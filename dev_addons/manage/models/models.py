@@ -13,6 +13,8 @@ class task(models.Model):
     is_paused = fields.Boolean()
     sprint = fields.Many2one("manage.sprint", ondelete="set null", help="sprint relacionado ")
 
+    technology = fields.Many2many("manage.technology")
+
 
 
 class sprint(models.Model):
@@ -27,4 +29,14 @@ class sprint(models.Model):
     task = fields.One2many(string="Tareas", comodel_name="manage.task", inverse_name="sprint")
 
 
+class technology(models.Model):
+    _name = 'manage.technology'
+    _description = 'manage.technology'
 
+    name = fields.Char()
+    description = fields.Text()
+
+    photo = fields.Image(max_width=200, max_height=200)
+
+    task = fields.Many2many ("manage.task")
+    
