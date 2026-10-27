@@ -11,7 +11,7 @@ class task(models.Model):
     start_date = fields.Datetime()
     end_date = fields.Datetime()
     is_paused = fields.Boolean()
-    sprint = fields.Many2one("manage.sprint")
+    sprint = fields.Many2one("manage.sprint", ondelete="set null", help="sprint relacionado ")
 
 
 
@@ -24,7 +24,7 @@ class sprint(models.Model):
     start_date = fields.Datetime()
     end_date = fields.Datetime()
 
-    task = fields.One2many("manage.task", "sprint")
+    task = fields.One2many(string="Tareas", comodel_name="manage.task", inverse_name="sprint")
 
 
 
