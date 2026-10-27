@@ -44,7 +44,7 @@
 
     <!-- menu categories -->
 
-    <menuitem name="Management 1" id="manage.menu_1" parent="manage.menu_root"/>
+    <menuitem name="Management" id="manage.menu_1" parent="manage.menu_root"/>
 <!--
     <menuitem name="manage" id="manage.menu_root"/>
 -->
