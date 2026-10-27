@@ -1,7 +1,7 @@
 services:
   # Odoo container
   odoo:
-    image: odoo:18
+    image: odoo:17
     container_name: odoo_dev_web
     ports:
       - "8069:8069"
@@ -21,7 +21,7 @@ services:
 
   # PostgreSQL database container
   db:
-    image: postgres:18
+    image: postgres:17
     container_name: odoo_dev_database
     environment:
       POSTGRES_DB: postgres

@@ -3,9 +3,17 @@
 # from odoo import models, fields, api
 
 
+<<<<<<< Updated upstream
 # class manage(models.Model):
 #     _name = 'manage.manage'
 #     _description = 'manage.manage'
+=======
+class task(models.Model):
+    _name = 'manage.task'
+    _description = 'manage.task'
+
+    name = fields.Char()  
+>>>>>>> Stashed changes
 
 #     name = fields.Char()
 #     value = fields.Integer()
