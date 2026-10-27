@@ -13,6 +13,26 @@
     </record>
 
 
+
+    <record model="ir.ui.view" id="manage.task_form">
+      <field name="name">manage task form</field>
+      <field name="model">manage.task</field>
+      <field name="arch" type="xml">
+        <form>
+          <group>
+            <field name="name"/>
+            <field name="description"/>
+            <field name="creation_date"/>
+            <field name="start_date"/>
+            <field name="end_date"/>
+            <field name="is_paused"/>
+            <field name ="sprint"/>
+          </group>
+        </form>
+      </field>
+    </record>
+
+
     <!-- actions opening views on models -->
 
     <record model="ir.actions.act_window" id="manage.action_task_window">
