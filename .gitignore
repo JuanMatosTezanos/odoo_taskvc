@@ -1,0 +1,7 @@
+Pg_data/
+logs/
+*.log
+__pysache__/
+*.pyc
+.DS_Store
+Thumbs.db

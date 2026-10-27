@@ -1,0 +1,42 @@
+services:
+  # Odoo container
+  odoo:
+    image: odoo:18
+    container_name: odoo_dev_web
+    ports:
+      - "8069:8069"
+    environment:
+      - HOST=db
+      - USER=odoo
+      - PASSWORD=odoo
+    volumes:
+      - odoo-data:/var/lib/odoo
+      - ./config_odoo/odoo.conf:/etc/odoo/odoo.conf
+      - ./dev_addons:/mnt/extra-addons
+      - ./logs:/var/log/odoo
+    networks:
+      - odoo-net
+    depends_on:
+      - db
+
+  # PostgreSQL database container
+  db:
+    image: postgres:18
+    container_name: odoo_dev_database
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: odoo
+    volumes:
+      - db-data:/var/lib/postgresql
+    networks:
+      - odoo-net
+
+# Define persistent volumes
+volumes:
+  odoo-data:
+  db-data:
+
+# Define the Docker network
+networks:
+  odoo-net:
