@@ -2,8 +2,10 @@ from odoo import models, fields, api
 import datetime
 from odoo.exceptions import ValidationError
 from odoo import _
+import logging
 
 
+_logger = logging.getLogger(__name__)
 
 class project(models.Model):
     _name = 'manage.project'
@@ -24,7 +26,7 @@ class history(models.Model):
     
     project = fields.Many2one("manage.project", ondelete="set null")
 
-    tasks = fields.One2many(string="Tareas", comodel_name="manage.task", inverse_name="history")
+    task = fields.One2many(string="Tareas", comodel_name="manage.task", inverse_name="history")
 
 
 
@@ -39,7 +41,7 @@ class task(models.Model):
     start_date = fields.Datetime()
     end_date = fields.Datetime()
     is_paused = fields.Boolean()
-    sprint = fields.Many2one("manage.sprint", ondelete="set null", help="sprint relacionado ")
+    sprint = fields.Many2one("manage.sprint", compute="_get_sprint", store=True)
 
     technology = fields.Many2many(comodel_name="manage.technology", relation="technologies_tasks", column1="task_id", column2 = "technology_id")
 
@@ -47,12 +49,15 @@ class task(models.Model):
     def _get_code(self):
         for task in self:
             try:
-                if len(task.sprint) == 0:
-                    task.code = "TSK_"+str(task.id)
-                else:
-                    task.code = str(task.sprint.name).upper() + "_"+str(task.id)
+                task.code = "TSK_"+str(task.id)
+                _logger.info("fields code generated for task with id: "+task.code)
             except:
                 raise ValidationError(_("bad code generation"))
+
+    api.depends("code")
+    def _get_sprint(self):
+        for task in self:
+            sprint = self.env['manage.sprint'].search([('project.id')])
 
 
 
@@ -61,7 +66,8 @@ class task(models.Model):
 class sprint(models.Model):
     _name = 'manage.sprint'
     _description = 'manage.sprint'
-    
+
+    project = fields.Many2one("manage.project",ondelete="set null")
     duration = fields.Integer()
     name = fields.Char()
     description = fields.Text()

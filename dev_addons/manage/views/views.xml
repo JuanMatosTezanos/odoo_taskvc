@@ -2,6 +2,8 @@
   <data>
     <!-- explicit list view definition -->
 
+
+
     <record model="ir.ui.view" id="manage.task_list">
       <field name="name">manage task list</field>
       <field name="model">manage.task</field>
@@ -9,6 +11,35 @@
         <tree>
           <field name="name"/>
         </tree>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="manage.project_form">
+      <field name="name">manage project form</field>
+      <field name="model">manage.project</field>
+      <field name="arch" type="xml">
+        <form>
+          <group>
+            <field name="name"/>
+            <field name="description"/>
+            <field name="history"/>
+          </group>
+        </form>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="manage.history_form">
+      <field name="name">manage history form</field>
+      <field name="model">manage.history</field>
+      <field name="arch" type="xml">
+        <form>
+          <group>
+            <field name="name"/>
+            <field name="description"/>
+            <field name="project"/>
+            <field name="task"/>
+          </group>
+        </form>
       </field>
     </record>
 
@@ -20,6 +51,7 @@
       <field name="arch" type="xml">
         <form>
           <group>
+            <field name="history"/>
             <field name="code"/>
             <field name="name"/>
             <field name="description"/>
@@ -40,6 +72,7 @@
       <field name="arch" type="xml">
         <form>
           <group>
+            <field name="project"/>
             <field name="name"/>
             <field name="description"/>
             <field name="duration"/>
@@ -74,6 +107,18 @@
       <field name="view_mode">tree,form</field>
     </record>
 
+    <record model="ir.actions.act_window" id="manage.action_project_window">
+      <field name="name">manage project window</field>
+      <field name="res_model">manage.project</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="manage.action_history_window">
+      <field name="name">manage history window</field>
+      <field name="res_model">manage.history</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
 
     <!-- server action to the one above -->
 <!--
@@ -103,6 +148,11 @@
 -->
 
     <!-- actions -->
+    <menuitem name="Projects" id="manage.menu_1_project_list" parent="manage.menu_1"
+              action="manage.action_project_window"/>
+
+    <menuitem name="History" id="manage.menu_1_history_list" parent="manage.menu_1"
+              action="manage.action_history_window"/>
 
     <menuitem name="Tasks" id="manage.menu_1_task_list" parent="manage.menu_1"
               action="manage.action_task_window"/>
