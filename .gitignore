@@ -6,3 +6,4 @@ __pysache__/
 .DS_Store
 Thumbs.db
 odoo/
+.refact/buddy/state.json
