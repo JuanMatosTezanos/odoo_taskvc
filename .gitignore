@@ -13,3 +13,5 @@ odoo/
 *.jsonl
 *.json
 *.jsonl
+*.jsonl
+*.json

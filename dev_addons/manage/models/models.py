@@ -2,6 +2,28 @@ from odoo import models, fields, api
 import datetime
 
 
+class project(models.Model):
+    _name = 'manage.project'
+    _description = 'manage.project'
+
+    name = fields.Char()
+    description = fields.Text()
+
+    history = fields.One2many(comodel_name="manage.history", inverse_name="project")
+
+class history(models.Model):
+    _name = 'manage.history'
+    _description = 'manage.history'
+
+    name = fields.Char()
+    description = fields.Text()
+
+
+    tasks = fields.One2many(comodel_name="manage.task", inverse_name="project")
+    
+    project = fields.Many2one("manage.project", ondelete="set null", help="proyecto relacionado ")
+
+
 class task(models.Model):
     _name = 'manage.task'
     _description = 'manage.task'
@@ -24,6 +46,8 @@ class task(models.Model):
                 task.code = "TSK_"+str(task.id)
             else:
                 task.code = str(task.sprint.name).upper() + "_"+str(task.id)
+
+
 
 
 
