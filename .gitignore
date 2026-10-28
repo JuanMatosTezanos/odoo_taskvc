@@ -11,3 +11,5 @@ odoo/
 /.refact/buddy
 /.refact
 *.jsonl
+*.json
+*.jsonl
