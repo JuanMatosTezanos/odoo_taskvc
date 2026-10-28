@@ -12,3 +12,5 @@ odoo/
 /.refact/knowledge
 *.jsonl
 *.json
+.refact/buddy/memory_ops.jsonl
+.refact/buddy/state.json
