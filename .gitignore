@@ -9,3 +9,6 @@ odoo/
 .refact/buddy/state.json
 .refact/buddy/state.json
 .refact/buddy/state.json
+/.refact/knowledge
+*.jsonl
+*.json
