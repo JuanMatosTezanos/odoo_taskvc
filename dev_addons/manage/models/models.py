@@ -1,12 +1,18 @@
 from odoo import models, fields, api
+from odoo.exceptions import ValidationError
+from odoo import _
 import datetime
+import logging
 
+
+
+_logger = logging.getLogger(__name__)#infromation about the log, can be used to debug and check the flow of the code  
 
 class task(models.Model):
     _name = 'manage.task'
     _description = 'manage.task'
 
-    code = fields.Char(compute="_get_code", store=True)
+    code = fields.Char(compute="_get_code")
     name = fields.Char(string="Nombre", readonly=False, required=True, help="Introduzca el nombre") #Name
     description= fields.Text()
     creation_date = fields.Date()
@@ -20,11 +26,15 @@ class task(models.Model):
 
     def _get_code(self):
         for task in self:
-            if len(task.sprint) == 0:
-                task.code = "TSK_"+str(task.id)
-            else:
-                task.code = str(task.sprint.name).upper() + "_"+str(task.id)
+            try:
+                if len(task.sprint) == 0:
+                    task.code = "TSK_"+str(task.id)
+                else:
+                    task.code = str(task.sprint.name).upper() + "_"+str(task.id)
+                _logger.debug("generated code for task: "+(task.code))
 
+            except:
+                raise ValidationError(_("wrong code generation"))
 
 
 class sprint(models.Model):
@@ -43,7 +53,7 @@ class sprint(models.Model):
     def _get_end_date(self):
         for sprint in self:
             if isinstance(sprint.start_date, datetime.datetime) and sprint.duration > 0:
-                sprint.end_date = sprint.start_date + datetime.timedelta(days=sprint.duration)
+                sprint.end_date = sprint.start_date + datetime.timedelta(days= sprint.duration)
             else:
                 sprint.end_date = sprint.start_date
 
