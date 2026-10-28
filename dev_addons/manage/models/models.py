@@ -1,11 +1,12 @@
 from odoo import models, fields, api
+import datetime
 
 
 class task(models.Model):
     _name = 'manage.task'
     _description = 'manage.task'
 
-    code = fields.Char(compute="_get_code")
+    code = fields.Char(compute="_get_code", store=True)
     name = fields.Char(string="Nombre", readonly=False, required=True, help="Introduzca el nombre") #Name
     description= fields.Text()
     creation_date = fields.Date()
@@ -29,13 +30,22 @@ class task(models.Model):
 class sprint(models.Model):
     _name = 'manage.sprint'
     _description = 'manage.sprint'
-
+    
+    duration = fields.Integer()
     name = fields.Char()
     description = fields.Text()
     start_date = fields.Datetime()
-    end_date = fields.Datetime()
+    end_date = fields.Datetime(compute="_get_end_date", store=True)
 
     task = fields.One2many(string="Tareas", comodel_name="manage.task", inverse_name="sprint")
+
+    @api.depends("start_date", "end_date")
+    def _get_end_date(self):
+        for sprint in self:
+            if isinstance(sprint.start_date, datetime.datetime) and sprint.duration > 0:
+                sprint.end_date = sprint.start_date + datetime.timedelta(days=sprint.duration)
+            else:
+                sprint.end_date = sprint.start_date
 
 
 class technology(models.Model):
