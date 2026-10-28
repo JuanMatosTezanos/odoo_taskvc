@@ -1,5 +1,8 @@
 from odoo import models, fields, api
 import datetime
+from odoo.exceptions import ValidationError
+from odoo import _
+
 
 
 class project(models.Model):
@@ -18,20 +21,21 @@ class history(models.Model):
     name = fields.Char()
     description = fields.Text()
 
-
-    tasks = fields.One2many(comodel_name="manage.task", inverse_name="project")
     
-    project = fields.Many2one("manage.project", ondelete="set null", help="proyecto relacionado ")
+    project = fields.Many2one("manage.project", ondelete="set null")
+
+    tasks = fields.One2many(string="Tareas", comodel_name="manage.task", inverse_name="history")
+
 
 
 class task(models.Model):
     _name = 'manage.task'
     _description = 'manage.task'
 
-    code = fields.Char(compute="_get_code", store=True)
+    code = fields.Char(compute="_get_code")
     name = fields.Char(string="Nombre", readonly=False, required=True, help="Introduzca el nombre") #Name
+    history = fields.Many2one("manage.history", ondelete="set null", help="historia relacionada ")
     description= fields.Text()
-    creation_date = fields.Date()
     start_date = fields.Datetime()
     end_date = fields.Datetime()
     is_paused = fields.Boolean()
@@ -42,10 +46,13 @@ class task(models.Model):
 
     def _get_code(self):
         for task in self:
-            if len(task.sprint) == 0:
-                task.code = "TSK_"+str(task.id)
-            else:
-                task.code = str(task.sprint.name).upper() + "_"+str(task.id)
+            try:
+                if len(task.sprint) == 0:
+                    task.code = "TSK_"+str(task.id)
+                else:
+                    task.code = str(task.sprint.name).upper() + "_"+str(task.id)
+            except:
+                raise ValidationError(_("bad code generation"))
 
 
 
