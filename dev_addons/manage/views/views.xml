@@ -3,21 +3,7 @@
     <!-- explicit list view definition -->
 
 
-
-    <record model="ir.ui.view" id="manage.devs_partner_form">
-      <field name="name">manage developer form</field>
-      <field name="model">res.partner</field>
-      <field name="arch" type="xml">
-        <form>
-          <group>
-            <field name="technologies"></field>
-          </group>
-        </form>
-      </field>
-    </record>
-
-
-
+       
     <record model="ir.ui.view" id="manage.task_list">
       <field name="name">manage task list</field>
       <field name="model">manage.task</field>
@@ -25,6 +11,26 @@
         <tree>
           <field name="name"/>
         </tree>
+      </field>
+    </record>
+
+
+    <record model="ir.ui.view" id="manage.devs_partner_form">
+      <field name="name">manage developer form</field>
+      <field name="model">res.partner</field>
+      <field name="inherit_id" ref="base.view_partner_form"/>
+      <field name="mode">primary</field>
+      <field name="arch" type="xml">
+        <xpath expr="//sheet/notebook/page[@name='internal_notes']" position="after">
+          <page name="Devs" string="Devs">
+            <group>
+              <group>
+              <field name="technologies"/>
+              <field name="is_dev"/>
+              </group>
+            </group>
+          </page>
+        </xpath>
       </field>
     </record>
 
@@ -140,6 +146,8 @@
       <field name="name">manage developer window</field>
       <field name="res_model">res.partner</field>
       <field name="view_mode">tree,form</field>
+      <field name="domain">[('is_dev','=',True)]</field>
+      <field name="context">{'default_is_dev': True}</field>
     </record>
 
   #When the user opens the Developer window, which view should Odoo show?
