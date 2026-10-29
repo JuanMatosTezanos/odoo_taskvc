@@ -7,6 +7,13 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
+class developer(models.Model):
+    _name = 'res.partner'
+    _inherit = 'res.partner'
+    
+
+    technologies = fields.Many2many('manage.technology', relation='developer_technologies', column1='developer_id', column2='technology_id')
+
 class project(models.Model):
     _name = 'manage.project'
     _description = 'manage.project'
@@ -14,7 +21,9 @@ class project(models.Model):
     name = fields.Char()
     description = fields.Text()
 
-    history = fields.One2many(comodel_name="manage.history", inverse_name="project")
+    histories = fields.One2many(comodel_name="manage.history", inverse_name="project")
+
+
 
 class history(models.Model):
     _name = 'manage.history'
@@ -26,14 +35,30 @@ class history(models.Model):
     
     project = fields.Many2one("manage.project", ondelete="set null")
 
-    task = fields.One2many(string="Tareas", comodel_name="manage.task", inverse_name="history")
+    tasks = fields.One2many(string="Tareas", comodel_name="manage.task", inverse_name="history")
 
+    used_technologies = fields.Many2many("manage.technology", compute="_get_used_technologies")
+
+    def _get_used_technologies(self):
+        for history in self:
+            technologies = None
+            for task in history.tasks:
+                if not technologies:
+                    technologies = task.technology
+                else:
+                    technologies = technologies + task.technology
+            history.used_technologies = technologies
 
 
 class task(models.Model):
     _name = 'manage.task'
     _description = 'manage.task'
 
+    def _get_definition_date(self):
+            return datetime.datetime.now()
+
+    definition_date = fields.Datetime(default=_get_definition_date)
+    project = fields.Many2one("manage.project", related="history.project", readonly=True)
     code = fields.Char(compute="_get_code")
     name = fields.Char(string="Nombre", readonly=False, required=True, help="Introduzca el nombre") #Name
     history = fields.Many2one("manage.history", ondelete="set null", help="historia relacionada ")
@@ -41,6 +66,7 @@ class task(models.Model):
     start_date = fields.Datetime()
     end_date = fields.Datetime()
     is_paused = fields.Boolean()
+
     sprint = fields.Many2one("manage.sprint", compute="_get_sprint", store=True)
 
     technology = fields.Many2many(comodel_name="manage.technology", relation="technologies_tasks", column1="task_id", column2 = "technology_id")
@@ -54,12 +80,17 @@ class task(models.Model):
             except:
                 raise ValidationError(_("bad code generation"))
 
-    api.depends("code")
+    @api.depends('code')
     def _get_sprint(self):
         for task in self:
-            sprint = self.env['manage.sprint'].search([('project.id')])
-
-
+            sprints = self.env['manage.sprint'].search([('project.id', '=', task.history.project.id)])
+            found = False
+            for sprint in sprints:
+                if isinstance(sprint.end_date,datetime.datetime) and sprint.end_date > datetime.datetime.now():
+                    task.sprint = sprint.id
+                    found = True
+            if not found:
+                task.sprint = False
 
 
 
@@ -68,13 +99,13 @@ class sprint(models.Model):
     _description = 'manage.sprint'
 
     project = fields.Many2one("manage.project",ondelete="set null")
-    duration = fields.Integer()
+    duration = fields.Integer(default=15)
     name = fields.Char()
     description = fields.Text()
     start_date = fields.Datetime()
-    end_date = fields.Datetime(compute="_get_end_date", store=True)
+    end_date = fields.Datetime(compute="_get_end_date")
 
-    task = fields.One2many(string="Tareas", comodel_name="manage.task", inverse_name="sprint")
+    tasks = fields.One2many(string="Tareas", comodel_name="manage.task", inverse_name="sprint")
 
     @api.depends("start_date", "end_date")
     def _get_end_date(self):
@@ -96,3 +127,4 @@ class technology(models.Model):
 
     task = fields.Many2many (comodel_name="manage.task", relation = "technologies_tasks", column1="technology_id", column2="task_id")
     
+

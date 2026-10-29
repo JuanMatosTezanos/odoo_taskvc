@@ -4,6 +4,20 @@
 
 
 
+    <record model="ir.ui.view" id="manage.devs_partner_form">
+      <field name="name">manage developer form</field>
+      <field name="model">res.partner</field>
+      <field name="arch" type="xml">
+        <form>
+          <group>
+            <field name="technologies"></field>
+          </group>
+        </form>
+      </field>
+    </record>
+
+
+
     <record model="ir.ui.view" id="manage.task_list">
       <field name="name">manage task list</field>
       <field name="model">manage.task</field>
@@ -22,7 +36,7 @@
           <group>
             <field name="name"/>
             <field name="description"/>
-            <field name="history"/>
+            <field name="histories"/>
           </group>
         </form>
       </field>
@@ -37,7 +51,8 @@
             <field name="name"/>
             <field name="description"/>
             <field name="project"/>
-            <field name="task"/>
+            <field name="tasks"/>
+            <field name="used_technologies"/>
           </group>
         </form>
       </field>
@@ -51,6 +66,8 @@
       <field name="arch" type="xml">
         <form>
           <group>
+            <field name="definition_date"/>
+            <field name="project"/>
             <field name="history"/>
             <field name="code"/>
             <field name="name"/>
@@ -78,7 +95,7 @@
             <field name="duration"/>
             <field name="start_date"/>
             <field name="end_date"/>
-            <field name="task"/>
+            <field name="tasks"/>
           </group>
         </form>
       </field>
@@ -118,6 +135,29 @@
       <field name="res_model">manage.history</field>
       <field name="view_mode">tree,form</field>
     </record>
+
+    <record model="ir.actions.act_window" id="manage.action_developer_window">
+      <field name="name">manage developer window</field>
+      <field name="res_model">res.partner</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+  #When the user opens the Developer window, which view should Odoo show?
+    <record model="ir.actions.act_window.view" id="manage.action_view_developer_tree">
+      <field name="sequence" eval="1"></field>
+      <field name="view_mode">tree</field>
+      <field name="view_id" ref="base.view_partner_tree"></field>
+      <field name="act_window_id" ref="manage.action_developer_window"></field>
+    </record>
+
+
+    <record model="ir.actions.act_window.view" id="manage.action_view_developer_form">
+      <field name="sequence" eval="2"></field>
+      <field name="view_mode">form</field>
+      <field name="view_id" ref="manage.devs_partner_form"></field>
+      <field name="act_window_id" ref="manage.action_developer_window"></field>
+    </record>
+
 
 
     <!-- server action to the one above -->
@@ -163,6 +203,9 @@
 
     <menuitem name="Technologies" id="manage.menu_1_technology_list" parent="manage.menu_1"
               action="manage.action_technology_window"/>
+
+    <menuitem name="Developers" id="manage.menu_1_devs_list" parent="manage.menu_1"
+              action="manage.action_developer_window"/>
 <!--
     <menuitem name="Server to list" id="manage" parent="manage.menu_2"
               action="manage.action_server"/>
