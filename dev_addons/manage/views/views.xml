@@ -14,6 +14,7 @@
                             <group>
                                 <field name="technologies" />
                                 <field name="is_dev" invisible="True" />
+                                <field name="task" context="{'current_developer': active_id}"/>
                             </group>
                         </group>
                     </page>

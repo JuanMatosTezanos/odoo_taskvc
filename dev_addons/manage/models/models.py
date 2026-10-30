@@ -16,6 +16,16 @@ class developer(models.Model):
 
     technologies = fields.Many2many('manage.technology', relation='developer_technologies', column1='developer_id', column2='technology_id')
 
+    task = fields.Many2many('manage.task', relation='developers_tasks', column1='developer_id', column2='task_id')
+
+    bugs = fields.Many2many('manage.bug', relation='developers_bugs', column1='developer_id', column2='bug_id')
+
+    improvements = fields.Many2many('manage.improvement', relation='developers_improvements', column1='developer_id', column2='improvement_id')
+
+
+
+    
+
     @api.onchange('is_dev')
     def _onchange_is_dev(self):
         categories = self.env['res.partner.category'].search([('name', '=', 'Devs')])
@@ -83,7 +93,6 @@ class task(models.Model):
 
     technology = fields.Many2many(comodel_name="manage.technology", relation="technologies_tasks", column1="task_id", column2 = "technology_id")
 
-    developer = fields.Many2many("res.partner", domain=[('is_dev', '=', True)])
 
     def _get_code(self):
         for task in self:
@@ -105,6 +114,15 @@ class task(models.Model):
             if not found:
                 task.sprint = False
 
+
+    def _get_default_dev(self):
+        developer_id = self.env.context.get('current_developer')
+        return [developer_id] if developer_id else []
+
+
+    developer = fields.Many2many(comodel_name="res.partner", relation="developers_tasks", column1="task_id", column2 = "developer_id", domain=[('is_dev', '=', True)], default=_get_default_dev)
+
+
 class bug(models.Model):
     _name = 'manage.bug'
     _description = 'manage.bug'
@@ -117,7 +135,7 @@ class bug(models.Model):
 
     bug_linked = fields.Many2many(comodel_name="manage.bug", relation="bugs_bugs", column1="bug1_id", column2 = "bug2_id")
 
-    developers = fields.Many2many(comodel_name="res.partner", relation="developers_bugs", column1="bug_id", column2 = "developer_id")
+    developer = fields.Many2many(comodel_name="res.partner", relation="developers_bugs", column1="bug_id", column2 = "developer_id", domain=[('is_dev', '=', True)])
 
     improvement_linked = fields.Many2many(comodel_name="manage.improvement", relation="improvements_bugs", column1="bug_id", column2 = "improvement_id")
 
@@ -133,7 +151,7 @@ class improvement(models.Model):
 
     history_linked = fields.Many2many("manage.history")
 
-    developers = fields.Many2many(comodel_name="res.partner", relation="developers_improvements", column1="improvement_id", column2 = "developer_id")
+    developer = fields.Many2many(comodel_name="res.partner", relation="developers_improvements", column1="improvement_id", column2 = "developer_id", domain=[('is_dev', '=', True)])
 
 
 
