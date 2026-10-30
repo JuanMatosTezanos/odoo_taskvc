@@ -3,6 +3,7 @@ import datetime
 from odoo.exceptions import ValidationError
 from odoo import _
 import logging
+import re
 
 
 _logger = logging.getLogger(__name__)
@@ -12,6 +13,7 @@ class developer(models.Model):
     _inherit = 'res.partner'
 
     is_dev = fields.Boolean()
+    access_level = fields.Char()
 
 
     technologies = fields.Many2many('manage.technology', relation='developer_technologies', column1='developer_id', column2='technology_id')
@@ -22,8 +24,17 @@ class developer(models.Model):
 
     improvements = fields.Many2many('manage.improvement', relation='developers_improvements', column1='developer_id', column2='improvement_id')
 
+    @api.constrains("access_level")
+    def _check_code(self):
+        regex = re.compile(r'^[0-9]{8}[a-z]+$', re.I)        
+        for dev in self:
+            if regex.match(dev.access_level):
+                _logger.info("Access code is valid for developer with id")
+            else:
+                raise ValidationError("Access code is invalid")
 
 
+    _sql_constraints = [('access_level_unique', 'unique(access_level)', 'Access level must be unique')]
     
 
     @api.onchange('is_dev')
