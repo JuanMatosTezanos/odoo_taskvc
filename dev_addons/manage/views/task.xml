@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="manage.task_list" model="ir.ui.view">
+            <field name="name">manage task list</field>
+            <field name="model">manage.task</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name" />
+                </tree>
+            </field>
+        </record>
+
+        <record id="manage.task_form" model="ir.ui.view">
+            <field name="name">manage task form</field>
+            <field name="model">manage.task</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group>
+                        <field name="definition_date" />
+                        <field name="project" />
+                        <field name="history" />
+                        <field name="code" />
+                        <field name="name" />
+                        <field name="description" />
+                        <field name="start_date" />
+                        <field name="end_date" />
+                        <field name="is_paused" />
+                        <field name="sprint" />
+                        <field name="developer" domain="[('is_dev', '=', True)]" context="{'form_view_ref':'manage.devs_partner_form'}" />
+                        <field name="technology" />
+                    </group>
+                </form>
+            </field>
+        </record>
+        <!-- actions opening views on models -->
+        <record id="manage.action_task_window" model="ir.actions.act_window">
+            <field name="name">manage task window</field>
+            <field name="res_model">manage.task</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="manage.menu_1_task_list" name="Tasks" parent="manage.menu_1" action="manage.action_task_window" />
+    </data>
+</odoo>

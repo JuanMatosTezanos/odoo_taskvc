@@ -83,7 +83,7 @@ class task(models.Model):
 
     technology = fields.Many2many(comodel_name="manage.technology", relation="technologies_tasks", column1="task_id", column2 = "technology_id")
 
-    developer = fields.Many2one("res.partner", domain=[('is_dev', '=', True)])
+    developer = fields.Many2many("res.partner", domain=[('is_dev', '=', True)])
 
     def _get_code(self):
         for task in self:
@@ -104,6 +104,38 @@ class task(models.Model):
                     found = True
             if not found:
                 task.sprint = False
+
+class bug(models.Model):
+    _name = 'manage.bug'
+    _description = 'manage.bug'
+    _inherit = 'manage.task'
+
+
+    technology = fields.Many2many(comodel_name="manage.technology", relation="technologies_bugs", column1="bug_id", column2 = "technology_id")
+
+    task_linked = fields.Many2many(comodel_name="manage.task", relation="task_bugs", column1="bug_id", column2 = "task_id")
+
+    bug_linked = fields.Many2many(comodel_name="manage.bug", relation="bugs_bugs", column1="bug1_id", column2 = "bug2_id")
+
+    developers = fields.Many2many(comodel_name="res.partner", relation="developers_bugs", column1="bug_id", column2 = "developer_id")
+
+    improvement_linked = fields.Many2many(comodel_name="manage.improvement", relation="improvements_bugs", column1="bug_id", column2 = "improvement_id")
+
+
+
+class improvement(models.Model):
+    _name = 'manage.improvement'
+    _description = 'manage.improvement'
+    _inherit = 'manage.task'
+
+
+    technology = fields.Many2many(comodel_name="manage.technology", relation="technologies_improvements", column1="improvement_id", column2 = "technology_id")
+
+    history_linked = fields.Many2many("manage.history")
+
+    developers = fields.Many2many(comodel_name="res.partner", relation="developers_improvements", column1="improvement_id", column2 = "developer_id")
+
+
 
 
 
