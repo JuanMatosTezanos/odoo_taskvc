@@ -13,7 +13,6 @@ class developer(models.Model):
 
     is_dev = fields.Boolean()
 
-    
 
     technologies = fields.Many2many('manage.technology', relation='developer_technologies', column1='developer_id', column2='technology_id')
 
@@ -74,6 +73,7 @@ class task(models.Model):
 
     technology = fields.Many2many(comodel_name="manage.technology", relation="technologies_tasks", column1="task_id", column2 = "technology_id")
 
+    developer = fields.Many2one("res.partner", domain=[('is_dev', '=', True)])
 
     def _get_code(self):
         for task in self:
