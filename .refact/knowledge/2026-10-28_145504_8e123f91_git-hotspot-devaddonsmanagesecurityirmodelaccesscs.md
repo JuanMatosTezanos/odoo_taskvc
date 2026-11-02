@@ -6,15 +6,15 @@ tags:
 - git
 - hotspot
 created: 2026-10-28
-updated: 2026-10-28
+updated: 2026-11-02
 filenames:
 - dev_addons/manage/security/ir.model.access.csv
 links: []
 kind: code
-status: proposed
-superseded_by: null
-deprecated_at: null
-review_after: 2026-10-28
+status: archived
+superseded_by: 4d881bc0-f2ff-4f20-861b-1c74da77a999
+deprecated_at: 2026-11-02
+review_after: 2026-11-02
 source_chat_id: null
 created_at: 2026-10-28T19:55:04.687319400+00:00
 summary: null

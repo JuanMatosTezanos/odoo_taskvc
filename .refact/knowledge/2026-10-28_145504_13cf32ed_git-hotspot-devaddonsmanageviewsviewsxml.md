@@ -6,15 +6,15 @@ tags:
 - git
 - hotspot
 created: 2026-10-28
-updated: 2026-10-28
+updated: 2026-11-02
 filenames:
 - dev_addons/manage/views/views.xml
 links: []
 kind: code
-status: proposed
-superseded_by: null
-deprecated_at: null
-review_after: 2026-10-28
+status: archived
+superseded_by: 43b5d809-9f5c-4ee3-b643-9add1abaf7f7
+deprecated_at: 2026-11-02
+review_after: 2026-11-02
 source_chat_id: null
 created_at: 2026-10-28T19:55:04.632168400+00:00
 summary: null

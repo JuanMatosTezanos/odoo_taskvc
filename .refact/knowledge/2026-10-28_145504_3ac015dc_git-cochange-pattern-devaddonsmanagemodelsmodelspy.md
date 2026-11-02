@@ -6,7 +6,7 @@ tags:
 - git
 - pattern
 created: 2026-10-28
-updated: 2026-10-28
+updated: 2026-11-02
 filenames:
 - dev_addons/manage/models/models.py
 - dev_addons/manage/security/ir.model.access.csv
@@ -15,7 +15,7 @@ kind: pattern
 status: proposed
 superseded_by: null
 deprecated_at: null
-review_after: 2026-10-28
+review_after: 2026-11-02
 source_chat_id: null
 created_at: 2026-10-28T19:55:04.655659700+00:00
 summary: null

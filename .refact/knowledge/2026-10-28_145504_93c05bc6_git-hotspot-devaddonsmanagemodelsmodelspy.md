@@ -6,15 +6,15 @@ tags:
 - git
 - hotspot
 created: 2026-10-28
-updated: 2026-10-28
+updated: 2026-11-02
 filenames:
 - dev_addons/manage/models/models.py
 links: []
 kind: code
-status: proposed
-superseded_by: null
-deprecated_at: null
-review_after: 2026-10-28
+status: archived
+superseded_by: 2afa843f-94bc-4c5e-bd5b-8fdb56da1b70
+deprecated_at: 2026-11-02
+review_after: 2026-11-02
 source_chat_id: null
 created_at: 2026-10-28T19:55:04.664437700+00:00
 summary: null
