@@ -12,10 +12,11 @@
                     <page name="Devs" string="Devs" invisible="not is_dev">
                         <group>
                             <group>
+                                <field name="last_login" />
                                 <field name="technologies" />
                                 <field name="is_dev" invisible="True" />
-                                <field name="access_level"/>
-                                <field name="task" context="{'current_developer': active_id}"/>
+                                <field name="access_level" />
+                                <field name="task" context="{'current_developer': active_id}" />
                             </group>
                         </group>
                     </page>
@@ -23,12 +24,6 @@
             </field>
         </record>
         <!-- actions opening views on models -->
-        <record id="manage.action_technology_window" model="ir.actions.act_window">
-            <field name="name">manage technology window</field>
-            <field name="res_model">manage.technology</field>
-            <field name="view_mode">tree,form</field>
-        </record>
-
         <record id="manage.action_developer_window" model="ir.actions.act_window">
             <field name="name">manage developer window</field>
             <field name="res_model">res.partner</field>
@@ -74,7 +69,6 @@
     <menuitem name="manage" id="manage.menu_root"/>
 -->
         <!-- actions -->
-        <menuitem id="manage.menu_1_technology_list" name="Technologies" parent="manage.menu_1" action="manage.action_technology_window" />
 
         <menuitem id="manage.menu_1_devs_list" name="Developers" parent="manage.menu_1" action="manage.action_developer_window" />
         <!--

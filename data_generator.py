@@ -1,7 +1,7 @@
 from os import path
 from os import remove
 import random
-
+import base64
 
 n_technologies = 0
 
@@ -44,6 +44,7 @@ def write_text(text,file):
 def write_dev(line, demo_file):
     write_text(f'<record id= \'dev_{line[0]}\' model =\'res.partner\'>', demo_file)
     write_text(f'<field name= \'name\'>{line[1]}</field>', demo_file)
+    write_text(f'<field name= \'last_login\' eval=\"(datetime.now().strftime(\'%Y-%m-%d\'))\"></field>', demo_file)
     write_text(f'<field name= \'access_level\'>{line[2]}</field>', demo_file)
     write_text(f'<field name= \'is_dev\'>True</field>', demo_file)
     write_text(f'<field name= \'technologies\' eval="{format_random_technologies()}"></field>', demo_file)
@@ -97,7 +98,7 @@ def technologies_generator(source, demo_file):
     write_text('<odoo><data>', demo_file)
     with open(source) as file:
         for line in file:
-            line = line.split(',')
+            line = line.strip().split(',')
             n_technologies += 1
             write_technology(line,demo_file)
     write_text('</data></odoo>', demo_file)
@@ -105,6 +106,12 @@ def technologies_generator(source, demo_file):
 def write_technology(line, demo_file):
     write_text(f'<record id= \'technology_{line[0]}\' model =\'manage.technology\'>', demo_file)
     write_text(f'<field name= \'name\'>{line[1]}</field>', demo_file)
+
+
+    image = open("tech_images/"+line[1]+".png", "rb")
+    b64_string = base64.b64encode(image.read()).decode('utf-8')
+
+    write_text(f'<field name= \'photo\'>{b64_string}</field>', demo_file)
     write_text(f'</record>', demo_file)   
 
 

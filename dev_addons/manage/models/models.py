@@ -12,6 +12,7 @@ class developer(models.Model):
     _name = 'res.partner'
     _inherit = 'res.partner'
 
+    last_login = fields.Date()
     is_dev = fields.Boolean()
     access_level = fields.Char()
 

@@ -24,6 +24,7 @@ Long description of module's purpose
     'data': [
         'security/ir.model.access.csv',
         'views/views.xml',
+        'views/technology.xml',
         'views/project.xml',
         'views/history.xml',
         'views/sprint.xml',

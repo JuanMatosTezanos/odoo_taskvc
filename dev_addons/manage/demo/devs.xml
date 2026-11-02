@@ -3,72 +3,82 @@
     <data>
         <record id="dev_1" model="res.partner">
             <field name="name">Rania McFarland</field>
+            <field name="last_login" eval="(datetime.now().strftime('%Y-%m-%d'))" />
             <field name="access_level">29586531I</field>
             <field name="is_dev">True</field>
-            <field name="technologies" eval="[(6,0,[ref('technology_4'),ref('technology_3'),ref('technology_5')])]" />
+            <field name="technologies" eval="[(6,0,[ref('technology_5')])]" />
         </record>
 
         <record id="dev_2" model="res.partner">
             <field name="name">Kilian Cruse</field>
+            <field name="last_login" eval="(datetime.now().strftime('%Y-%m-%d'))" />
             <field name="access_level">33395701K</field>
             <field name="is_dev">True</field>
-            <field name="technologies" eval="[(6,0,[ref('technology_4')])]" />
+            <field name="technologies" eval="[(6,0,[ref('technology_3'),ref('technology_4'),ref('technology_6'),ref('technology_5'),ref('technology_1')])]" />
         </record>
 
         <record id="dev_3" model="res.partner">
             <field name="name">Ethe Burnie</field>
+            <field name="last_login" eval="(datetime.now().strftime('%Y-%m-%d'))" />
             <field name="access_level">19613825Q</field>
             <field name="is_dev">True</field>
-            <field name="technologies" eval="[(6,0,[ref('technology_5'),ref('technology_4'),ref('technology_2')])]" />
+            <field name="technologies" eval="[(6,0,[ref('technology_5'),ref('technology_2')])]" />
         </record>
 
         <record id="dev_4" model="res.partner">
             <field name="name">Claretta Parry</field>
+            <field name="last_login" eval="(datetime.now().strftime('%Y-%m-%d'))" />
             <field name="access_level">07257656C</field>
             <field name="is_dev">True</field>
-            <field name="technologies" eval="[(6,0,[ref('technology_1')])]" />
+            <field name="technologies" eval="[(6,0,[ref('technology_5'),ref('technology_3'),ref('technology_6'),ref('technology_2'),ref('technology_1'),ref('technology_4')])]" />
         </record>
 
         <record id="dev_5" model="res.partner">
             <field name="name">Lorie Newling</field>
+            <field name="last_login" eval="(datetime.now().strftime('%Y-%m-%d'))" />
             <field name="access_level">38321392T</field>
             <field name="is_dev">True</field>
-            <field name="technologies" eval="[(6,0,[ref('technology_3'),ref('technology_5'),ref('technology_6'),ref('technology_4'),ref('technology_2')])]" />
+            <field name="technologies" eval="[(6,0,[ref('technology_3'),ref('technology_4'),ref('technology_1'),ref('technology_2'),ref('technology_6'),ref('technology_5')])]" />
         </record>
 
         <record id="dev_6" model="res.partner">
             <field name="name">Zechariah Gummoe</field>
+            <field name="last_login" eval="(datetime.now().strftime('%Y-%m-%d'))" />
             <field name="access_level">69034116Y</field>
             <field name="is_dev">True</field>
-            <field name="technologies" eval="[(6,0,[ref('technology_6')])]" />
+            <field name="technologies" eval="[(6,0,[ref('technology_3'),ref('technology_4'),ref('technology_1')])]" />
         </record>
 
         <record id="dev_7" model="res.partner">
             <field name="name">Allene Vest</field>
+            <field name="last_login" eval="(datetime.now().strftime('%Y-%m-%d'))" />
             <field name="access_level">27348835Q</field>
             <field name="is_dev">True</field>
-            <field name="technologies" eval="[(6,0,[ref('technology_2'),ref('technology_5'),ref('technology_3'),ref('technology_4'),ref('technology_6'),ref('technology_1')])]" />
+            <field name="technologies" eval="[(6,0,[ref('technology_4'),ref('technology_3'),ref('technology_6'),ref('technology_1'),ref('technology_5')])]" />
         </record>
 
         <record id="dev_8" model="res.partner">
             <field name="name">Stanton Kearford</field>
+            <field name="last_login" eval="(datetime.now().strftime('%Y-%m-%d'))" />
             <field name="access_level">30199479C</field>
             <field name="is_dev">True</field>
-            <field name="technologies" eval="[(6,0,[ref('technology_6'),ref('technology_3'),ref('technology_2'),ref('technology_4'),ref('technology_1'),ref('technology_5')])]" />
+            <field name="technologies" eval="[(6,0,[ref('technology_6'),ref('technology_4'),ref('technology_2')])]" />
         </record>
 
         <record id="dev_9" model="res.partner">
             <field name="name">Edith Peirpoint</field>
+            <field name="last_login" eval="(datetime.now().strftime('%Y-%m-%d'))" />
             <field name="access_level">53910861C</field>
             <field name="is_dev">True</field>
-            <field name="technologies" eval="[(6,0,[ref('technology_5'),ref('technology_3'),ref('technology_1'),ref('technology_2'),ref('technology_6')])]" />
+            <field name="technologies" eval="[(6,0,[ref('technology_2'),ref('technology_6'),ref('technology_4'),ref('technology_3')])]" />
         </record>
 
         <record id="dev_10" model="res.partner">
             <field name="name">Edie Putman</field>
+            <field name="last_login" eval="(datetime.now().strftime('%Y-%m-%d'))" />
             <field name="access_level">28549747G</field>
             <field name="is_dev">True</field>
-            <field name="technologies" eval="[(6,0,[ref('technology_1'),ref('technology_2'),ref('technology_3'),ref('technology_4'),ref('technology_5'),ref('technology_6')])]" />
+            <field name="technologies" eval="[(6,0,[ref('technology_6')])]" />
         </record>
     </data>
 </odoo>
