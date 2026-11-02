@@ -195,14 +195,33 @@ class sprint(models.Model):
     end_date = fields.Datetime(compute="_get_end_date")
 
     tasks = fields.One2many(string="Tareas", comodel_name="manage.task", inverse_name="sprint")
+    active = fields.Boolean(compute="_get_active", store=True)
 
-    @api.depends("start_date", "end_date")
+    @api.depends("start_date", "duration")
     def _get_end_date(self):
         for sprint in self:
             if isinstance(sprint.start_date, datetime.datetime) and sprint.duration > 0:
                 sprint.end_date = sprint.start_date + datetime.timedelta(days=sprint.duration)
             else:
                 sprint.end_date = sprint.start_date
+
+    @api.depends('start_date', 'duration')
+    def _get_active(self):
+        for sprint in self:
+            _logger.info("START=%s", sprint.start_date)
+            _logger.info("END=%s", sprint.end_date)
+
+            if (
+                isinstance(sprint.start_date, datetime.datetime)
+                and isinstance(sprint.end_date, datetime.datetime)
+                and sprint.end_date > datetime.datetime.now()
+                and sprint.start_date <= datetime.datetime.now()
+            ):
+                _logger.info("ACTIVE")
+                sprint.active = True
+            else:
+                _logger.info("NOT ACTIVE")
+                sprint.active = False
 
 
 class technology(models.Model):
