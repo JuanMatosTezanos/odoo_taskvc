@@ -35,6 +35,10 @@ Long description of module's purpose
     # only loaded in demonstration mode
     'demo': [
         'demo/demo.xml',
+        'demo/technologies.xml',
+        'demo/devs.xml',
+        'demo/projects.xml',
+        'demo/histories.xml',
     ],
 }
 

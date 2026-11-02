@@ -4,7 +4,7 @@
         <record id="012DEV" model="res.partner">
             <field name="name">yummers</field>
             <field name="access_level">12345678E</field>
-            <field name="is_dev"> =True</field>
+            <field name="is_dev">True</field>
         </record>
     </data>
 </odoo>

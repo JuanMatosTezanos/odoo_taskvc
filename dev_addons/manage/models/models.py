@@ -35,17 +35,31 @@ class developer(models.Model):
 
 
     _sql_constraints = [('access_level_unique', 'unique(access_level)', 'Access level must be unique')]
+
+
+    def _get_category(self):
+        for dev in self:
+            categories = self.env['res.partner.category'].search([('name', '=', 'Devs')])
+            if len(categories) > 0:
+                category = categories[0]
+            else:
+                category = self.env['res.partner.category'].create({'name': 'Devs'})
+            return category
+
     
 
     @api.onchange('is_dev')
     def _onchange_is_dev(self):
-        categories = self.env['res.partner.category'].search([('name', '=', 'Devs')])
-        if len(categories) > 0:
-            category = categories[0]
-        else:
-            category = self.env['res.partner.category'].create({'name': 'Devs'})
+        category = self._get_category()
         self.category_id = [(4,category.id)]
 
+
+    @api.constrains("is_dev")
+    def _check_is_dev(self):
+        category = self._get_category()
+        for dev in self:
+            if dev.is_dev:
+                dev.category_id = [(4,category.id)]
 
 class project(models.Model):
     _name = 'manage.project'
