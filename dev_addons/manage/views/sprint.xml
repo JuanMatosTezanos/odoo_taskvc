@@ -5,12 +5,12 @@
             <field name="name">manage sprint list</field>
             <field name="model">manage.sprint</field>
             <field name="arch" type="xml">
-                <tree decoration-info="active == True" decoration-warning="duration==15">
+                <tree decoration-info="active == True" decoration-warning="duration &lt; 15">
                     <field name="name" />
                     <field name = "start_date"/>
                     <field name = "end_date"/>
-                    <field name="duration" />
-                    <field name="active" invisible="True" />
+                    <field name="duration" sum = "Total" />
+                    <field name="active"/>
                 </tree>
             </field>
         </record>

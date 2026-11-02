@@ -195,7 +195,7 @@ class sprint(models.Model):
     end_date = fields.Datetime(compute="_get_end_date")
 
     tasks = fields.One2many(string="Tareas", comodel_name="manage.task", inverse_name="sprint")
-    active = fields.Boolean(compute="_get_active", store=True)
+    active = fields.Boolean(compute="_get_active", store=False)
 
     @api.depends("start_date", "duration")
     def _get_end_date(self):
