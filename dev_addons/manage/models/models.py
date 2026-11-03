@@ -1,25 +1,136 @@
 from odoo import models, fields, api
+import datetime
 from odoo.exceptions import ValidationError
 from odoo import _
-import datetime
 import logging
+import re
+import base64
+from os import path
+
+
+_logger = logging.getLogger(__name__)
+
+
+class developer(models.Model):
+    _name = 'res.partner'
+    _inherit = 'res.partner'
+
+    last_login = fields.Date()
+    is_dev = fields.Boolean()
+    access_level = fields.Char(string="Acess Code", required=True)
+
+
+    technologies = fields.Many2many('manage.technology', relation='developer_technologies', column1='developer_id', column2='technology_id')
+
+    task = fields.Many2many('manage.task', relation='developers_tasks', column1='developer_id', column2='task_id')
+
+    bugs = fields.Many2many('manage.bug', relation='developers_bugs', column1='developer_id', column2='bug_id')
+
+    improvements = fields.Many2many('manage.improvement', relation='developers_improvements', column1='developer_id', column2='improvement_id')
+
+    @api.constrains("access_level")
+    def _check_code(self):
+        regex = re.compile(r'^[0-9]{8}[a-z]+$', re.I)        
+        for dev in self:
+            if not dev.access_level:
+                raise ValidationError("Access code is required")
+            if regex.match(dev.access_level):
+                _logger.info("Access code is valid for developer with id")
+            else:
+                raise ValidationError("Access code is invalid")
+
+
+    _sql_constraints = [('access_level_unique', 'unique(access_level)', 'Access level must be unique')]
+
+
+    def _get_category(self):
+        for dev in self:
+            categories = self.env['res.partner.category'].search([('name', '=', 'Devs')])
+            if len(categories) > 0:
+                category = categories[0]
+            else:
+                category = self.env['res.partner.category'].create({'name': 'Devs'})
+            return category
+
+    
+
+    @api.onchange('is_dev')
+    def _onchange_is_dev(self):
+        category = self._get_category()
+        self.category_id = [(4,category.id)]
+
+
+    @api.constrains("is_dev")
+    def _check_is_dev(self):
+        category = self._get_category()
+        for dev in self:
+            if dev.is_dev:
+                dev.category_id = [(4,category.id)]
+
+
+    def write(self, vals):
+        for dev in self:
+            if 'access_level' in vals and dev.access_level:
+                raise ValidationError(
+                    "Access code cannot be modified once assigned."
+                )
+
+        return super().write(vals)
+
+class project(models.Model):
+    _name = 'manage.project'
+    _description = 'manage.project'
+
+    name = fields.Char(required=True)
+    description = fields.Text()
+
+    histories = fields.One2many(comodel_name="manage.history", inverse_name="project")
 
 
 
-_logger = logging.getLogger(__name__)#infromation about the log, can be used to debug and check the flow of the code  
+class history(models.Model):
+    _name = 'manage.history'
+    _description = 'manage.history'
+
+    name = fields.Char(required=True)
+    description = fields.Text()
+
+    
+    project = fields.Many2one("manage.project", ondelete="set null")
+
+    tasks = fields.One2many(string="Tasks", comodel_name="manage.task", inverse_name="history")
+
+    used_technologies = fields.Many2many("manage.technology", compute="_get_used_technologies")
+
+    def _get_used_technologies(self):
+        for history in self:
+            technologies = None
+            for task in history.tasks:
+                if not technologies:
+                    technologies = task.technology
+                else:
+                    technologies = technologies + task.technology
+            history.used_technologies = technologies
+
 
 class task(models.Model):
     _name = 'manage.task'
     _description = 'manage.task'
 
+    def _get_definition_date(self):
+            return datetime.datetime.now()
+
+    definition_date = fields.Datetime(default=_get_definition_date)
+    project = fields.Many2one("manage.project", related="history.project", readonly=True)
     code = fields.Char(compute="_get_code")
-    name = fields.Char(string="Nombre", readonly=False, required=True, help="Introduzca el nombre") #Name
+    name = fields.Char(string="Name", readonly=False, required=True, help="Enter the name") #Name
+    history = fields.Many2one("manage.history", ondelete="set null", help="Related history")
     description= fields.Text()
-    creation_date = fields.Date()
     start_date = fields.Datetime()
     end_date = fields.Datetime()
     is_paused = fields.Boolean()
-    sprint = fields.Many2one("manage.sprint", ondelete="set null", help="sprint relacionado ")
+
+    sprint = fields.Many2one("manage.sprint", compute="_get_sprint", store=True)
 
     technology = fields.Many2many(comodel_name="manage.technology", relation="technologies_tasks", column1="task_id", column2 = "technology_id")
 
@@ -27,35 +138,108 @@ class task(models.Model):
     def _get_code(self):
         for task in self:
             try:
-                if len(task.sprint) == 0:
-                    task.code = "TSK_"+str(task.id)
-                else:
-                    task.code = str(task.sprint.name).upper() + "_"+str(task.id)
-                _logger.debug("generated code for task: "+(task.code))
-
+                task.code = "TSK_"+str(task.id)
+                _logger.info("fields code generated for task with id: "+task.code)
             except:
-                raise ValidationError(_("wrong code generation"))
+                raise ValidationError(_("bad code generation"))
+
+    @api.depends('code')
+    def _get_sprint(self):
+        for task in self:
+            sprints = self.env['manage.sprint'].search([('project.id', '=', task.history.project.id)])
+            found = False
+            for sprint in sprints:
+                if isinstance(sprint.end_date,datetime.datetime) and sprint.end_date > datetime.datetime.now():
+                    task.sprint = sprint.id
+                    found = True
+            if not found:
+                task.sprint = False
+
+
+    def _get_default_dev(self):
+        developer_id = self.env.context.get('current_developer')
+        return [developer_id] if developer_id else []
+
+
+    developer = fields.Many2many(comodel_name="res.partner", relation="developers_tasks", column1="task_id", column2 = "developer_id", domain=[('is_dev', '=', True)], default=_get_default_dev)
+
+
+
+
+
+class bug(models.Model):
+    _name = 'manage.bug'
+    _description = 'manage.bug'
+    _inherit = 'manage.task'
+
+
+    technology = fields.Many2many(comodel_name="manage.technology", relation="technologies_bugs", column1="bug_id", column2 = "technology_id")
+
+    task_linked = fields.Many2many(comodel_name="manage.task", relation="task_bugs", column1="bug_id", column2 = "task_id")
+
+    bug_linked = fields.Many2many(comodel_name="manage.bug", relation="bugs_bugs", column1="bug1_id", column2 = "bug2_id")
+
+    developer = fields.Many2many(comodel_name="res.partner", relation="developers_bugs", column1="bug_id", column2 = "developer_id", domain=[('is_dev', '=', True)])
+
+    improvement_linked = fields.Many2many(comodel_name="manage.improvement", relation="improvements_bugs", column1="bug_id", column2 = "improvement_id")
+
+
+
+class improvement(models.Model):
+    _name = 'manage.improvement'
+    _description = 'manage.improvement'
+    _inherit = 'manage.task'
+
+
+    technology = fields.Many2many(comodel_name="manage.technology", relation="technologies_improvements", column1="improvement_id", column2 = "technology_id")
+
+    history_linked = fields.Many2many("manage.history")
+
+    developer = fields.Many2many(comodel_name="res.partner", relation="developers_improvements", column1="improvement_id", column2 = "developer_id", domain=[('is_dev', '=', True)])
+
+
+
 
 
 class sprint(models.Model):
     _name = 'manage.sprint'
     _description = 'manage.sprint'
-    
-    duration = fields.Integer()
+
+    project = fields.Many2one("manage.project",ondelete="set null")
+    duration = fields.Integer(default=15)
     name = fields.Char()
     description = fields.Text()
     start_date = fields.Datetime()
-    end_date = fields.Datetime(compute="_get_end_date", store=True)
+    end_date = fields.Datetime(compute="_get_end_date")
 
-    task = fields.One2many(string="Tareas", comodel_name="manage.task", inverse_name="sprint")
+    tasks = fields.One2many(string="Tasks", comodel_name="manage.task", inverse_name="sprint")
+    active = fields.Boolean(compute="_get_active", store=True)
 
-    @api.depends("start_date", "end_date")
+    @api.depends("start_date", "duration")
     def _get_end_date(self):
         for sprint in self:
             if isinstance(sprint.start_date, datetime.datetime) and sprint.duration > 0:
-                sprint.end_date = sprint.start_date + datetime.timedelta(days= sprint.duration)
+                sprint.end_date = sprint.start_date + datetime.timedelta(days=sprint.duration)
             else:
                 sprint.end_date = sprint.start_date
+
+    @api.depends('start_date', 'duration')
+    def _get_active(self):
+        for sprint in self:
+            _logger.info("START=%s", sprint.start_date)
+            _logger.info("END=%s", sprint.end_date)
+
+            if (
+                isinstance(sprint.start_date, datetime.datetime)
+                and isinstance(sprint.end_date, datetime.datetime)
+                and sprint.end_date > datetime.datetime.now()
+                and sprint.start_date <= datetime.datetime.now()
+            ):
+                _logger.info("ACTIVE")
+                sprint.active = True
+            else:
+                _logger.info("NOT ACTIVE")
+                sprint.active = False
 
 
 class technology(models.Model):
@@ -68,4 +252,30 @@ class technology(models.Model):
     photo = fields.Image(max_width=200, max_height=200)
 
     task = fields.Many2many (comodel_name="manage.task", relation = "technologies_tasks", column1="technology_id", column2="task_id")
+
+
+    @api.onchange('name')
+    def _pic_change(self):
+        for record in self:
+            if not record.name:
+                record.photo = False
+                continue
+            tech_name = record.name.lower()
+            image_path = path.join("/tech_images", f"{tech_name.capitalize()}.png")
+
+
+
+            if not path.exists(image_path):
+                print("No image found for technology:", tech_name)
+                record.photo = False
+                continue
+
+
+
+            with open(image_path, "rb") as image:
+                b64_string = base64.b64encode(image.read()).decode("utf-8")
+                record.photo = b64_string
+
+
     
+

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="manage.sprint_list" model="ir.ui.view">
+            <field name="name">Manage Sprint List</field>
+            <field name="model">manage.sprint</field>
+            <field name="arch" type="xml">
+                <tree decoration-info="active == True" decoration-warning="duration &lt; 15">
+                    <field name="name" />
+                    <field name = "start_date"/>
+                    <field name = "end_date"/>
+                    <field name="duration" sum = "Total" />
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="manage.sprint_form" model="ir.ui.view">
+            <field name="name">Manage Sprint Form</field>
+            <field name="model">manage.sprint</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group>
+                        <field name="project" />
+                        <field name="name" />
+                        <field name="description" />
+                        <field name="duration" />
+                        <field name="start_date" />
+                        <field name="end_date" />
+                        <field name="tasks" />
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <record id="manage.action_sprint_window" model="ir.actions.act_window">
+            <field name="name">Manage Sprint Window</field>
+            <field name="res_model">manage.sprint</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="manage.menu_1_sprint_list" name="Sprints" parent="manage.menu_1" action="manage.action_sprint_window" />
+    </data>
+</odoo>

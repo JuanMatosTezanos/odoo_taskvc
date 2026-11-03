@@ -21,14 +21,25 @@ Long description of module's purpose
     'depends': ['base'],
 
     # always loaded
-    "data": [
-        "security/ir.model.access.csv",
-        "views/templates.xml",
-        "views/views.xml"
+    'data': [
+        'security/ir.model.access.csv',
+        'views/views.xml',
+        'views/technology.xml',
+        'views/project.xml',
+        'views/history.xml',
+        'views/sprint.xml',
+        'views/task.xml',
+        'views/bug.xml',
+        'views/improvement.xml',
+        'views/templates.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
-        'demo/demo.xml',
+        #'demo/demo.xml',
+        'demo/technologies.xml',
+        'demo/devs.xml',
+        'demo/projects.xml',
+        'demo/histories.xml',
     ],
 }
 
