@@ -12,10 +12,10 @@
                     <page name="Devs" string="Devs" invisible="not is_dev">
                         <group>
                             <group>
+                                <field name="access_level" readonly="id" />    
                                 <field name="last_login" />
                                 <field name="technologies" />
                                 <field name="is_dev" invisible="True" />
-                                <field name="access_level" />
                                 <field name="task" context="{'current_developer': active_id}" />
                             </group>
                         </group>

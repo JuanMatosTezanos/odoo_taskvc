@@ -13,6 +13,7 @@ services:
       - odoo-data:/var/lib/odoo
       - ./config_odoo/odoo.conf:/etc/odoo/odoo.conf
       - ./dev_addons:/mnt/extra-addons
+      - ./tech_images:/tech_images:ro
       - ./logs:/var/log/odoo
     networks:
       - odoo-net

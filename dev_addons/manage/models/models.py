@@ -4,6 +4,8 @@ from odoo.exceptions import ValidationError
 from odoo import _
 import logging
 import re
+import base64
+from os import path
 
 
 _logger = logging.getLogger(__name__)
@@ -14,7 +16,7 @@ class developer(models.Model):
 
     last_login = fields.Date()
     is_dev = fields.Boolean()
-    access_level = fields.Char()
+    access_level = fields.Char(string="Acess Code", required=True)
 
 
     technologies = fields.Many2many('manage.technology', relation='developer_technologies', column1='developer_id', column2='technology_id')
@@ -29,6 +31,8 @@ class developer(models.Model):
     def _check_code(self):
         regex = re.compile(r'^[0-9]{8}[a-z]+$', re.I)        
         for dev in self:
+            if not dev.access_level:
+                raise ValidationError("Access code is required")
             if regex.match(dev.access_level):
                 _logger.info("Access code is valid for developer with id")
             else:
@@ -61,6 +65,16 @@ class developer(models.Model):
         for dev in self:
             if dev.is_dev:
                 dev.category_id = [(4,category.id)]
+
+
+    def write(self, vals):
+        for dev in self:
+            if 'access_level' in vals and dev.access_level:
+                raise ValidationError(
+                    "Access code cannot be modified once assigned."
+                )
+
+        return super().write(vals)
 
 class project(models.Model):
     _name = 'manage.project'
@@ -195,7 +209,7 @@ class sprint(models.Model):
     end_date = fields.Datetime(compute="_get_end_date")
 
     tasks = fields.One2many(string="Tareas", comodel_name="manage.task", inverse_name="sprint")
-    active = fields.Boolean(compute="_get_active", store=False)
+    active = fields.Boolean(compute="_get_active", store=True)
 
     @api.depends("start_date", "duration")
     def _get_end_date(self):
@@ -234,5 +248,30 @@ class technology(models.Model):
     photo = fields.Image(max_width=200, max_height=200)
 
     task = fields.Many2many (comodel_name="manage.task", relation = "technologies_tasks", column1="technology_id", column2="task_id")
+
+
+    @api.onchange('name')
+    def _pic_change(self):
+        for record in self:
+            if not record.name:
+                record.photo = False
+                continue
+            tech_name = record.name.lower()
+            image_path = path.join("/tech_images", f"{tech_name.capitalize()}.png")
+
+
+
+            if not path.exists(image_path):
+                print("No image found for technology:", tech_name)
+                record.photo = False
+                continue
+
+
+
+            with open(image_path, "rb") as image:
+                b64_string = base64.b64encode(image.read()).decode("utf-8")
+                record.photo = b64_string
+
+
     
 
