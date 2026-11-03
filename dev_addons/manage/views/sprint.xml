@@ -2,7 +2,7 @@
 <odoo>
     <data>
         <record id="manage.sprint_list" model="ir.ui.view">
-            <field name="name">manage sprint list</field>
+            <field name="name">Manage Sprint List</field>
             <field name="model">manage.sprint</field>
             <field name="arch" type="xml">
                 <tree decoration-info="active == True" decoration-warning="duration &lt; 15">
@@ -16,7 +16,7 @@
         </record>
 
         <record id="manage.sprint_form" model="ir.ui.view">
-            <field name="name">manage sprint form</field>
+            <field name="name">Manage Sprint Form</field>
             <field name="model">manage.sprint</field>
             <field name="arch" type="xml">
                 <form>
@@ -34,7 +34,7 @@
         </record>
 
         <record id="manage.action_sprint_window" model="ir.actions.act_window">
-            <field name="name">manage sprint window</field>
+            <field name="name">Manage Sprint Window</field>
             <field name="res_model">manage.sprint</field>
             <field name="view_mode">tree,form</field>
         </record>

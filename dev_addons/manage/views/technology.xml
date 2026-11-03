@@ -2,7 +2,7 @@
 <odoo>
     <data>
         <record id="manage.technology_form" model="ir.ui.view">
-            <field name="name">manage technology form</field>
+            <field name="name">Manage Technology Form</field>
             <field name="model">manage.technology</field>
             <field name="arch" type="xml">
                 <form>
@@ -17,7 +17,7 @@
         </record>
 
         <record id="manage.action_technology_window" model="ir.actions.act_window">
-            <field name="name">manage technology window</field>
+            <field name="name">Manage Technology Window</field>
             <field name="res_model">manage.technology</field>
             <field name="view_mode">tree,form</field>
         </record>

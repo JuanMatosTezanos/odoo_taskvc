@@ -10,6 +10,7 @@ from os import path
 
 _logger = logging.getLogger(__name__)
 
+
 class developer(models.Model):
     _name = 'res.partner'
     _inherit = 'res.partner'
@@ -80,7 +81,7 @@ class project(models.Model):
     _name = 'manage.project'
     _description = 'manage.project'
 
-    name = fields.Char()
+    name = fields.Char(required=True)
     description = fields.Text()
 
     histories = fields.One2many(comodel_name="manage.history", inverse_name="project")
@@ -91,13 +92,13 @@ class history(models.Model):
     _name = 'manage.history'
     _description = 'manage.history'
 
-    name = fields.Char()
+    name = fields.Char(required=True)
     description = fields.Text()
 
     
     project = fields.Many2one("manage.project", ondelete="set null")
 
-    tasks = fields.One2many(string="Tareas", comodel_name="manage.task", inverse_name="history")
+    tasks = fields.One2many(string="Tasks", comodel_name="manage.task", inverse_name="history")
 
     used_technologies = fields.Many2many("manage.technology", compute="_get_used_technologies")
 
@@ -163,6 +164,9 @@ class task(models.Model):
     developer = fields.Many2many(comodel_name="res.partner", relation="developers_tasks", column1="task_id", column2 = "developer_id", domain=[('is_dev', '=', True)], default=_get_default_dev)
 
 
+
+
+
 class bug(models.Model):
     _name = 'manage.bug'
     _description = 'manage.bug'
@@ -208,7 +212,7 @@ class sprint(models.Model):
     start_date = fields.Datetime()
     end_date = fields.Datetime(compute="_get_end_date")
 
-    tasks = fields.One2many(string="Tareas", comodel_name="manage.task", inverse_name="sprint")
+    tasks = fields.One2many(string="Tasks", comodel_name="manage.task", inverse_name="sprint")
     active = fields.Boolean(compute="_get_active", store=True)
 
     @api.depends("start_date", "duration")

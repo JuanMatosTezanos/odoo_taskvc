@@ -2,7 +2,7 @@
 <odoo>
     <data>
         <record id="manage.task_list" model="ir.ui.view">
-            <field name="name">manage task list</field>
+            <field name="name">Manage Task List</field>
             <field name="model">manage.task</field>
             <field name="arch" type="xml">
                 <tree>
@@ -12,7 +12,7 @@
         </record>
 
         <record id="manage.task_form" model="ir.ui.view">
-            <field name="name">manage task form</field>
+            <field name="name">Manage Task Form</field>
             <field name="model">manage.task</field>
             <field name="arch" type="xml">
                 <form>
@@ -35,7 +35,7 @@
         </record>
         <!-- actions opening views on models -->
         <record id="manage.action_task_window" model="ir.actions.act_window">
-            <field name="name">manage task window</field>
+            <field name="name">Manage Task Window</field>
             <field name="res_model">manage.task</field>
             <field name="view_mode">tree,form</field>
         </record>

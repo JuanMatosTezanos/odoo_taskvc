@@ -2,7 +2,7 @@
 <odoo>
     <data>
         <record id="manage.project_form" model="ir.ui.view">
-            <field name="name">manage project form</field>
+            <field name="name">Manage Project Form</field>
             <field name="model">manage.project</field>
             <field name="arch" type="xml">
                 <form>
@@ -16,7 +16,7 @@
         </record>
 
         <record id="manage.action_project_window" model="ir.actions.act_window">
-            <field name="name">manage project window</field>
+            <field name="name">Manage Project Window</field>
             <field name="res_model">manage.project</field>
             <field name="view_mode">tree,form</field>
         </record>
