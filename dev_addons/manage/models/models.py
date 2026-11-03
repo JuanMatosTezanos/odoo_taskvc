@@ -123,8 +123,8 @@ class task(models.Model):
     definition_date = fields.Datetime(default=_get_definition_date)
     project = fields.Many2one("manage.project", related="history.project", readonly=True)
     code = fields.Char(compute="_get_code")
-    name = fields.Char(string="Nombre", readonly=False, required=True, help="Introduzca el nombre") #Name
-    history = fields.Many2one("manage.history", ondelete="set null", help="historia relacionada ")
+    name = fields.Char(string="Name", readonly=False, required=True, help="Enter the name") #Name
+    history = fields.Many2one("manage.history", ondelete="set null", help="Related history")
     description= fields.Text()
     start_date = fields.Datetime()
     end_date = fields.Datetime()

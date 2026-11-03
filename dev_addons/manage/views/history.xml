@@ -2,7 +2,7 @@
 <odoo>
     <data>
         <record id="manage.history_form" model="ir.ui.view">
-            <field name="name">manage history form</field>
+            <field name="name">Manage History Form</field>
             <field name="model">manage.history</field>
             <field name="arch" type="xml">
                 <form>
@@ -18,7 +18,7 @@
         </record>
 
         <record id="manage.action_history_window" model="ir.actions.act_window">
-            <field name="name">manage history window</field>
+            <field name="name">Manage History Window</field>
             <field name="res_model">manage.history</field>
             <field name="view_mode">tree,form</field>
         </record>
