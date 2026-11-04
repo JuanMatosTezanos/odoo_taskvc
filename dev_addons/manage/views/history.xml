@@ -1,28 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <record id="manage.history_list" model="ir.ui.view">
+            <field name="name">Manage History List</field>
+            <field name="model">manage.history</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name" />
+                    <field name="project" />
+                    <field name="task_count" string="Tasks" />
+                    <field name="description" optional="hide" />
+                </tree>
+            </field>
+        </record>
+
         <record id="manage.history_form" model="ir.ui.view">
             <field name="name">Manage History Form</field>
             <field name="model">manage.history</field>
             <field name="arch" type="xml">
                 <form>
-                    <group>
-                        <field name="name" />
-                        <field name="description" />
-                        <field name="project" />
-                        <field name="tasks" />
-                        <field name="used_technologies" />
-                    </group>
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name" />
+                            <h1><field name="name" placeholder="e.g. User login" /></h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="project" />
+                            </group>
+                            <group>
+                                <field name="used_technologies" widget="many2many_tags" options="{'color_field': 'color'}" />
+                            </group>
+                        </group>
+                        <notebook>
+                            <page name="tasks" string="Tasks">
+                                <field name="tasks">
+                                    <tree editable="bottom">
+                                        <field name="name" />
+                                        <field name="developer" widget="many2many_tags_avatar" />
+                                        <field name="technology" widget="many2many_tags" options="{'color_field': 'color'}" />
+                                        <field name="priority" widget="priority" />
+                                        <field name="state" widget="badge" decoration-success="state == 'done'" decoration-info="state == 'in_progress'" decoration-warning="state == 'review'" />
+                                    </tree>
+                                </field>
+                            </page>
+                            <page name="description" string="Description">
+                                <field name="description" placeholder="Describe the user history..." />
+                            </page>
+                        </notebook>
+                    </sheet>
                 </form>
             </field>
         </record>
 
-        <record id="manage.action_history_window" model="ir.actions.act_window">
-            <field name="name">Manage History Window</field>
-            <field name="res_model">manage.history</field>
-            <field name="view_mode">tree,form</field>
+        <record id="manage.history_search" model="ir.ui.view">
+            <field name="name">Manage History Search</field>
+            <field name="model">manage.history</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name" />
+                    <field name="project" />
+                    <group expand="0" string="Group By">
+                        <filter name="group_project" string="Project" context="{'group_by': 'project'}" />
+                    </group>
+                </search>
+            </field>
         </record>
 
-        <menuitem id="manage.menu_1_history_list" name="History" parent="manage.menu_1" action="manage.action_history_window" />
+        <record id="manage.action_history_window" model="ir.actions.act_window">
+            <field name="name">Histories</field>
+            <field name="res_model">manage.history</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">Create a history</p>
+                <p>Histories describe a feature of a project and contain its tasks.</p>
+            </field>
+        </record>
+
+        <menuitem id="manage.menu_1_history_list" name="Histories" parent="manage.menu_1" action="manage.action_history_window" sequence="20" />
     </data>
 </odoo>

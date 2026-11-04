@@ -1,26 +1,133 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <record id="manage.project_list" model="ir.ui.view">
+            <field name="name">Manage Project List</field>
+            <field name="model">manage.project</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name" />
+                    <field name="description" optional="show" />
+                    <field name="history_count" string="Histories" />
+                    <field name="sprint_count" string="Sprints" />
+                    <field name="task_count" string="Tasks" />
+                </tree>
+            </field>
+        </record>
+
+        <record id="manage.project_kanban" model="ir.ui.view">
+            <field name="name">Manage Project Kanban</field>
+            <field name="model">manage.project</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_dashboard">
+                    <field name="color" />
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="oe_kanban_global_click #{kanban_color(record.color.raw_value)}">
+                                <div class="o_dropdown_kanban dropdown">
+                                    <a class="dropdown-toggle o-no-caret btn" role="button" data-bs-toggle="dropdown" href="#" aria-label="Menu">
+                                        <span class="fa fa-ellipsis-v" />
+                                    </a>
+                                    <div class="dropdown-menu" role="menu">
+                                        <a role="menuitem" type="edit" class="dropdown-item">Edit</a>
+                                        <ul class="oe_kanban_colorpicker" data-field="color" />
+                                    </div>
+                                </div>
+                                <div class="oe_kanban_details p-2">
+                                    <strong class="fs-4"><field name="name" /></strong>
+                                    <div class="text-muted text-truncate"><field name="description" /></div>
+                                    <div class="d-flex gap-2 mt-3 flex-wrap">
+                                        <a name="action_view_histories" type="object" role="button" class="btn btn-sm btn-light">
+                                            <i class="fa fa-book me-1" title="Histories" /><field name="history_count" /> Histories
+                                        </a>
+                                        <a name="action_view_sprints" type="object" role="button" class="btn btn-sm btn-light">
+                                            <i class="fa fa-refresh me-1" title="Sprints" /><field name="sprint_count" /> Sprints
+                                        </a>
+                                        <a name="action_view_tasks" type="object" role="button" class="btn btn-sm btn-primary">
+                                            <i class="fa fa-tasks me-1" title="Tasks" /><field name="task_count" /> Tasks
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
         <record id="manage.project_form" model="ir.ui.view">
             <field name="name">Manage Project Form</field>
             <field name="model">manage.project</field>
             <field name="arch" type="xml">
                 <form>
-                    <group>
-                        <field name="name" />
-                        <field name="description" />
-                        <field name="histories" />
-                    </group>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_histories" type="object" class="oe_stat_button" icon="fa-book">
+                                <field name="history_count" widget="statinfo" string="Histories" />
+                            </button>
+                            <button name="action_view_sprints" type="object" class="oe_stat_button" icon="fa-refresh">
+                                <field name="sprint_count" widget="statinfo" string="Sprints" />
+                            </button>
+                            <button name="action_view_tasks" type="object" class="oe_stat_button" icon="fa-tasks">
+                                <field name="task_count" widget="statinfo" string="Tasks" />
+                            </button>
+                        </div>
+                        <div class="oe_title">
+                            <label for="name" />
+                            <h1><field name="name" placeholder="e.g. Customer Portal" /></h1>
+                        </div>
+                        <notebook>
+                            <page name="histories" string="Histories">
+                                <field name="histories">
+                                    <tree editable="bottom">
+                                        <field name="name" />
+                                        <field name="description" />
+                                        <field name="task_count" string="Tasks" />
+                                    </tree>
+                                </field>
+                            </page>
+                            <page name="sprints" string="Sprints">
+                                <field name="sprints" context="{'active_test': False}">
+                                    <tree decoration-info="active" decoration-muted="not active">
+                                        <field name="name" />
+                                        <field name="start_date" />
+                                        <field name="end_date" />
+                                        <field name="duration" />
+                                        <field name="progress" widget="progressbar" />
+                                        <field name="active" column_invisible="True" />
+                                    </tree>
+                                </field>
+                            </page>
+                            <page name="description" string="Description">
+                                <field name="description" placeholder="What is this project about?" />
+                            </page>
+                        </notebook>
+                    </sheet>
                 </form>
             </field>
         </record>
 
-        <record id="manage.action_project_window" model="ir.actions.act_window">
-            <field name="name">Manage Project Window</field>
-            <field name="res_model">manage.project</field>
-            <field name="view_mode">tree,form</field>
+        <record id="manage.project_search" model="ir.ui.view">
+            <field name="name">Manage Project Search</field>
+            <field name="model">manage.project</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name" />
+                    <field name="description" />
+                </search>
+            </field>
         </record>
 
-        <menuitem id="manage.menu_1_project_list" name="Projects" parent="manage.menu_1" action="manage.action_project_window" />
+        <record id="manage.action_project_window" model="ir.actions.act_window">
+            <field name="name">Projects</field>
+            <field name="res_model">manage.project</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">Create your first project</p>
+                <p>Projects group histories, sprints and the tasks your team works on.</p>
+            </field>
+        </record>
+
+        <menuitem id="manage.menu_1_project_list" name="Projects" parent="manage.menu_1" action="manage.action_project_window" sequence="10" />
     </data>
 </odoo>
