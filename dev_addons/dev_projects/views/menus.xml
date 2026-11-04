@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- The Dev Projects app. Same projects and tasks as the Project app. -->
+    <menuitem id="menu_root" name="Dev Projects" web_icon="dev_projects,static/description/icon.png"
+              groups="project.group_project_user" sequence="71" />
+
+    <menuitem id="menu_work" name="Work" parent="menu_root" sequence="10" />
+    <menuitem id="menu_board" name="Board" parent="menu_work" action="action_board" sequence="1" />
+    <menuitem id="menu_backlog" name="Backlog" parent="menu_work" action="action_backlog" sequence="2" />
+
+    <menuitem id="menu_planning" name="Planning" parent="menu_root" sequence="20" />
+    <menuitem id="menu_projects" name="Projects" parent="menu_planning" action="action_project" sequence="1" />
+    <menuitem id="menu_sprints" name="Sprints" parent="menu_planning" action="action_sprint" sequence="2" />
+    <menuitem id="menu_histories" name="Histories" parent="menu_planning" action="action_history" sequence="3" />
+
+    <menuitem id="menu_team" name="Team" parent="menu_root" sequence="30" />
+    <menuitem id="menu_my_profile" name="My Developer Profile" parent="menu_team" action="action_my_developer_profile" sequence="1" />
+    <menuitem id="menu_developers" name="Developers" parent="menu_team" action="action_developer" sequence="2" />
+    <menuitem id="menu_technologies" name="Technologies" parent="menu_team" action="action_technology" sequence="3" />
+
+    <menuitem id="menu_config" name="Configuration" parent="menu_root" sequence="90" />
+    <menuitem id="menu_stages" name="Board Columns" parent="menu_config" action="action_stage" sequence="1" />
+</odoo>

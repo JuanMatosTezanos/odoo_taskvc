@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="project_form_inherit" model="ir.ui.view">
+        <field name="name">manage.project.form.plus</field>
+        <field name="model">manage.project</field>
+        <field name="inherit_id" ref="manage.project_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_backlog" type="object" class="oe_stat_button" icon="fa-list-ol" string="Backlog" />
+                <button name="action_view_bugs" type="object" class="oe_stat_button" icon="fa-bug">
+                    <field name="bug_count" widget="statinfo" string="Bugs" />
+                </button>
+            </xpath>
+            <xpath expr="//button[@name='action_view_tasks']/field[@name='task_count']" position="attributes">
+                <attribute name="string">Open Issues</attribute>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="after">
+                <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active" />
+                <field name="active" invisible="1" />
+            </xpath>
+            <xpath expr="//div[hasclass('oe_title')]" position="after">
+                <group>
+                    <group>
+                        <field name="key" placeholder="e.g. WEB" readonly="issue_sequence" />
+                        <field name="issue_sequence" invisible="1" />
+                        <field name="manager_id" widget="many2one_avatar_user" />
+                    </group>
+                    <group>
+                        <field name="running_sprint" />
+                    </group>
+                </group>
+            </xpath>
+            <field name="sprints" position="attributes">
+                <attribute name="context">{}</attribute>
+            </field>
+            <xpath expr="//field[@name='sprints']/tree" position="attributes">
+                <attribute name="decoration-info">state == 'running'</attribute>
+                <attribute name="decoration-muted">state == 'closed'</attribute>
+            </xpath>
+            <xpath expr="//field[@name='sprints']/tree/field[@name='progress']" position="after">
+                <field name="state" widget="badge" decoration-success="state == 'running'" decoration-info="state == 'planned'" />
+            </xpath>
+            <xpath expr="//sheet" position="after">
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" />
+                    <field name="activity_ids" />
+                    <field name="message_ids" />
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="project_list_inherit" model="ir.ui.view">
+        <field name="name">manage.project.list.plus</field>
+        <field name="model">manage.project</field>
+        <field name="inherit_id" ref="manage.project_list" />
+        <field name="arch" type="xml">
+            <field name="name" position="before">
+                <field name="key" />
+            </field>
+            <field name="description" position="after">
+                <field name="manager_id" widget="many2one_avatar_user" optional="show" />
+                <field name="running_sprint" optional="show" />
+            </field>
+            <field name="task_count" position="attributes">
+                <attribute name="string">Open Issues</attribute>
+            </field>
+            <field name="task_count" position="after">
+                <field name="open_bug_count" string="Open Bugs" />
+            </field>
+        </field>
+    </record>
+
+    <record id="project_kanban_inherit" model="ir.ui.view">
+        <field name="name">manage.project.kanban.plus</field>
+        <field name="model">manage.project</field>
+        <field name="inherit_id" ref="manage.project_kanban" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_kanban_details')]/strong" position="before">
+                <span class="badge text-bg-secondary me-2"><field name="key" /></span>
+            </xpath>
+            <xpath expr="//a[@name='action_view_tasks']" position="replace">
+                <a name="action_view_tasks" type="object" role="button" class="btn btn-sm btn-primary">
+                    <i class="fa fa-tasks me-1" title="Open issues" /><field name="task_count" /> Open Issues
+                </a>
+                <a name="action_view_backlog" type="object" role="button" class="btn btn-sm btn-light">
+                    <i class="fa fa-list-ol me-1" title="Backlog" />Backlog
+                </a>
+                <a name="action_view_bugs" type="object" role="button" class="btn btn-sm btn-light">
+                    <i class="fa fa-bug me-1" title="Open bugs" /><field name="open_bug_count" /> Open Bugs
+                </a>
+            </xpath>
+            <xpath expr="//div[hasclass('oe_kanban_details')]/div[hasclass('text-truncate')]" position="after">
+                <div class="small mt-1" t-if="record.running_sprint.raw_value">
+                    <i class="fa fa-refresh me-1" title="Running sprint" /><field name="running_sprint" />
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="project_search_inherit" model="ir.ui.view">
+        <field name="name">manage.project.search.plus</field>
+        <field name="model">manage.project</field>
+        <field name="inherit_id" ref="manage.project_search" />
+        <field name="arch" type="xml">
+            <field name="description" position="after">
+                <field name="key" />
+                <field name="manager_id" />
+                <filter name="my_projects" string="My Projects" domain="[('manager_id', '=', uid)]" />
+                <separator />
+                <filter name="archived" string="Archived" domain="[('active', '=', False)]" />
+            </field>
+        </field>
+    </record>
+</odoo>

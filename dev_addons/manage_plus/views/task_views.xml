@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ================= Issue form ================= -->
+    <record id="task_form_inherit" model="ir.ui.view">
+        <field name="name">manage.task.form.plus</field>
+        <field name="model">manage.task</field>
+        <field name="inherit_id" ref="manage.task_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//header/field[@name='state']" position="replace">
+                <button name="action_open_complete_wizard" type="object" string="Complete" class="btn-success" invisible="not active or not id" help="Mark as done, then archive or delete it" />
+                <button name="action_assign_to_me" type="object" string="Assign to Me" invisible="state == 'done'" />
+                <field name="active" invisible="1" />
+                <field name="state" invisible="1" />
+                <field name="stage_id" widget="statusbar" options="{'clickable': '1', 'fold_field': 'fold'}" />
+            </xpath>
+            <xpath expr="//widget[@name='web_ribbon']" position="after">
+                <widget name="web_ribbon" title="Archived" bg_color="text-bg-secondary" invisible="active" />
+                <widget name="web_ribbon" title="Overdue" bg_color="text-bg-warning" invisible="not is_overdue or is_paused or not active" />
+                <field name="is_overdue" invisible="1" />
+            </xpath>
+            <xpath expr="//div[hasclass('oe_title')]" position="before">
+                <div class="mb-2">
+                    <field name="issue_type" widget="radio" options="{'horizontal': true}" />
+                </div>
+            </xpath>
+            <field name="name" position="attributes">
+                <attribute name="placeholder">Summary...</attribute>
+            </field>
+            <field name="history" position="before">
+                <field name="project" position="move" />
+            </field>
+            <field name="project" position="attributes">
+                <attribute name="options">{'no_create': True}</attribute>
+                <!-- Keys and sprints need a project. Required in the form only, so
+                     older issues without one can still be read and fixed. -->
+                <attribute name="required">1</attribute>
+            </field>
+            <field name="history" position="attributes">
+                <attribute name="string">Epic / History</attribute>
+            </field>
+            <field name="sprint" position="attributes">
+                <attribute name="options">{'no_create': True}</attribute>
+                <attribute name="readonly">state == 'done'</attribute>
+            </field>
+            <field name="sprint" position="after">
+                <field name="story_points" />
+                <field name="severity" invisible="issue_type != 'bug'" required="issue_type == 'bug'" widget="badge" decoration-danger="severity in ('critical', 'blocker')" decoration-warning="severity == 'major'" />
+            </field>
+            <field name="end_date" position="after">
+                <field name="date_deadline" decoration-danger="is_overdue" />
+            </field>
+            <field name="developer" position="before">
+                <field name="assignee" widget="many2one_avatar" options="{'no_create': True}" context="{'form_view_ref': 'manage.devs_partner_form', 'default_is_dev': True}" />
+                <field name="reporter_id" widget="many2one_avatar_user" />
+            </field>
+            <field name="developer" position="attributes">
+                <attribute name="string">Team</attribute>
+                <attribute name="help">Everyone who worked on the issue. The assignee is added automatically.</attribute>
+            </field>
+            <xpath expr="//sheet" position="after">
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" />
+                    <field name="activity_ids" />
+                    <field name="message_ids" />
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ================= Issue list ================= -->
+    <record id="task_list_inherit" model="ir.ui.view">
+        <field name="name">manage.task.list.plus</field>
+        <field name="model">manage.task</field>
+        <field name="inherit_id" ref="manage.task_list" />
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="attributes">
+                <attribute name="decoration-warning">is_overdue</attribute>
+            </xpath>
+            <field name="code" position="before">
+                <field name="issue_type" />
+            </field>
+            <field name="code" position="attributes">
+                <attribute name="string">Key</attribute>
+            </field>
+            <field name="developer" position="replace">
+                <field name="assignee" widget="many2one_avatar" optional="show" />
+                <field name="developer" string="Team" widget="many2many_tags_avatar" optional="hide" />
+            </field>
+            <field name="sprint" position="after">
+                <field name="story_points" optional="show" sum="Total" />
+                <field name="severity" invisible="issue_type != 'bug'" widget="badge" decoration-danger="severity in ('critical', 'blocker')" decoration-warning="severity == 'major'" optional="hide" />
+            </field>
+            <field name="end_date" position="after">
+                <field name="date_deadline" widget="remaining_days" invisible="state == 'done'" optional="show" />
+                <field name="is_overdue" column_invisible="1" />
+            </field>
+            <field name="state" position="replace">
+                <field name="state" column_invisible="1" />
+                <field name="stage_id" widget="badge" decoration-success="state == 'done'" decoration-info="state == 'in_progress'" decoration-warning="state == 'review'" />
+            </field>
+        </field>
+    </record>
+
+    <!-- ================= Board (kanban) ================= -->
+    <record id="task_kanban_inherit" model="ir.ui.view">
+        <field name="name">manage.task.kanban.plus</field>
+        <field name="model">manage.task</field>
+        <field name="inherit_id" ref="manage.task_kanban" />
+        <field name="arch" type="xml">
+            <xpath expr="//kanban" position="attributes">
+                <attribute name="default_group_by">stage_id</attribute>
+                <attribute name="quick_create">1</attribute>
+                <attribute name="quick_create_view">manage_plus.task_quick_create_form</attribute>
+            </xpath>
+            <field name="state" position="after">
+                <field name="stage_id" />
+                <field name="issue_type" />
+                <field name="severity" />
+                <field name="story_points" />
+            </field>
+            <xpath expr="//div[hasclass('oe_kanban_content')]/div[1]" position="replace">
+                <div class="text-muted small d-flex align-items-center gap-1">
+                    <i t-if="record.issue_type.raw_value == 'story'" class="fa fa-bookmark text-success" title="Story" />
+                    <i t-if="record.issue_type.raw_value == 'task'" class="fa fa-check-square text-primary" title="Task" />
+                    <i t-if="record.issue_type.raw_value == 'bug'" class="fa fa-bug text-danger" title="Bug" />
+                    <i t-if="record.issue_type.raw_value == 'improvement'" class="fa fa-arrow-circle-up text-info" title="Improvement" />
+                    <field name="code" />
+                </div>
+            </xpath>
+            <xpath expr="//div[hasclass('oe_kanban_bottom_right')]/field[@name='developer']" position="replace">
+                <field name="assignee" widget="many2one_avatar" />
+            </xpath>
+            <xpath expr="//div[hasclass('oe_kanban_bottom_left')]" position="inside">
+                <field name="activity_ids" widget="kanban_activity" />
+                <field name="date_deadline" widget="remaining_days" invisible="state == 'done'" />
+                <span t-if="record.issue_type.raw_value == 'bug' and ['critical', 'blocker'].includes(record.severity.raw_value)" class="badge text-bg-danger ms-1">
+                    <t t-esc="record.severity.value" />
+                </span>
+                <span t-if="record.story_points.raw_value" class="badge rounded-pill text-bg-light ms-1" title="Story points">
+                    <t t-esc="record.story_points.value" />
+                </span>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ================= Search ================= -->
+    <record id="task_search_inherit" model="ir.ui.view">
+        <field name="name">manage.task.search.plus</field>
+        <field name="model">manage.task</field>
+        <field name="inherit_id" ref="manage.task_search" />
+        <field name="arch" type="xml">
+            <field name="name" position="attributes">
+                <attribute name="filter_domain">['|', ('name', 'ilike', self), ('key', 'ilike', self)]</attribute>
+            </field>
+            <field name="name" position="after">
+                <field name="code" string="Key" />
+                <field name="assignee" />
+                <field name="sprint" />
+            </field>
+            <filter name="open" position="before">
+                <filter name="my_items" string="Assigned to Me" domain="[('assignee.user_ids', 'in', [uid])]" />
+                <filter name="reported_by_me" string="Reported by Me" domain="[('reporter_id', '=', uid)]" />
+                <filter name="unassigned" string="Unassigned" domain="[('assignee', '=', False)]" />
+                <separator />
+                <filter name="type_story" string="Stories" domain="[('issue_type', '=', 'story')]" />
+                <filter name="type_task" string="Tasks" domain="[('issue_type', '=', 'task')]" />
+                <filter name="type_bug" string="Bugs" domain="[('issue_type', '=', 'bug')]" />
+                <filter name="type_improvement" string="Improvements" domain="[('issue_type', '=', 'improvement')]" />
+                <separator />
+            </filter>
+            <filter name="in_sprint" position="attributes">
+                <attribute name="string">Active Sprint</attribute>
+                <attribute name="domain">[('sprint.state', '=', 'running')]</attribute>
+            </filter>
+            <filter name="in_sprint" position="after">
+                <filter name="backlog" string="Backlog" domain="[('sprint', '=', False)]" />
+                <filter name="current_work" string="Current Work" domain="['|', ('sprint', '=', False), ('sprint.state', '=', 'running')]" help="The running sprint plus issues not planned in any sprint" />
+                <separator />
+                <filter name="archived" string="Archived" domain="[('active', '=', False)]" />
+            </filter>
+            <filter name="paused" position="after">
+                <filter name="overdue" string="Overdue" domain="[('is_overdue', '=', True)]" />
+            </filter>
+            <filter name="group_state" position="replace">
+                <filter name="group_stage" string="Stage" context="{'group_by': 'stage_id'}" />
+                <filter name="group_type" string="Type" context="{'group_by': 'issue_type'}" />
+                <filter name="group_assignee" string="Assignee" context="{'group_by': 'assignee'}" />
+            </filter>
+        </field>
+    </record>
+
+    <!-- ================= Backlog ================= -->
+    <record id="task_backlog_list" model="ir.ui.view">
+        <field name="name">manage.task.backlog.list</field>
+        <field name="model">manage.task</field>
+        <field name="priority">50</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom" multi_edit="1" decoration-warning="is_overdue">
+                <field name="sequence" widget="handle" />
+                <field name="issue_type" />
+                <field name="code" string="Key" readonly="1" />
+                <field name="name" />
+                <field name="project" optional="show" options="{'no_create': True}" />
+                <field name="history" optional="hide" />
+                <field name="assignee" widget="many2one_avatar" optional="show" options="{'no_create': True}" />
+                <field name="priority" widget="priority" optional="show" />
+                <field name="story_points" sum="Total" />
+                <field name="sprint" options="{'no_create': True}" />
+                <field name="stage_id" optional="show" options="{'no_create': True}" />
+                <field name="state" column_invisible="1" />
+                <field name="is_overdue" column_invisible="1" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_backlog" model="ir.actions.act_window">
+        <field name="name">Backlog</field>
+        <field name="res_model">manage.task</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="task_backlog_list" />
+        <field name="search_view_id" ref="manage.task_search" />
+        <field name="domain">[('state', '!=', 'done'), '|', ('sprint', '=', False), ('sprint.state', '!=', 'closed')]</field>
+        <field name="context">{'group_by': 'sprint'}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Your backlog is empty</p>
+            <p>Add issues here, drag them to rank them, and pick a sprint in the Sprint column to plan it.
+               Issues without a sprint are grouped under "None".</p>
+        </field>
+    </record>
+
+    <record id="task_quick_create_form" model="ir.ui.view">
+        <field name="name">manage.task.quick.create</field>
+        <field name="model">manage.task</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="name" placeholder="Summary..." />
+                    <field name="project" required="1" options="{'no_create': True}" />
+                    <field name="issue_type" />
+                    <field name="assignee" widget="many2one_avatar" options="{'no_create': True}" />
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <!-- ================= Reporting ================= -->
+    <record id="task_pivot" model="ir.ui.view">
+        <field name="name">manage.task.pivot</field>
+        <field name="model">manage.task</field>
+        <field name="arch" type="xml">
+            <pivot string="Issues" sample="1">
+                <field name="project" type="row" />
+                <field name="issue_type" type="col" />
+                <field name="story_points" type="measure" />
+            </pivot>
+        </field>
+    </record>
+
+    <record id="task_graph" model="ir.ui.view">
+        <field name="name">manage.task.graph</field>
+        <field name="model">manage.task</field>
+        <field name="arch" type="xml">
+            <graph string="Issues" type="bar" stacked="1" sample="1">
+                <field name="sprint" />
+                <field name="stage_id" />
+            </graph>
+        </field>
+    </record>
+
+    <!-- ================= Board ================= -->
+    <!-- The one screen for issues. "Board" and "All Issues" used to be two menus
+         showing nearly the same thing; now the board opens on current work
+         (running sprint + issues not planned in a sprint) and removing that
+         filter shows every issue. -->
+    <record id="manage.action_task_window" model="ir.actions.act_window">
+        <field name="name">Board</field>
+        <field name="view_mode">kanban,tree,form,pivot,graph</field>
+        <field name="context">{'manage_board': True, 'search_default_current_work': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Nothing on the board yet</p>
+            <p>Create an issue here. Remove the "Current Work" filter to see every issue,
+               or use "Archived" to find completed ones you archived.</p>
+        </field>
+    </record>
+
+    <!-- ================= Complete issues ================= -->
+    <record id="task_complete_form" model="ir.ui.view">
+        <field name="name">manage.task.complete.form</field>
+        <field name="model">manage.task.complete</field>
+        <field name="arch" type="xml">
+            <form>
+                <p>The issue(s) below will be marked as done and taken off the board.</p>
+                <field name="task_ids" widget="many2many_tags" readonly="1" />
+                <group>
+                    <field name="mode" widget="radio" />
+                </group>
+                <p class="text-muted" invisible="mode != 'archive'">
+                    Archived issues keep their history and comments. Find them again with the "Archived" filter.
+                </p>
+                <p class="text-danger" invisible="mode != 'delete'">
+                    Deleting cannot be undone.
+                </p>
+                <footer>
+                    <button name="action_confirm" type="object" string="Complete" class="btn-primary" />
+                    <button special="cancel" string="Cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Also in the list's Action menu, for several issues at once. -->
+    <record id="action_task_complete" model="ir.actions.act_window">
+        <field name="name">Complete</field>
+        <field name="res_model">manage.task.complete</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="manage.model_manage_task" />
+        <field name="binding_view_types">list,kanban</field>
+    </record>
+
+    <!-- ================= Stages (board columns) ================= -->
+    <record id="stage_list" model="ir.ui.view">
+        <field name="name">manage.stage.list</field>
+        <field name="model">manage.stage</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="sequence" widget="handle" />
+                <field name="name" />
+                <field name="state" />
+                <field name="wip_limit" />
+                <field name="fold" />
+                <field name="project_ids" widget="many2many_tags" optional="show" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_stage" model="ir.actions.act_window">
+        <field name="name">Board Columns</field>
+        <field name="res_model">manage.stage</field>
+        <field name="view_mode">tree</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Add a board column</p>
+            <p>Each column belongs to a status category (To Do, In Progress, In Review, Done).
+               A WIP limit caps how many issues of one sprint can sit in the column.</p>
+        </field>
+    </record>
+
+    <!-- ================= Menus ================= -->
+    <record id="manage.menu_1_task_list" model="ir.ui.menu">
+        <field name="name">Board</field>
+        <field name="sequence">1</field>
+    </record>
+    <menuitem id="menu_backlog" name="Backlog" parent="manage.menu_work" action="action_backlog" sequence="2" />
+    <!-- Bugs and improvements are issue types now. -->
+    <record id="manage.menu_1_bug_list" model="ir.ui.menu">
+        <field name="active" eval="False" />
+    </record>
+    <record id="manage.menu_1_improvement_list" model="ir.ui.menu">
+        <field name="active" eval="False" />
+    </record>
+
+    <menuitem id="menu_config" name="Configuration" parent="manage.menu_root" sequence="90" />
+    <menuitem id="menu_stages" name="Board Columns" parent="menu_config" action="action_stage" sequence="10" />
+</odoo>

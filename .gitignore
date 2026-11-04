@@ -1,8 +1,9 @@
 Pg_data/
 logs/
 *.log
-__pysache__/
+__pycache__/
 *.pyc
 .DS_Store
 Thumbs.db
 odoo/
+.refact/

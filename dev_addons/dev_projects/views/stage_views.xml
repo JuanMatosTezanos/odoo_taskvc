@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Board columns = project stages, with a status category and a WIP limit. -->
+    <record id="stage_list" model="ir.ui.view">
+        <field name="name">dev.stage.list</field>
+        <field name="model">project.task.type</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="sequence" widget="handle" />
+                <field name="name" />
+                <field name="dev_category" />
+                <field name="dev_wip_limit" />
+                <field name="fold" />
+                <field name="project_ids" widget="many2many_tags" optional="show" />
+                <field name="user_id" column_invisible="1" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="stage_form_inherit" model="ir.ui.view">
+        <field name="name">project.task.type.form.dev</field>
+        <field name="model">project.task.type</field>
+        <field name="inherit_id" ref="project.task_type_edit" />
+        <field name="arch" type="xml">
+            <field name="fold" position="after">
+                <field name="dev_category" />
+                <field name="dev_wip_limit" />
+            </field>
+        </field>
+    </record>
+
+    <record id="action_stage" model="ir.actions.act_window">
+        <field name="name">Board Columns</field>
+        <field name="res_model">project.task.type</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="stage_list" />
+        <field name="domain">[('user_id', '=', False)]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Add a board column</p>
+            <p>Columns are the stages of your projects (shared with the Project app). Each has a
+               status category (To Do, In Progress, In Review, Done) and an optional WIP limit.</p>
+        </field>
+    </record>
+</odoo>

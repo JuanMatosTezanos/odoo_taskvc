@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Small additions to the Project app's own task screens, so the Dev
+         details are visible when switching between the two apps. -->
+    <record id="project_task_form_inherit" model="ir.ui.view">
+        <field name="name">project.task.form.dev</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2" />
+        <field name="arch" type="xml">
+            <xpath expr="//notebook/page[@name='description_page']" position="after">
+                <page name="dev" string="Development">
+                    <group>
+                        <group>
+                            <field name="dev_key" readonly="1" />
+                            <field name="dev_issue_type" />
+                            <field name="dev_priority" widget="priority" />
+                            <field name="dev_history_id" options="{'no_create': True}" />
+                            <field name="dev_sprint_id" options="{'no_create': True}" />
+                            <field name="dev_story_points" />
+                            <field name="dev_severity" invisible="dev_issue_type != 'bug'" />
+                        </group>
+                        <group>
+                            <field name="dev_assignee_id" widget="many2one_avatar_user" options="{'no_create': True}" />
+                            <field name="dev_reporter_id" widget="many2one_avatar_user" options="{'no_create': True}" />
+                            <field name="dev_technology_ids" widget="many2many_tags" options="{'color_field': 'color'}" />
+                            <field name="dev_status" />
+                            <field name="dev_start_date" />
+                            <field name="dev_end_date" />
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="project_task_list_inherit" model="ir.ui.view">
+        <field name="name">project.task.list.dev</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.project_task_view_tree_main_base" />
+        <field name="arch" type="xml">
+            <field name="name" position="before">
+                <field name="dev_key" optional="show" />
+            </field>
+        </field>
+    </record>
+
+    <record id="project_task_kanban_inherit" model="ir.ui.view">
+        <field name="name">project.task.kanban.dev</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_kanban" />
+        <field name="arch" type="xml">
+            <xpath expr="//strong[hasclass('o_kanban_record_title')]" position="before">
+                <div class="text-muted small"><field name="dev_key" /></div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

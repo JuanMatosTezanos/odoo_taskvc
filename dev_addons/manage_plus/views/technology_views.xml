@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="technology_list_inherit" model="ir.ui.view">
+        <field name="name">manage.technology.list.plus</field>
+        <field name="model">manage.technology</field>
+        <field name="inherit_id" ref="manage.technology_list" />
+        <field name="arch" type="xml">
+            <field name="task_count" position="attributes">
+                <attribute name="string">Issues</attribute>
+            </field>
+            <field name="task_count" position="after">
+                <field name="bug_count" string="Bugs" />
+            </field>
+        </field>
+    </record>
+
+    <record id="technology_form_inherit" model="ir.ui.view">
+        <field name="name">manage.technology.form.plus</field>
+        <field name="model">manage.technology</field>
+        <field name="inherit_id" ref="manage.technology_form" />
+        <field name="arch" type="xml">
+            <page name="tasks" position="attributes">
+                <attribute name="string">Issues</attribute>
+            </page>
+        </field>
+    </record>
+</odoo>
