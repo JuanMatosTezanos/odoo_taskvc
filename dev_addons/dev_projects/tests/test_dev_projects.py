@@ -340,6 +340,34 @@ class TestDevProjects(TransactionCase):
         partner.invalidate_recordset()
         self.assertEqual(partner.dev_open_issue_count, 1)
 
+    def test_developer_create_user(self):
+        dev = self.env['res.partner'].create({'name': 'Wil Test', 'dev_is_developer': True,
+                                              'dev_access_code': '87654321K'})
+        with self.assertRaises(UserError):
+            dev.action_dev_create_user()  # no email yet
+        dev.email = 'wil.test@example.com'
+        dev.with_context(no_reset_password=True).action_dev_create_user()
+        user = dev.user_ids
+        self.assertEqual(len(user), 1)
+        self.assertEqual(user.partner_id, dev, "same contact: the profile stays on it")
+        self.assertEqual(dev.dev_access_code, '87654321K')
+        self.assertEqual(user.login, 'wil.test@example.com')
+        self.assertFalse(user.share, "internal user, so it can be an assignee")
+        self.assertTrue(user.has_group('project.group_project_user'))
+        self.assertEqual(self.env['res.partner'].search_count([('name', '=', 'Wil Test')]), 1, "no duplicate contact")
+        # Now assignable from an issue form, and counted on the developer.
+        form = Form(self.Task.with_context(default_project_id=self.project.id), view='project.view_task_form2')
+        form.name = 'For Wil'
+        form.dev_assignee_id = user
+        issue = form.save()
+        self.assertIn(user, issue.user_ids)
+        dev.invalidate_recordset()
+        self.assertEqual(dev.dev_open_issue_count, 1)
+        # He can open his issues, and the button refuses a second user.
+        self.assertEqual(self.Task.search(dev.action_dev_view_issues()['domain']), issue)
+        with self.assertRaises(UserError):
+            dev.action_dev_create_user()
+
     def test_technology(self):
         tech = self.env['dev.technology'].create({'name': 'Zig Test'})
         issue = self._issue(dev_issue_type='bug', dev_technology_ids=[(6, 0, tech.ids)],

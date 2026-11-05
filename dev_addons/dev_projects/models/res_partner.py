@@ -2,7 +2,7 @@
 import re
 
 from odoo import Command, _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 
 # 8 digits followed by letters, e.g. 12345678A.
 ACCESS_CODE_RE = re.compile(r'^[0-9]{8}[A-Z]+$')
@@ -117,6 +117,37 @@ class ResPartner(models.Model):
             'search_view_id': [self.env.ref('dev_projects.task_search').id],
             'domain': [('dev_assignee_id', 'in', self.user_ids.ids), ('project_id.dev_is_software', '=', True)],
             'context': {'default_dev_assignee_id': self.user_ids[:1].id, 'dev_board': True},
+        }
+
+    def action_dev_create_user(self):
+        """Give a developer a login so issues can be assigned to them.
+
+        The user is linked to this contact, so the developer profile (access
+        code, technologies) stays on it. Creating it from Settings > Users
+        would make a second contact instead."""
+        self.ensure_one()
+        if self.user_ids:
+            raise UserError(_("%s already has a user.", self.name))
+        if not self.email:
+            raise UserError(_("Fill in %s's email first: it is used as their login.", self.name))
+        if self.env['res.users'].with_context(active_test=False).search_count([('login', '=', self.email)]):
+            raise UserError(_("A user with the login %s already exists.", self.email))
+        user = self.env['res.users'].create({
+            'partner_id': self.id,
+            'login': self.email,
+            'groups_id': [Command.link(self.env.ref('base.group_user').id),
+                          Command.link(self.env.ref('project.group_project_user').id)],
+        })
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'type': 'success',
+                'message': _("%(name)s can now be assigned issues. Their login is %(login)s; "
+                             "set a password in Settings > Users if no invitation email arrives.",
+                             name=self.name, login=user.login),
+                'next': {'type': 'ir.actions.client', 'tag': 'soft_reload'},
+            },
         }
 
     @api.model

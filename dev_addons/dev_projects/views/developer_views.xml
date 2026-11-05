@@ -30,9 +30,13 @@
                         <field name="dev_issue_count" />
                     </group>
                 </group>
-                <div class="alert alert-info" role="alert" invisible="not dev_is_developer or user_ids">
-                    Issues are assigned to Odoo users. Give this developer a user
-                    (Settings &gt; Users) to assign issues to them.
+                <div class="alert alert-info d-flex align-items-center gap-3" role="alert" invisible="not dev_is_developer or user_ids">
+                    <span class="flex-grow-1">
+                        This developer cannot be assigned issues yet: issues are assigned to people
+                        who can log in to Odoo. Create a login for them (it uses their email).
+                    </span>
+                    <button name="action_dev_create_user" type="object" string="Create User" class="btn-primary"
+                            groups="base.group_erp_manager" invisible="not id" />
                 </div>
             </xpath>
         </field>
