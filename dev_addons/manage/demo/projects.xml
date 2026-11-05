@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<odoo>
-    <data>
-        <record id="project_1" model="manage.project">
-            <field name="name">Main</field>
-        </record>
-    </data>
-</odoo>

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="sprint_list" model="ir.ui.view">
+        <field name="name">dev.sprint.list</field>
+        <field name="model">dev.sprint</field>
+        <field name="arch" type="xml">
+            <tree decoration-info="state == 'running'" decoration-muted="state == 'closed'">
+                <field name="name" />
+                <field name="goal" optional="show" />
+                <field name="project_id" />
+                <field name="start_date" />
+                <field name="end_date" />
+                <field name="duration" sum="Total" optional="hide" />
+                <field name="item_count" string="Issues" />
+                <field name="planned_points" optional="show" sum="Total" />
+                <field name="done_points" optional="hide" sum="Total" />
+                <field name="progress" widget="progressbar" />
+                <field name="state" widget="badge" decoration-success="state == 'running'" decoration-info="state == 'planned'" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="sprint_form" model="ir.ui.view">
+        <field name="name">dev.sprint.form</field>
+        <field name="model">dev.sprint</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_start" type="object" string="Start Sprint" class="btn-primary" invisible="state != 'planned' or not id" />
+                    <button name="action_open_complete_wizard" type="object" string="Complete Sprint" class="btn-primary" invisible="state != 'running'" />
+                    <field name="state" widget="statusbar" />
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_issues" type="object" class="oe_stat_button" icon="fa-tasks">
+                            <field name="item_count" widget="statinfo" string="Issues" />
+                        </button>
+                    </div>
+                    <field name="active" invisible="1" />
+                    <widget name="web_ribbon" title="Running" bg_color="text-bg-success" invisible="state != 'running' or not active" />
+                    <widget name="web_ribbon" title="Closed" bg_color="text-bg-secondary" invisible="state != 'closed' or not active" />
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active" />
+                    <div class="oe_title">
+                        <label for="name" />
+                        <h1><field name="name" placeholder="e.g. Sprint 1" /></h1>
+                        <field name="goal" placeholder="Sprint goal, e.g. Users can reset their password" />
+                    </div>
+                    <group>
+                        <group string="Planning">
+                            <field name="project_id" options="{'no_create': True}" readonly="state != 'planned'" />
+                            <field name="start_date" />
+                            <label for="duration" />
+                            <div class="o_row">
+                                <field name="duration" /> <span>days</span>
+                            </div>
+                            <field name="end_date" readonly="state != 'closed'" />
+                        </group>
+                        <group string="Progress">
+                            <field name="done_count" />
+                            <label for="planned_points" string="Story Points" />
+                            <div class="o_row">
+                                <field name="done_points" /> <span>/</span> <field name="planned_points" />
+                            </div>
+                            <field name="progress" widget="progressbar" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="issues" string="Issues">
+                            <field name="task_ids" context="{'default_project_id': project_id, 'default_dev_sprint_id': id, 'form_view_ref': 'project.view_task_form2'}">
+                                <tree>
+                                    <field name="dev_issue_type" />
+                                    <field name="dev_key" />
+                                    <field name="name" />
+                                    <field name="dev_assignee_id" widget="many2one_avatar_user" />
+                                    <field name="dev_priority" widget="priority" />
+                                    <field name="dev_story_points" sum="Total" />
+                                    <field name="dev_status" column_invisible="1" />
+                                    <field name="stage_id" widget="badge" decoration-success="dev_status == 'done'" decoration-info="dev_status == 'in_progress'" decoration-warning="dev_status == 'review'" />
+                                </tree>
+                            </field>
+                        </page>
+                        <page name="description" string="Description">
+                            <field name="description" placeholder="Notes about this sprint..." />
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" />
+                    <field name="message_ids" />
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="sprint_calendar" model="ir.ui.view">
+        <field name="name">dev.sprint.calendar</field>
+        <field name="model">dev.sprint</field>
+        <field name="arch" type="xml">
+            <calendar string="Sprints" date_start="start_date" date_stop="end_date" color="project_id" mode="month" quick_create="0">
+                <field name="name" />
+                <field name="project_id" filters="1" />
+            </calendar>
+        </field>
+    </record>
+
+    <record id="sprint_search" model="ir.ui.view">
+        <field name="name">dev.sprint.search</field>
+        <field name="model">dev.sprint</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" />
+                <field name="project_id" />
+                <filter name="planned" string="Planned" domain="[('state', '=', 'planned')]" />
+                <filter name="running" string="Running" domain="[('state', '=', 'running')]" />
+                <filter name="closed" string="Closed" domain="[('state', '=', 'closed')]" />
+                <separator />
+                <filter name="archived" string="Archived" domain="[('active', '=', False)]" />
+                <group expand="0" string="Group By">
+                    <filter name="group_project" string="Project" context="{'group_by': 'project_id'}" />
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}" />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="sprint_complete_form" model="ir.ui.view">
+        <field name="name">dev.sprint.complete.form</field>
+        <field name="model">dev.sprint.complete</field>
+        <field name="arch" type="xml">
+            <form>
+                <field name="sprint_id" invisible="1" />
+                <field name="project_id" invisible="1" />
+                <p>
+                    <field name="done_count" class="fw-bold" /> issue(s) are done and
+                    <field name="open_count" class="fw-bold" /> are not finished.
+                </p>
+                <group invisible="not open_count">
+                    <field name="destination" widget="radio" />
+                    <field name="target_sprint_id" invisible="destination != 'sprint'" required="destination == 'sprint' and open_count" options="{'no_create': True}" />
+                </group>
+                <footer>
+                    <button name="action_confirm" type="object" string="Complete Sprint" class="btn-primary" />
+                    <button special="cancel" string="Cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_sprint" model="ir.actions.act_window">
+        <field name="name">Sprints</field>
+        <field name="res_model">dev.sprint</field>
+        <field name="view_mode">tree,calendar,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Plan your first sprint</p>
+            <p>Create a sprint, add issues to it from the Backlog, then press Start Sprint.</p>
+        </field>
+    </record>
+</odoo>

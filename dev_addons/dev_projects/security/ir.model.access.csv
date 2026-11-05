@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_dev_sprint_user,dev.sprint user,model_dev_sprint,project.group_project_user,1,1,1,1
+access_dev_history_user,dev.history user,model_dev_history,project.group_project_user,1,1,1,1
+access_dev_technology_user,dev.technology user,model_dev_technology,project.group_project_user,1,1,1,1
+access_dev_technology_employee,dev.technology employee,model_dev_technology,base.group_user,1,0,0,0
+access_dev_sprint_complete_user,dev.sprint.complete user,model_dev_sprint_complete,project.group_project_user,1,1,1,1
+access_dev_task_complete_user,dev.task.complete user,model_dev_task_complete,project.group_project_user,1,1,1,1

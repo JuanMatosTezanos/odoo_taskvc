@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="history_list" model="ir.ui.view">
+        <field name="name">dev.history.list</field>
+        <field name="model">dev.history</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" />
+                <field name="project_id" />
+                <field name="task_count" string="Issues" />
+                <field name="bug_count" string="Bugs" />
+                <field name="progress" widget="progressbar" />
+                <field name="description" optional="hide" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="history_form" model="ir.ui.view">
+        <field name="name">dev.history.form</field>
+        <field name="model">dev.history</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" />
+                        <h1><field name="name" placeholder="e.g. User login" /></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="project_id" options="{'no_create': True}" />
+                            <field name="progress" widget="progressbar" />
+                        </group>
+                        <group>
+                            <field name="used_technology_ids" widget="many2many_tags" options="{'color_field': 'color'}" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="issues" string="Issues">
+                            <field name="task_ids" context="{'default_project_id': project_id, 'default_dev_history_id': id, 'form_view_ref': 'project.view_task_form2'}">
+                                <tree>
+                                    <field name="dev_issue_type" />
+                                    <field name="dev_key" />
+                                    <field name="name" />
+                                    <field name="dev_assignee_id" widget="many2one_avatar_user" />
+                                    <field name="dev_technology_ids" widget="many2many_tags" options="{'color_field': 'color'}" />
+                                    <field name="dev_priority" widget="priority" />
+                                    <field name="dev_status" column_invisible="1" />
+                                    <field name="stage_id" widget="badge" decoration-success="dev_status == 'done'" decoration-info="dev_status == 'in_progress'" decoration-warning="dev_status == 'review'" />
+                                </tree>
+                            </field>
+                        </page>
+                        <page name="description" string="Description">
+                            <field name="description" placeholder="Describe the user history..." />
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" />
+                    <field name="message_ids" />
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="history_search" model="ir.ui.view">
+        <field name="name">dev.history.search</field>
+        <field name="model">dev.history</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" />
+                <field name="project_id" />
+                <group expand="0" string="Group By">
+                    <filter name="group_project" string="Project" context="{'group_by': 'project_id'}" />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_history" model="ir.actions.act_window">
+        <field name="name">Histories</field>
+        <field name="res_model">dev.history</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Create a history</p>
+            <p>Histories (epics) describe a feature of a project and group its issues.</p>
+        </field>
+    </record>
+</odoo>
