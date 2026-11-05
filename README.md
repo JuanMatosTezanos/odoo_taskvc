@@ -1,236 +1,223 @@
-Overview
-Manage is a custom Odoo module designed to support Scrum-based project management. It allows users to manage projects, histories (user stories), tasks, bugs, improvements, sprints, developers, and technologies.
 
-This project began as a tutorial implementation and was later enhanced with additional functionality including access code validation, immutable access codes, automatic developer categorization, active sprint detection, and technology logo automation.
+[README -.md](https://github.com/user-attachments/files/34446706/README.-.Copy.md)
+# Dev Projects for Odoo 17
 
-Features
-Developer Management
-The module extends Odoo's built-in res.partner model to represent developers.
+Jira-style software project management built on top of Odoo's own **Project** app.
 
-Additional fields include:
+Dev Projects adds issue keys (`WEB-1`, `WEB-2`…), issue types, a board with WIP limits, a ranked backlog, sprints you start and complete by hand, epics ("histories"), technologies and developer profiles. It works on the **same projects and tasks** as the Project app. An issue is a normal Odoo task with extra fields, so you can switch between the two apps at any time.
 
-Last Login Date
-Developer Flag (is_dev)
-Access Code
-Developers can be assigned to:
+---
 
-Technologies
-Tasks
-Bugs
-Improvements
-Access Code Validation
-Developer access codes must:
+## Contents
 
-Start with exactly 8 digits
-End with one or more letters
-Examples:
+- [Features](#features)
+- [How it fits with the Project app](#how-it-fits-with-the-project-app)
+- [Getting started](#getting-started)
+- [Day-to-day workflow](#day-to-day-workflow)
+- [Configuration](#configuration)
+- [Running the tests](#running-the-tests)
+- [Project structure](#project-structure)
+- [Uninstalling](#uninstalling)
 
-Valid:
+---
 
-12345678A
+## Features
 
-12345678ABC
+**Issues**
+- Types: Story, Task, Bug, Improvement.
+- A key per project, e.g. `AG-1`, `AG-2`. It's suggested from the project name ("AI glasses" → `AG`), and you can search by it.
+- Story points, a 4-level priority (Normal, Important, High, Critical) and a severity for bugs.
+- One **assignee** (also added to the task's assignees in Odoo) and a **reporter**.
+- Start/finish dates filled in automatically as the issue moves across the board.
+- Pause/resume, overdue warnings, and **Complete**: mark it done, then archive or delete it.
 
-Invalid:
+**Board**
+- Columns are Odoo project stages, each with a status category: To Do, In Progress, In Review or Done.
+- Moving a card to a Done column marks the task done in the Project app too, and moving it out reopens it.
+- Optional **WIP limit** per column, counted per project and sprint. Done columns are never limited.
+- Shows **current work**: the running sprint plus issues not in any sprint.
 
-ABC12345
+**Backlog and sprints**
+- Backlog grouped by sprint. Drag to rank issues, and pick a sprint to plan them.
+- Sprints are started and completed by hand, like in Jira. Only one sprint per project can run at a time.
+- When you complete a sprint, unfinished issues move to the next sprint or back to the backlog.
+- Sprint progress, planned points and done points.
 
-12345A
+**Histories, technologies and developers**
+- Histories (epics) group issues and show progress and the technologies used.
+- Technologies get their logo automatically from an image folder (`Docker` → `Docker.png`).
+- Developer profiles on contacts:
+  - An access code: 8 digits followed by letters, e.g. `12345678A`. It must be unique and can't be changed once saved.
+  - Technologies the developer knows.
+  - A "Devs" tag, added automatically.
 
-123456789
+---
 
-Validation is performed using a regular expression and enforced with Odoo constraints.
+## How it fits with the Project app
 
-Access Code Integrity
-Access codes are protected after creation.
+After installing, the home screen shows one **Projects** app with two menus:
 
-Once an access code has been assigned to a developer it cannot be modified.
+```
+Projects  |  Project ▾          |  Dev Projects ▾
+          |  Odoo's own menus,  |  Work:     Board, Backlog
+          |  unchanged          |  Planning: Projects, Sprints, Histories
+          |                     |  Team:     My Developer Profile, Developers, Technologies
+          |                     |  Configuration
+```
 
-A database-level uniqueness constraint also prevents duplicate access codes.
+- **Software projects** have the *Software Project* box ticked. Projects created from Dev Projects get it automatically. Only these appear in Dev Projects and get keys, board columns and the Dev behaviour.
+- **Regular projects** (marketing, office, etc.) behave exactly like plain Odoo.
+- The Project app hides software projects by default with a **"Hide Software Projects"** filter. It's a normal search filter, so removing it shows everything.
+- To move an existing project into Dev Projects, tick *Software Project* on it. It gets a key, board columns, and its existing tasks get numbered.
 
-Automatic Developer Categorization
-When a contact is marked as a developer (is_dev = True), the system automatically assigns the contact to the Devs category.
+---
 
-If the category does not exist, it is created automatically.
+## Getting started
 
-Project Management
-Projects are the top-level organizational unit.
+### Requirements
 
-Each project contains:
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Docker Compose included)
 
-Name
-Description
-Histories
-History Management
-Histories represent Scrum User Stories.
+### 1. Start Odoo
 
-Each history contains:
+From the project folder:
 
-Name
-Description
-Related Project
-Assigned Tasks
-Technology Aggregation
-A computed field automatically gathers all technologies used by tasks that belong to a history.
+```bash
+docker compose up -d
+```
 
-This provides a quick overview of technologies involved in a user story.
+This starts two containers:
 
-Task Management
-Tasks represent individual work items.
+| Container           | What it is              | Port   |
+|---------------------|-------------------------|--------|
+| `odoo_dev_web`      | Odoo 17                 | 8069   |
+| `odoo_dev_database` | PostgreSQL 17           | (internal) |
 
-Each task contains:
+Open **http://localhost:8069**.
 
-Name
-Description
-Project
-History
-Sprint
-Developers
-Technologies
-Start Date
-End Date
-Automatic Task Codes
-Each task automatically generates a unique code.
+### 2. Create a database
 
-Examples:
+If you have no database yet, Odoo shows the database manager. Create one (for example `ProjectsData`), then log in.
 
-TSK_1
+### 3. Install the module
 
-TSK_2
+1. Go to **Apps**.
+2. Remove the "Apps" filter and search for **Dev Projects**.
+3. Click **Activate**.
 
-TSK_3
+The **Project** app is installed automatically if you don't have it.
 
-The code is generated using the record's database identifier.
+### After changing the code
 
-Automatic Sprint Assignment
-Tasks automatically determine which sprint they belong to based on:
+- **Python changes:** restart the web container with `docker restart odoo_dev_web`.
+- **View/XML or field changes:** upgrade the module, either from *Apps → Dev Projects → Upgrade* or from the command line:
 
-Associated Project
-Sprint Start Date
-Sprint End Date
-If an active sprint exists, the task is linked automatically.
+  ```bash
+  docker compose run --rm --no-deps odoo odoo --db_host=db --db_user=odoo --db_password=odoo \
+      -d ProjectsData -u dev_projects --stop-after-init
+  docker restart odoo_dev_web
+  ```
 
-Bug Tracking
-Bugs inherit functionality from the Task model.
+---
 
-Additional bug features include:
+## Day-to-day workflow
 
-Linked Tasks
-Linked Bugs
-Linked Improvements
-Assigned Developers
-Technology Associations
-This allows defects to be tracked alongside development work.
+1. **Create a project.** Go to *Dev Projects → Planning → Projects → New*. It gets a key and the four default columns: To Do, In Progress, In Review, Done.
+2. **Fill the backlog.** In *Work → Backlog*, add issues, drag them to rank them, and set the **Sprint** column to plan them.
+3. **Start the sprint.** In *Planning → Sprints*, open the sprint and click **Start Sprint**.
+4. **Work on the Board.** In *Work → Board*, drag cards across the columns. New issues created here go into the running sprint automatically.
+5. **Complete the sprint.** Click **Complete Sprint** and choose where unfinished issues go: the next sprint or the backlog.
 
-Improvement Tracking
-Improvements also inherit from the Task model.
+> **Why don't I see my sprint's issues on the Board?**
+> The Board shows the *running* sprint plus issues not in any sprint. Issues in a sprint that hasn't been started stay hidden until you click **Start Sprint**. To see them earlier, use the sprint's **Issues** button or remove the "Current Work" filter.
+>
+> If you create an issue on the Board while no sprint is running, it goes to the backlog and a short notification tells you so.
 
-They are used to represent:
+---
 
-Enhancements
-Optimizations
-Feature Requests
-Improvements can be assigned to developers and technologies.
+## Configuration
 
-Sprint Management
-Sprints organize project work into Scrum iterations.
+**Settings → Project → Dev Projects**
 
-Sprint fields include:
+| Setting | Default | What it does |
+|---------|---------|--------------|
+| Technology Logo Folder | `/tech_images` | Folder searched for `<Technology name>.png` logos |
+| Default Sprint Length (days) | 14 | Duration of new sprints |
+| Default Board Columns for New Software Projects | On | Gives new software projects the four default columns |
 
-Project
-Duration
-Start Date
-End Date
-Assigned Tasks
-Automatic End Date Calculation
-Sprint end dates are calculated automatically:
+**Dev Projects → Configuration → Board Columns**: rename, reorder or add columns, set each column's *Status Category* and *WIP Limit* (0 = no limit).
 
-end_date = start_date + duration
-Active Sprint Detection
-A sprint is considered active when:
+**Technology logos**: put PNG files in [`tech_images/`](tech_images/). The file name must match the technology name, ignoring upper/lower case. The folder is mounted read-only into the container at `/tech_images`.
 
-Current date is after the sprint start date
-Current date is before the sprint end date
-This removes the need for manually activating or deactivating sprints.
+---
 
-Technology Management
-Technologies are used to track frameworks, tools, and platforms used throughout the project.
+## Running the tests
 
-Each technology contains:
+Tests run on a **throwaway database**, so your real data is never touched:
 
-Name
-Description
-Image
-Automatic Logo Loading
-When a technology name is entered, the system searches for a matching image file and automatically loads it into the image field.
+```bash
+docker compose run --rm --no-deps odoo odoo --db_host=db --db_user=odoo --db_password=odoo \
+    -d test_dev_projects -i dev_projects --test-enable --stop-after-init \
+    --test-tags /dev_projects,/project,-/project:TestUi,-/project:TestProjectSharingChatterAccess
+```
 
-Example:
+This runs the Dev Projects tests plus Odoo's own Project tests, to check that nothing in the Project app broke. Look for this line at the end:
 
-Docker
-Automatically loads:
+```
+0 failed, 0 error(s) of ... tests
+```
 
-Docker.png
-The image is encoded using Base64 and stored in Odoo's image field.
+`TestProjectSharingChatterAccess` is excluded because it also fails on a plain Odoo install, and `TestUi` needs a browser.
 
-Odoo Concepts Demonstrated
-This project demonstrates:
+Afterwards, delete the test database:
 
-Model Inheritance
-Examples:
+```bash
+docker exec odoo_dev_database dropdb -U odoo test_dev_projects
+```
 
-res.partner
-manage.task
-Relationships
-One2many
-Many2one
-Many2many
-Computed Fields
-Used for:
+> On Windows Git Bash, put `MSYS_NO_PATHCONV=1` in front of the `docker compose run` command. PowerShell doesn't need it.
 
-Sprint Detection
-Active Sprint Status
-Technology Aggregation
-Task Code Generation
-Constraints
-Used for:
+---
 
-Access Code Validation
-Developer Validation
-SQL Constraints
-Used to enforce unique access codes.
+## Project structure
 
-Onchange Methods
-Used for:
+```
+odoo_taskvc/
+├── docker-compose.yaml        Odoo 17 + PostgreSQL 17
+├── config_odoo/odoo.conf      Odoo server configuration
+├── tech_images/               Technology logos (mounted at /tech_images)
+├── logs/                      Odoo log file (git-ignored)
+└── dev_addons/                Custom addons (mounted at /mnt/extra-addons)
+    └── dev_projects/
+        ├── __manifest__.py
+        ├── hooks.py           Install / uninstall steps
+        ├── data/              Default board columns, settings
+        ├── models/
+        │   ├── project_task.py        Issues: types, keys, board/Done sync, Complete wizard
+        │   ├── project_project.py     Software projects, keys, screen actions
+        │   ├── project_task_type.py   Board columns: status category, WIP limit
+        │   ├── dev_sprint.py          Sprints and the Complete Sprint wizard
+        │   ├── dev_history.py         Histories (epics)
+        │   ├── dev_technology.py      Technologies and logo loading
+        │   ├── res_partner.py         Developer profiles and access codes
+        │   └── res_config_settings.py Settings
+        ├── views/             Board, backlog, sprints, forms, menus, settings
+        ├── security/          Access rights
+        └── tests/
+            ├── test_dev_projects.py   Behaviour tests
+            └── test_screens.py        Every screen opens; Project app still works
+```
 
-Technology Logo Loading
-Developer Category Assignment
-Custom Enhancements
-The following features were added beyond the original tutorial:
+`data_generator.py` and `csv/` belong to the earlier `manage` module, which has been removed. Dev Projects doesn't use them.
 
-Access code validation using regular expressions
-Unique developer access codes
-Immutable access codes
-Automatic developer categorization
-Dynamic sprint activity detection
-Automatic technology logo loading
-Technology aggregation for histories
-Future Improvements
-Potential enhancements include:
+---
 
-Burndown Charts
-Velocity Tracking
-Developer Workload Dashboards
-Project Analytics
-Email Notifications
-Advanced Bug Prioritization
-User Authentication with Access Codes
-Author
-Custom Scrum Project Management module developed in Odoo using:
+## Uninstalling
 
-Python
-Odoo ORM
-XML Views
-Model Inheritance
-Computed Fields
-Constraints
-Scrum Methodology Concepts
+Uninstalling Dev Projects from *Apps* puts the Project app back the way Odoo ships it: original menus, no default filter. Your projects and tasks stay. Only the Dev fields, sprints, histories and technologies are removed.
+
+---
+
+## License
+
+LGPL-3
