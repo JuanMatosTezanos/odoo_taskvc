@@ -66,7 +66,7 @@
                     </group>
                     <notebook>
                         <page name="issues" string="Issues">
-                            <field name="task_ids" context="{'default_project_id': project_id, 'default_dev_sprint_id': id, 'form_view_ref': 'dev_projects.task_form'}">
+                            <field name="task_ids" context="{'default_project_id': project_id, 'default_dev_sprint_id': id, 'form_view_ref': 'project.view_task_form2'}">
                                 <tree>
                                     <field name="dev_issue_type" />
                                     <field name="dev_key" />

@@ -13,6 +13,7 @@ class DevHistory(models.Model):
     description = fields.Text()
     color = fields.Integer()
     project_id = fields.Many2one('project.project', string="Project", required=True,
+                                 domain=[('dev_is_software', '=', True)],
                                  index=True, ondelete='cascade', tracking=True)
     task_ids = fields.One2many('project.task', 'dev_history_id', string="Issues")
     task_count = fields.Integer(string="Issue Count", compute='_compute_progress')

@@ -1,31 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Small additions to the Project app's own task screens, so the Dev
-         details are visible when switching between the two apps. -->
+    <!-- The Project app's own task form, enhanced (nothing removed). Both the
+         Project and Dev Projects menus open issues with this form, so every
+         Project feature (milestones, dependencies, recurrence, customer,
+         timesheets...) is available, plus the Dev fields and buttons. -->
     <record id="project_task_form_inherit" model="ir.ui.view">
         <field name="name">project.task.form.dev</field>
         <field name="model">project.task</field>
         <field name="inherit_id" ref="project.view_task_form2" />
         <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_dev_start" type="object" string="Start" class="btn-primary" invisible="dev_status != 'todo' or not id or not dev_project_is_software" />
+                <button name="action_dev_review" type="object" string="Send to Review" class="btn-primary" invisible="dev_status != 'in_progress' or not dev_project_is_software" />
+                <button name="action_dev_done" type="object" string="Mark as Done" class="btn-primary" invisible="dev_status not in ('in_progress', 'review') or not dev_project_is_software" />
+                <button name="action_dev_toggle_pause" type="object" string="Pause" invisible="dev_status != 'in_progress' or dev_is_paused or not dev_project_is_software" />
+                <button name="action_dev_toggle_pause" type="object" string="Resume" class="btn-primary" invisible="not dev_is_paused" />
+                <button name="action_dev_reopen" type="object" string="Reopen" invisible="dev_status != 'done' or not dev_project_is_software" />
+                <button name="action_dev_open_complete_wizard" type="object" string="Complete" class="btn-success" invisible="not active or not id or not dev_project_is_software" help="Mark as done, then archive or delete it" />
+                <button name="action_dev_assign_to_me" type="object" string="Assign to Me" invisible="dev_status == 'done' or dev_assignee_id == uid or not dev_project_is_software" />
+            </xpath>
+            <xpath expr="//widget[@name='web_ribbon']" position="after">
+                <widget name="web_ribbon" title="Paused" bg_color="text-bg-danger" invisible="not dev_is_paused or not active" />
+                <widget name="web_ribbon" title="Overdue" bg_color="text-bg-warning" invisible="not dev_is_overdue or dev_is_paused or not active or not dev_project_is_software" />
+                <field name="dev_status" invisible="1" />
+                <field name="dev_project_is_software" invisible="1" />
+                <field name="dev_is_paused" invisible="1" />
+                <field name="dev_is_overdue" invisible="1" />
+            </xpath>
+            <xpath expr="//div[hasclass('oe_title')]" position="before">
+                <div class="d-flex align-items-center gap-3 mb-2" invisible="not dev_project_is_software">
+                    <field name="dev_key" readonly="1" class="text-muted" invisible="not dev_key" />
+                    <field name="dev_issue_type" widget="radio" options="{'horizontal': true}" />
+                </div>
+            </xpath>
+            <field name="user_ids" position="before">
+                <field name="dev_assignee_id" widget="many2one_avatar_user" options="{'no_create': True}" invisible="not dev_project_is_software" />
+            </field>
+            <field name="user_ids" position="after">
+                <field name="dev_reporter_id" widget="many2one_avatar_user" options="{'no_create': True}" invisible="not dev_project_is_software" />
+            </field>
+            <field name="tag_ids" position="after">
+                <field name="dev_technology_ids" widget="many2many_tags" options="{'color_field': 'color'}" invisible="not dev_project_is_software" />
+            </field>
+            <xpath expr="//div[@id='date_deadline_and_recurring_task']" position="after">
+                <field name="dev_history_id" options="{'no_create': True}" invisible="not dev_project_is_software" />
+                <field name="dev_sprint_id" options="{'no_create': True}" invisible="not dev_project_is_software" readonly="dev_status == 'done'" />
+                <field name="dev_story_points" invisible="not dev_project_is_software" />
+                <field name="dev_priority" widget="priority" invisible="not dev_project_is_software" />
+                <field name="dev_severity" invisible="dev_issue_type != 'bug' or not dev_project_is_software" required="dev_issue_type == 'bug' and dev_project_is_software" widget="badge" decoration-danger="dev_severity in ('critical', 'blocker')" decoration-warning="dev_severity == 'major'" />
+            </xpath>
             <xpath expr="//notebook/page[@name='description_page']" position="after">
-                <page name="dev" string="Development">
+                <page name="dev" string="Development" invisible="not dev_project_is_software">
                     <group>
                         <group>
-                            <field name="dev_key" readonly="1" />
-                            <field name="dev_issue_type" />
-                            <field name="dev_priority" widget="priority" />
-                            <field name="dev_history_id" options="{'no_create': True}" />
-                            <field name="dev_sprint_id" options="{'no_create': True}" />
-                            <field name="dev_story_points" />
-                            <field name="dev_severity" invisible="dev_issue_type != 'bug'" />
-                        </group>
-                        <group>
-                            <field name="dev_assignee_id" widget="many2one_avatar_user" options="{'no_create': True}" />
-                            <field name="dev_reporter_id" widget="many2one_avatar_user" options="{'no_create': True}" />
-                            <field name="dev_technology_ids" widget="many2many_tags" options="{'color_field': 'color'}" />
                             <field name="dev_status" />
                             <field name="dev_start_date" />
                             <field name="dev_end_date" />
+                        </group>
+                        <group>
+                            <field name="dev_is_paused" />
                         </group>
                     </group>
                 </page>
@@ -53,5 +86,57 @@
                 <div class="text-muted small"><field name="dev_key" /></div>
             </xpath>
         </field>
+    </record>
+
+    <!-- ============ Project app: hide software projects by default ============ -->
+    <!-- A normal search filter, switched on by default in the Project menus.
+         Removing it (one click) shows everything, e.g. for managers. -->
+    <record id="project_search_inherit" model="ir.ui.view">
+        <field name="name">project.project.search.dev</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.view_project_project_filter" />
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <separator />
+                <filter name="dev_hide_software" string="Hide Software Projects" domain="[('dev_is_software', '=', False)]" />
+                <filter name="dev_only_software" string="Software Projects" domain="[('dev_is_software', '=', True)]" />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- On the base task search, so it is in Project's task screens and Task Analysis. -->
+    <record id="task_search_base_inherit" model="ir.ui.view">
+        <field name="name">project.task.search.base.dev</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_search_form_base" />
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <separator />
+                <filter name="dev_hide_software" string="Hide Software Projects" domain="['|', ('project_id', '=', False), ('project_id.dev_is_software', '=', False)]" />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Odoo's own contexts plus the default filter (put back on uninstall). -->
+    <record id="project.open_view_project_all" model="ir.actions.act_window">
+        <field name="context">{'search_default_dev_hide_software': 1}</field>
+    </record>
+    <record id="project.open_view_project_all_group_stage" model="ir.actions.act_window">
+        <field name="context">{'search_default_dev_hide_software': 1}</field>
+    </record>
+    <record id="project.open_view_project_all_config" model="ir.actions.act_window">
+        <field name="context">{'search_default_dev_hide_software': 1}</field>
+    </record>
+    <record id="project.open_view_project_all_config_group_stage" model="ir.actions.act_window">
+        <field name="context">{'search_default_dev_hide_software': 1}</field>
+    </record>
+    <record id="project.action_view_all_task" model="ir.actions.act_window">
+        <field name="context">{'search_default_open_tasks': 1, 'default_user_ids': [(4, uid)], 'search_default_dev_hide_software': 1}</field>
+    </record>
+    <record id="project.action_view_my_task" model="ir.actions.act_window">
+        <field name="context">{'search_default_open_tasks': 1, 'all_task': 0, 'default_user_ids': [(4, uid)], 'search_default_dev_hide_software': 1}</field>
+    </record>
+    <record id="project.action_project_task_user_tree" model="ir.actions.act_window">
+        <field name="context">{'group_by_no_leaf':1, 'group_by':[], 'graph_measure': '__count__', 'search_default_dev_hide_software': 1}</field>
     </record>
 </odoo>

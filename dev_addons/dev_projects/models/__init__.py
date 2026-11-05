@@ -6,3 +6,4 @@ from . import project_project
 from . import dev_history
 from . import dev_sprint
 from . import project_task
+from . import res_config_settings

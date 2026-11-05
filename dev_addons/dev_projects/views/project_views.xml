@@ -7,20 +7,24 @@
         <field name="inherit_id" ref="project.edit_project" />
         <field name="arch" type="xml">
             <xpath expr="//div[@name='button_box']" position="inside">
-                <button name="action_dev_board" type="object" class="oe_stat_button" icon="fa-columns" string="Dev Board" />
-                <button name="action_dev_backlog" type="object" class="oe_stat_button" icon="fa-list-ol" string="Backlog" />
-                <button name="action_dev_sprints" type="object" class="oe_stat_button" icon="fa-refresh">
+                <button name="action_dev_board" type="object" class="oe_stat_button" icon="fa-columns" string="Dev Board" invisible="not dev_is_software" />
+                <button name="action_dev_backlog" type="object" class="oe_stat_button" icon="fa-list-ol" string="Backlog" invisible="not dev_is_software" />
+                <button name="action_dev_sprints" type="object" class="oe_stat_button" icon="fa-refresh" invisible="not dev_is_software">
                     <field name="dev_sprint_count" widget="statinfo" string="Sprints" />
                 </button>
-                <button name="action_dev_open_issues" type="object" class="oe_stat_button" icon="fa-tasks">
+                <button name="action_dev_open_issues" type="object" class="oe_stat_button" icon="fa-tasks" invisible="not dev_is_software">
                     <field name="dev_open_issue_count" widget="statinfo" string="Open Issues" />
                 </button>
             </xpath>
             <xpath expr="//notebook/page[@name='description']" position="before">
                 <page name="dev" string="Development">
                     <group>
+                        <field name="dev_is_software" />
+                    </group>
+                    <div invisible="not dev_is_software">
+                    <group>
                         <group>
-                            <field name="dev_key" placeholder="Filled in from the name, e.g. WEB" readonly="dev_issue_sequence" />
+                            <field name="dev_key" placeholder="Filled in from the name, e.g. WEB" readonly="dev_issue_sequence" required="dev_is_software" />
                             <field name="dev_issue_sequence" invisible="1" />
                         </group>
                         <group>
@@ -47,6 +51,7 @@
                             <field name="progress" widget="progressbar" />
                         </tree>
                     </field>
+                    </div>
                 </page>
             </xpath>
         </field>
@@ -116,9 +121,11 @@
         <field name="name">Projects</field>
         <field name="res_model">project.project</field>
         <field name="view_mode">kanban,tree,form</field>
+        <field name="domain">[('dev_is_software', '=', True)]</field>
+        <field name="context">{'default_dev_is_software': True}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">Create your first project</p>
-            <p>These are the same projects as in the Project app. Each one gets a key
+            <p>Software projects (shared with the Project app, which hides them by default). Each one gets a key
                (like WEB) used to number its issues.</p>
         </field>
     </record>

@@ -15,7 +15,7 @@ class TestScreens(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.project = cls.env['project.project'].create({'name': 'Screens'})
+        cls.project = cls.env['project.project'].create({'name': 'Screens', 'dev_is_software': True})
         cls.history = cls.env['dev.history'].create({'name': 'Epic', 'project_id': cls.project.id})
         cls.sprint = cls.env['dev.sprint'].create({'project_id': cls.project.id})
         cls.sprint.action_start()
@@ -128,7 +128,7 @@ class TestScreens(TransactionCase):
         self.assertEqual(partner.action_dev_my_profile()['res_id'], partner.id)
 
     def test_forms_save_from_scratch(self):
-        with Form(self.env['project.project']) as f:
+        with Form(self.env['project.project'].with_context(default_dev_is_software=True)) as f:
             f.name = 'From Form'
         project = f.record
         self.assertTrue(project.dev_key)
@@ -138,7 +138,7 @@ class TestScreens(TransactionCase):
         with Form(self.env['dev.sprint']) as f:
             f.project_id = project
         self.assertEqual((f.record.state, f.record.name), ('planned', 'Sprint 1'))
-        with Form(self.env['project.task'].with_context(dev_board=True), view='dev_projects.task_form') as f:
+        with Form(self.env['project.task'].with_context(dev_board=True), view='project.view_task_form2') as f:
             f.name = 'Form issue'
             f.project_id = project
             f.dev_issue_type = 'story'
@@ -187,3 +187,33 @@ class TestScreens(TransactionCase):
             f.dev_is_developer = True
             f.dev_access_code = '13572468r'
         self.assertTrue(user.partner_id.dev_is_developer)
+
+    def test_menu_layout(self):
+        """One "Projects" app: Odoo's menus under "Project", ours under "Dev Projects"."""
+        app = self.env.ref('project.menu_main_pm')
+        self.assertEqual(app.name, 'Projects')
+        self.assertEqual(app.child_id.mapped('name'), ['Project', 'Dev Projects'])
+        project_section = self.env.ref('dev_projects.menu_project_section')
+        for xmlid in ('project.menu_projects', 'project.menu_project_management',
+                      'project.menu_project_report', 'project.menu_project_config'):
+            self.assertEqual(self.env.ref(xmlid).parent_id, project_section, xmlid)
+        self.assertEqual(self.env.ref('dev_projects.menu_root').parent_id, app)
+        self.assertEqual(self.env['ir.ui.menu'].search_count([('name', '=', 'Dev Projects'), ('parent_id', '=', False)]), 0,
+                         "no separate Dev Projects app")
+        # Dev Projects > Configuration has Project's settings and configuration too.
+        config = self.env.ref('dev_projects.menu_config').child_id.mapped('name')
+        for name in ('Settings', 'Board Columns', 'Tags', 'Activity Types'):
+            self.assertIn(name, config)
+
+    def test_settings(self):
+        settings = self.env['res.config.settings'].create({})
+        self.assertTrue(settings.dev_default_columns)
+        settings.write({'dev_sprint_duration': 10, 'dev_default_columns': False,
+                        'dev_tech_image_dir': '/somewhere'})
+        settings.execute()
+        self.assertFalse(self.env['res.config.settings'].create({}).dev_default_columns)
+        self.assertEqual(self.env['dev.sprint'].create({'project_id': self.project.id}).duration, 10)
+        self.assertFalse(self.env['project.project'].create({'name': 'No Columns', 'dev_is_software': True}).type_ids)
+        self.assertEqual(self.env['ir.config_parameter'].get_param('dev_projects.tech_image_dir'), '/somewhere')
+        # The settings page (with our section) opens.
+        self.env['res.config.settings'].get_views([(False, 'form')])

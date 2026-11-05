@@ -33,8 +33,10 @@ Project app, so you can switch between the two:
         'views/technology_views.xml',
         'views/developer_views.xml',
         'views/project_app_views.xml',
+        'views/settings_views.xml',
         'views/menus.xml',
     ],
     'post_init_hook': 'post_init_hook',
+    'uninstall_hook': 'uninstall_hook',
     'installable': True,
 }

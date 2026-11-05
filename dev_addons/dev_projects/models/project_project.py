@@ -10,6 +10,12 @@ KEY_RE = re.compile(r'^[A-Z][A-Z0-9]{1,9}$')
 class ProjectProject(models.Model):
     _inherit = 'project.project'
 
+    # Software projects live in Dev Projects; the Project app hides them by
+    # default (removable filter). Projects created from Dev Projects get it ticked.
+    dev_is_software = fields.Boolean(
+        string="Software Project", index=True, tracking=True,
+        help="Managed in Dev Projects (board, backlog, sprints, issue keys). "
+             "Hidden from the Project app's lists by default.")
     dev_key = fields.Char(
         string="Key", tracking=True, copy=False,
         help="Short uppercase code used in issue keys, e.g. WEB gives WEB-1, WEB-2...")
@@ -74,11 +80,12 @@ class ProjectProject(models.Model):
             key = f"{base}{n}"
         return key
 
-    @api.onchange('name')
+    @api.onchange('name', 'dev_is_software')
     def _onchange_name_dev_key(self):
-        # Suggest a key while the project is new; never change one in use.
+        # Suggest a key for software projects; never change one in use.
         for project in self:
-            if project.name and not project.dev_issue_sequence and not project._origin.dev_key:
+            if project.dev_is_software and project.name and not project.dev_issue_sequence \
+                    and not project._origin.dev_key:
                 project.dev_key = self._dev_suggest_key(project.name)
 
     @api.constrains('dev_key')
@@ -92,25 +99,44 @@ class ProjectProject(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         default_stages = self.env['project.task.type']._dev_default_stages()
+        if self.env['ir.config_parameter'].sudo().get_param('dev_projects.default_columns', 'yes') == 'no':
+            default_stages = self.env['project.task.type']  # turned off in Settings
+        default_software = self.env.context.get('default_dev_is_software')
         for vals in vals_list:
             if vals.get('dev_key'):
                 vals['dev_key'] = vals['dev_key'].strip().upper()
-            else:
+            if not vals.get('dev_is_software', default_software):
+                continue  # a regular project: plain Odoo behaviour
+            if not vals.get('dev_key'):
                 vals['dev_key'] = self._dev_suggest_key(vals.get('name'))
             if not vals.get('type_ids') and default_stages:
-                # Give every new project the default board columns.
+                # Give new software projects the default board columns.
                 vals['type_ids'] = [Command.link(stage.id) for stage in default_stages]
         return super().create(vals_list)
 
     def write(self, vals):
         if 'dev_key' in vals:
             vals = dict(vals, dev_key=(vals['dev_key'] or '').strip().upper() or False)
-            if not vals['dev_key']:
-                raise UserError(_("A project needs a key."))
+            if not vals['dev_key'] and self.filtered('dev_is_software'):
+                raise UserError(_("A software project needs a key."))
             # Changing it would leave old keys behind (and break links to them).
             if self.filtered(lambda p: p.dev_key != vals['dev_key'] and p.dev_issue_sequence):
                 raise UserError(_("The key cannot change once the project has issues."))
-        return super().write(vals)
+        res = super().write(vals)
+        if vals.get('dev_is_software'):
+            self._dev_make_software()
+        return res
+
+    def _dev_make_software(self):
+        """A project just became a software project: key, columns, numbered issues."""
+        default_stages = self.env['project.task.type']._dev_default_stages()
+        for project in self:
+            if not project.dev_key:
+                project.dev_key = self._dev_suggest_key(project.name)
+            if not project.type_ids and default_stages:
+                project.type_ids = [Command.link(stage.id) for stage in default_stages]
+            self.env['project.task'].with_context(active_test=False).search(
+                [('project_id', '=', project.id), ('dev_key', '=', False)], order='id')._dev_assign_keys()
 
     def _dev_next_issue_number(self):
         """Reserve the next issue number; one SQL update so two users never get the same."""

@@ -70,7 +70,7 @@
                             </field>
                         </page>
                         <page name="issues" string="Issues">
-                            <field name="task_ids" context="{'form_view_ref': 'dev_projects.task_form'}">
+                            <field name="task_ids" context="{'form_view_ref': 'project.view_task_form2'}">
                                 <tree>
                                     <field name="dev_key" />
                                     <field name="name" />

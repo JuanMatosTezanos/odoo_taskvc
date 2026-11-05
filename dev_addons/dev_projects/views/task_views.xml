@@ -3,94 +3,6 @@
     <!-- Dev Projects' own views of project.task. They have a high priority
          number so the Project app keeps using its own views by default. -->
 
-    <!-- ================= Issue form ================= -->
-    <record id="task_form" model="ir.ui.view">
-        <field name="name">dev.issue.form</field>
-        <field name="model">project.task</field>
-        <field name="priority">90</field>
-        <field name="arch" type="xml">
-            <form string="Issue">
-                <header>
-                    <button name="action_dev_start" type="object" string="Start" class="btn-primary" invisible="dev_status != 'todo' or not id" />
-                    <button name="action_dev_review" type="object" string="Send to Review" class="btn-primary" invisible="dev_status != 'in_progress'" />
-                    <button name="action_dev_done" type="object" string="Mark as Done" class="btn-primary" invisible="dev_status not in ('in_progress', 'review')" />
-                    <button name="action_dev_toggle_pause" type="object" string="Pause" invisible="dev_status != 'in_progress' or dev_is_paused" />
-                    <button name="action_dev_toggle_pause" type="object" string="Resume" class="btn-primary" invisible="not dev_is_paused" />
-                    <button name="action_dev_reopen" type="object" string="Reopen" invisible="dev_status != 'done'" />
-                    <button name="action_dev_open_complete_wizard" type="object" string="Complete" class="btn-success" invisible="not active or not id" help="Mark as done, then archive or delete it" />
-                    <button name="action_dev_assign_to_me" type="object" string="Assign to Me" invisible="dev_status == 'done'" />
-                    <field name="stage_id" widget="statusbar" options="{'clickable': '1', 'fold_field': 'fold'}" domain="[('project_ids', '=', project_id)]" />
-                </header>
-                <sheet>
-                    <field name="active" invisible="1" />
-                    <field name="dev_status" invisible="1" />
-                    <field name="dev_is_overdue" invisible="1" />
-                    <field name="state" invisible="1" />
-                    <field name="company_id" invisible="1" />
-                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-secondary" invisible="active" />
-                    <widget name="web_ribbon" title="Paused" bg_color="text-bg-danger" invisible="not dev_is_paused or not active" />
-                    <widget name="web_ribbon" title="Overdue" bg_color="text-bg-warning" invisible="not dev_is_overdue or dev_is_paused or not active" />
-                    <div class="mb-2">
-                        <field name="dev_issue_type" widget="radio" options="{'horizontal': true}" />
-                    </div>
-                    <div class="oe_title">
-                        <div class="text-muted"><field name="dev_key" readonly="1" /></div>
-                        <h1 class="d-flex">
-                            <field name="dev_priority" widget="priority" class="me-3" />
-                            <field name="name" placeholder="Summary..." />
-                        </h1>
-                    </div>
-                    <group>
-                        <group string="Planning">
-                            <field name="project_id" required="1" options="{'no_create': True}" />
-                            <field name="dev_history_id" options="{'no_create': True}" />
-                            <field name="dev_sprint_id" options="{'no_create': True}" readonly="dev_status == 'done'" />
-                            <field name="dev_story_points" />
-                            <field name="dev_severity" invisible="dev_issue_type != 'bug'" required="dev_issue_type == 'bug'" widget="badge" decoration-danger="dev_severity in ('critical', 'blocker')" decoration-warning="dev_severity == 'major'" />
-                        </group>
-                        <group string="People">
-                            <field name="dev_assignee_id" widget="many2one_avatar_user" options="{'no_create': True}" />
-                            <field name="dev_reporter_id" widget="many2one_avatar_user" options="{'no_create': True}" />
-                            <field name="user_ids" string="Team" widget="many2many_avatar_user" options="{'no_create': True}" help="Everyone working on it (the Project app's Assignees). The assignee is added automatically." />
-                            <field name="dev_technology_ids" widget="many2many_tags" options="{'color_field': 'color'}" />
-                            <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}" />
-                        </group>
-                        <group string="Schedule">
-                            <field name="create_date" string="Created On" readonly="1" />
-                            <field name="dev_start_date" />
-                            <field name="dev_end_date" />
-                            <field name="date_deadline" decoration-danger="dev_is_overdue" />
-                            <field name="dev_is_paused" />
-                        </group>
-                    </group>
-                    <notebook>
-                        <page name="description" string="Description">
-                            <field name="description" placeholder="Describe the issue..." />
-                        </page>
-                        <page name="subtasks" string="Sub-tasks" invisible="not id">
-                            <field name="child_ids" context="{'default_project_id': project_id, 'default_parent_id': id, 'default_dev_sprint_id': dev_sprint_id, 'default_dev_history_id': dev_history_id}">
-                                <tree editable="bottom">
-                                    <field name="dev_key" readonly="1" />
-                                    <field name="name" />
-                                    <field name="dev_assignee_id" widget="many2one_avatar_user" />
-                                    <field name="dev_story_points" />
-                                    <field name="stage_id" readonly="1" />
-                                    <field name="project_id" column_invisible="1" />
-                                    <field name="company_id" column_invisible="1" />
-                                </tree>
-                            </field>
-                        </page>
-                    </notebook>
-                </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids" />
-                    <field name="activity_ids" />
-                    <field name="message_ids" />
-                </div>
-            </form>
-        </field>
-    </record>
-
     <!-- ================= Issue list ================= -->
     <record id="task_list" model="ir.ui.view">
         <field name="name">dev.issue.list</field>
@@ -129,7 +41,7 @@
             <form>
                 <group>
                     <field name="name" placeholder="Summary..." />
-                    <field name="project_id" required="1" options="{'no_create': True}" />
+                    <field name="project_id" required="1" options="{'no_create': True}" domain="[('dev_is_software', '=', True)]" />
                     <field name="dev_issue_type" />
                     <field name="dev_assignee_id" widget="many2one_avatar_user" options="{'no_create': True}" />
                     <field name="company_id" invisible="1" />
@@ -273,7 +185,7 @@
                 <field name="dev_issue_type" />
                 <field name="dev_key" readonly="1" />
                 <field name="name" />
-                <field name="project_id" optional="show" options="{'no_create': True}" required="1" />
+                <field name="project_id" optional="show" options="{'no_create': True}" required="1" domain="[('dev_is_software', '=', True)]" />
                 <field name="dev_history_id" optional="hide" options="{'no_create': True}" />
                 <field name="dev_assignee_id" widget="many2one_avatar_user" optional="show" options="{'no_create': True}" />
                 <field name="dev_priority" widget="priority" optional="show" />
@@ -321,7 +233,7 @@
         <field name="res_model">project.task</field>
         <field name="view_mode">kanban,tree,form,pivot,graph</field>
         <field name="search_view_id" ref="task_search" />
-        <field name="domain">[('project_id', '!=', False), ('display_in_project', '=', True)]</field>
+        <field name="domain">[('project_id.dev_is_software', '=', True), ('display_in_project', '=', True)]</field>
         <field name="context">{'dev_board': True, 'search_default_dev_current_work': 1}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">Nothing on the board yet</p>
@@ -344,7 +256,7 @@
     <record id="action_board_view_form" model="ir.actions.act_window.view">
         <field name="sequence">3</field>
         <field name="view_mode">form</field>
-        <field name="view_id" ref="task_form" />
+        <field name="view_id" ref="project.view_task_form2" />
         <field name="act_window_id" ref="action_board" />
     </record>
     <record id="action_board_view_pivot" model="ir.actions.act_window.view">
@@ -365,7 +277,7 @@
         <field name="res_model">project.task</field>
         <field name="view_mode">tree,form</field>
         <field name="search_view_id" ref="task_search" />
-        <field name="domain">[('project_id', '!=', False), ('display_in_project', '=', True), ('dev_status', '!=', 'done'), '|', ('dev_sprint_id', '=', False), ('dev_sprint_id.state', '!=', 'closed')]</field>
+        <field name="domain">[('project_id.dev_is_software', '=', True), ('display_in_project', '=', True), ('dev_status', '!=', 'done'), '|', ('dev_sprint_id', '=', False), ('dev_sprint_id.state', '!=', 'closed')]</field>
         <field name="context">{'dev_board': True, 'group_by': 'dev_sprint_id'}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">Your backlog is empty</p>
@@ -382,7 +294,7 @@
     <record id="action_backlog_view_form" model="ir.actions.act_window.view">
         <field name="sequence">2</field>
         <field name="view_mode">form</field>
-        <field name="view_id" ref="task_form" />
+        <field name="view_id" ref="project.view_task_form2" />
         <field name="act_window_id" ref="action_backlog" />
     </record>
 

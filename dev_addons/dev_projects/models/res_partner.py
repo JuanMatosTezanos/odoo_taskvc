@@ -47,7 +47,7 @@ class ResPartner(models.Model):
             users = partner.user_ids
             partner.dev_last_login = max(users.mapped('login_date'), default=False) if users else False
             if users:
-                domain = [('dev_assignee_id', 'in', users.ids)]
+                domain = [('dev_assignee_id', 'in', users.ids), ('project_id.dev_is_software', '=', True)]
                 partner.dev_issue_count = Task.search_count(domain)
                 partner.dev_open_issue_count = Task.search_count(domain + [('dev_status', '!=', 'done')])
             else:
@@ -113,9 +113,9 @@ class ResPartner(models.Model):
             'view_mode': 'kanban,tree,form',
             'views': [(self.env.ref('dev_projects.task_kanban').id, 'kanban'),
                       (self.env.ref('dev_projects.task_list').id, 'list'),
-                      (self.env.ref('dev_projects.task_form').id, 'form')],
+                      (self.env.ref('project.view_task_form2').id, 'form')],
             'search_view_id': [self.env.ref('dev_projects.task_search').id],
-            'domain': [('dev_assignee_id', 'in', self.user_ids.ids)],
+            'domain': [('dev_assignee_id', 'in', self.user_ids.ids), ('project_id.dev_is_software', '=', True)],
             'context': {'default_dev_assignee_id': self.user_ids[:1].id, 'dev_board': True},
         }
 

@@ -44,6 +44,7 @@ class ProjectTask(models.Model):
 
     dev_issue_type = fields.Selection(
         ISSUE_TYPES, string="Type", required=True, default='task', tracking=True, index=True)
+    dev_project_is_software = fields.Boolean(related='project_id.dev_is_software', string="In a Software Project")
     dev_key = fields.Char(string="Key", readonly=True, copy=False, index=True,
                           help="Project key and number, e.g. WEB-42.")
     dev_status = fields.Selection(
@@ -189,18 +190,26 @@ class ProjectTask(models.Model):
     def _dev_priority_to_star(self, dev_priority):
         return '1' if dev_priority in ('2', '3') else '0'
 
+    def _dev_software(self):
+        """The tasks of software projects. Dev behaviour (column/Done sync,
+        assignee and priority sync, keys, WIP limits) only applies to these, so
+        other teams' projects behave exactly like the plain Project app."""
+        return self.filtered(lambda t: t.project_id.dev_is_software)
+
     def _dev_prepare_vals(self, vals):
-        """Changes that can be decided from `vals` alone (same for every record)."""
-        Stage = self.env['project.task.type']
-        if vals.get('stage_id') and 'state' not in vals:
-            # A Done column marks the task done in Project too.
-            if Stage.browse(vals['stage_id']).dev_category == 'done':
-                vals['state'] = '1_done'
+        """Changes that can be decided from `vals` alone. Only the Dev screens
+        set these fields, so they are safe for every task."""
         if vals.get('dev_assignee_id'):
             vals['user_ids'] = list(vals.get('user_ids', [])) + [Command.link(vals['dev_assignee_id'])]
         if 'dev_priority' in vals and 'priority' not in vals:
             vals['priority'] = self._dev_priority_to_star(vals['dev_priority'])
         return vals
+
+    def _dev_mark_done_in_done_columns(self):
+        # A Done column marks the task done in Project too.
+        to_close = self.filtered(lambda t: t.stage_id.dev_category == 'done' and t.state not in CLOSED_STATES)
+        if to_close:
+            super(ProjectTask, to_close).write({'state': '1_done'})
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -208,8 +217,8 @@ class ProjectTask(models.Model):
         dev_context = self.env.context.get('dev_board')
         for vals in vals_list:
             if dev_context and not vals.get('project_id') and not self.env.context.get('default_project_id'):
-                # Dev Projects and only one project: use it.
-                projects = Project.search([], limit=2)
+                # Dev Projects and only one software project: use it.
+                projects = Project.search([('dev_is_software', '=', True)], limit=2)
                 if len(projects) == 1:
                     vals['project_id'] = projects.id
             project = Project.browse(vals.get('project_id') or self.env.context.get('default_project_id') or [])
@@ -221,44 +230,49 @@ class ProjectTask(models.Model):
                 vals['project_id'] = self.env['dev.history'].browse(vals['dev_history_id']).project_id.id
             self._dev_prepare_vals(vals)
         tasks = super().create(vals_list)
-        for task in tasks:
+        software = tasks._dev_software()
+        for task in software:
             if not task.dev_assignee_id and task.user_ids:
                 # Created in the Project app: first assignee is the Dev assignee.
                 task.dev_assignee_id = task.user_ids[:1]
-        tasks._dev_sync_stage_and_dates(clear=False)
-        tasks._dev_assign_keys()
-        tasks._dev_check_wip_limits()
+        software._dev_mark_done_in_done_columns()
+        software._dev_sync_stage_and_dates(clear=False)
+        software._dev_assign_keys()
+        software._dev_check_wip_limits()
         return tasks
 
     def write(self, vals):
         vals = self._dev_prepare_vals(dict(vals))
         reopen = self.env['project.task']
         if vals.get('stage_id') and 'state' not in vals:
-            # Moving a done task out of a Done column reopens it.
             stage = self.env['project.task.type'].browse(vals['stage_id'])
             if stage.dev_category != 'done':
-                # Only cards dragged out of a Done column. Otherwise keep the
+                # Cards dragged out of a Done column reopen. Otherwise keep the
                 # Project app's rule: a closed task stays closed when it changes stage.
-                reopen = self.filtered(lambda t: t.state == '1_done' and t.stage_id.dev_category == 'done')
+                reopen = self._dev_software().filtered(
+                    lambda t: t.state == '1_done' and t.stage_id.dev_category == 'done')
         res = super().write(vals)
+        software = self._dev_software()
         if reopen:
             reopen.write({'state': '01_in_progress'})
+        if vals.get('stage_id') and 'state' not in vals:
+            software._dev_mark_done_in_done_columns()
         if 'user_ids' in vals and 'dev_assignee_id' not in vals:
             # Assignees changed in the Project app: keep the Dev assignee one of them.
-            for task in self.filtered(lambda t: t.dev_assignee_id not in t.user_ids):
+            for task in software.filtered(lambda t: t.dev_assignee_id not in t.user_ids):
                 super(ProjectTask, task).write({'dev_assignee_id': task.user_ids[:1].id})
         if 'priority' in vals and 'dev_priority' not in vals:
-            for task in self:
+            for task in software:
                 if task.priority == '1' and task.dev_priority in ('0', '1'):
                     super(ProjectTask, task).write({'dev_priority': '2'})
                 elif task.priority == '0' and task.dev_priority in ('2', '3'):
                     super(ProjectTask, task).write({'dev_priority': '0'})
         if 'stage_id' in vals or 'state' in vals:
-            self._dev_sync_stage_and_dates(keep=set(vals))
+            software._dev_sync_stage_and_dates(keep=set(vals))
         if 'project_id' in vals:
-            self._dev_assign_keys()
+            software._dev_assign_keys()
         if {'stage_id', 'project_id', 'dev_sprint_id'} & set(vals):
-            self._dev_check_wip_limits()
+            software._dev_check_wip_limits()
         return res
 
     def _dev_sync_stage_and_dates(self, keep=(), clear=True):

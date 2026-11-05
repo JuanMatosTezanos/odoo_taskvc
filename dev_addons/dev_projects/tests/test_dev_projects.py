@@ -18,7 +18,7 @@ class TestDevProjects(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.Task = cls.env['project.task']
-        cls.project = cls.env['project.project'].create({'name': 'Web Shop'})
+        cls.project = cls.env['project.project'].create({'name': 'Web Shop', 'dev_is_software': True})
         cls.history = cls.env['dev.history'].create({'name': 'Login', 'project_id': cls.project.id})
         cls.sprint = cls.env['dev.sprint'].create({'name': 'S1', 'project_id': cls.project.id})
         cls.user = cls.env['res.users'].create({'name': 'Dev One', 'login': 'dev_one_test'})
@@ -46,7 +46,7 @@ class TestDevProjects(TransactionCase):
         self.assertEqual(a.display_name, '[WS-1] T')
         self.assertEqual(self.Task.search([('dev_key', '=', 'WS-2')]), b)
         self.assertIn(a.id, [r[0] for r in self.Task.name_search('WS-1')])
-        other = self.env['project.project'].create({'name': 'Api', 'dev_key': 'api'})
+        other = self.env['project.project'].create({'name': 'Api', 'dev_key': 'api', 'dev_is_software': True})
         self.assertEqual(other.dev_key, 'API')
         a.project_id = other
         self.assertEqual(a.dev_key, 'API-1', "moving project gives a key from the new project")
@@ -237,3 +237,57 @@ class TestDevProjects(TransactionCase):
         with self.assertRaises(IntegrityError), mute_logger('odoo.sql_db'):
             with self.cr.savepoint():
                 self.env['dev.technology'].create({'name': 'Zig Test'})
+
+    # Software vs regular projects --------------------------------------------
+
+    def test_regular_projects_stay_plain(self):
+        """Other teams' projects behave exactly like the plain Project app."""
+        regular = self.env['project.project'].create({'name': 'Marketing'})
+        self.assertFalse(regular.dev_is_software)
+        self.assertFalse(regular.dev_key, "no key for regular projects")
+        self.assertFalse(regular.type_ids, "no Dev board columns forced on them")
+        done_like = self.env['project.task.type'].create({
+            'name': 'Done', 'dev_category': 'done', 'project_ids': [(4, regular.id)]})
+        task = self.Task.create({'name': 'Flyer', 'project_id': regular.id})
+        self.assertFalse(task.dev_key)
+        self.assertEqual(task.display_name, 'Flyer')
+        task.stage_id = done_like
+        self.assertEqual(task.state, '01_in_progress', "Project's own rule: a stage does not close a task")
+        task.user_ids = [(6, 0, [self.user.id])]
+        self.assertFalse(task.dev_assignee_id)
+
+        # Dev Projects screens do not list it.
+        board = self.env.ref('dev_projects.action_board')
+        self.assertNotIn(task, self.Task.search(safe_eval(board.domain)))
+        dev_projects = self.env.ref('dev_projects.action_project')
+        self.assertNotIn(regular, self.env['project.project'].search(safe_eval(dev_projects.domain)))
+
+        # Ticking "Software Project" later moves it over: key, numbered tasks.
+        regular.dev_is_software = True
+        self.assertEqual(regular.dev_key, 'MARK')
+        self.assertEqual(task.dev_key, 'MARK-1')
+        self.assertIn(task, self.Task.search(safe_eval(board.domain)))
+
+    def test_project_app_hides_software_by_default(self):
+        regular = self.env['project.project'].create({'name': 'Sales Ops'})
+        Project = self.env['project.project']
+        arch = Project.get_views([(self.env.ref('project.view_project_project_filter').id, 'search')])['views']['search']['arch']
+        hide = safe_eval(etree.fromstring(arch).find(".//filter[@name='dev_hide_software']").get('domain'))
+        found = Project.search(hide)
+        self.assertIn(regular, found)
+        self.assertNotIn(self.project, found)
+        task_soft = self._issue()
+        task_regular = self.Task.create({'name': 'R', 'project_id': regular.id})
+        private = self.Task.create({'name': 'Private', 'user_ids': [(6, 0, [self.env.uid])]})
+        task_arch = self.Task.get_views([(self.env.ref('project.view_task_search_form').id, 'search')])['views']['search']['arch']
+        task_hide = safe_eval(etree.fromstring(task_arch).find(".//filter[@name='dev_hide_software']").get('domain'))
+        tasks = self.Task.search(task_hide)
+        self.assertIn(task_regular, tasks)
+        self.assertIn(private, tasks)
+        self.assertNotIn(task_soft, tasks)
+        # On by default in the Project menus, and removable (it is a filter, not a hard rule).
+        for xmlid in ('project.open_view_project_all', 'project.action_view_all_task',
+                      'project.action_view_my_task', 'project.action_project_task_user_tree'):
+            ctx = safe_eval(self.env.ref(xmlid).context, {'uid': self.env.uid})
+            self.assertEqual(ctx.get('search_default_dev_hide_software'), 1, xmlid)
+        self.assertIn(self.project, Project.search([]), "managers can still see everything")

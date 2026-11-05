@@ -22,13 +22,15 @@ class DevSprint(models.Model):
     goal = fields.Char(string="Sprint Goal", tracking=True)
     description = fields.Text()
     project_id = fields.Many2one('project.project', string="Project", required=True,
+                                 domain=[('dev_is_software', '=', True)],
                                  index=True, ondelete='cascade', tracking=True)
     active = fields.Boolean(default=True)
     # Started and completed by hand, like in Jira, instead of following the calendar.
     state = fields.Selection(SPRINT_STATES, string="Status", default='planned', required=True,
                              index=True, tracking=True, copy=False)
     start_date = fields.Datetime(tracking=True)
-    duration = fields.Integer(default=14, help="Length of the sprint in days", tracking=True)
+    duration = fields.Integer(default=lambda self: self._default_duration(),
+                              help="Length of the sprint in days", tracking=True)
     # start + duration, but set to the real end when completed early.
     end_date = fields.Datetime(compute='_compute_end_date', store=True, readonly=False, tracking=True)
 
@@ -38,6 +40,14 @@ class DevSprint(models.Model):
     planned_points = fields.Integer(string="Planned Points", compute='_compute_counts')
     done_points = fields.Integer(string="Done Points", compute='_compute_counts')
     progress = fields.Float(compute='_compute_counts', help="Percentage of finished issues")
+
+    def _default_duration(self):
+        # Settings > Project > Dev Projects > Default Sprint Length.
+        value = self.env['ir.config_parameter'].sudo().get_param('dev_projects.sprint_duration', '14')
+        try:
+            return max(int(value), 1)
+        except ValueError:
+            return 14
 
     @api.depends('start_date', 'duration')
     def _compute_end_date(self):
