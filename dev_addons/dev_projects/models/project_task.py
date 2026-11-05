@@ -129,6 +129,23 @@ class ProjectTask(models.Model):
             extra = Stage._dev_default_stages()
         return (stages | extra).sorted(lambda s: (s.sequence, s.id))
 
+    @api.model
+    def _dev_on_board(self):
+        """Opened from the Board (not the Backlog, which plans issues into sprints by hand)."""
+        ctx = self.env.context
+        return bool(ctx.get('dev_board') and not ctx.get('dev_backlog'))
+
+    @api.model
+    def default_get(self, fields_list):
+        res = super().default_get(fields_list)
+        if 'dev_sprint_id' in fields_list and not res.get('dev_sprint_id') \
+                and res.get('project_id') and self._dev_on_board():
+            # New issue on the board: the running sprint, shown in the form.
+            running = self.env['project.project'].browse(res['project_id'])._dev_running_sprint()
+            if running:
+                res['dev_sprint_id'] = running.id
+        return res
+
     @api.onchange('project_id')
     def _onchange_project_id_dev(self):
         for task in self:
@@ -136,6 +153,9 @@ class ProjectTask(models.Model):
                 task.dev_history_id = False
             if task.dev_sprint_id.project_id != task.project_id:
                 task.dev_sprint_id = False
+            if not task._origin and not task.dev_sprint_id and task.project_id and self._dev_on_board():
+                # Project picked in a new board issue: its running sprint.
+                task.dev_sprint_id = task.project_id._dev_running_sprint()
 
     @api.onchange('dev_history_id')
     def _onchange_dev_history_id(self):
@@ -169,8 +189,10 @@ class ProjectTask(models.Model):
                                         task.display_name))
 
     def _dev_check_wip_limits(self):
-        """Refuse to put more issues in a column than its WIP limit allows (per project and sprint)."""
-        groups = {(t.stage_id, t.project_id, t.dev_sprint_id) for t in self if t.stage_id.dev_wip_limit}
+        """Refuse to put more issues in a column than its WIP limit allows (per project and sprint).
+        Done columns have no limit: finished work is not work in progress."""
+        groups = {(t.stage_id, t.project_id, t.dev_sprint_id) for t in self
+                  if t.stage_id.dev_wip_limit and t.stage_id.dev_category != 'done'}
         for stage, project, sprint in groups:
             count = self.search_count([
                 ('stage_id', '=', stage.id), ('project_id', '=', project.id),
@@ -215,6 +237,8 @@ class ProjectTask(models.Model):
     def create(self, vals_list):
         Project = self.env['project.project']
         dev_context = self.env.context.get('dev_board')
+        on_board = self._dev_on_board()
+        to_backlog = []  # board issues that found no running sprint
         for vals in vals_list:
             if dev_context and not vals.get('project_id') and not self.env.context.get('default_project_id'):
                 # Dev Projects and only one software project: use it.
@@ -222,10 +246,16 @@ class ProjectTask(models.Model):
                 if len(projects) == 1:
                     vals['project_id'] = projects.id
             project = Project.browse(vals.get('project_id') or self.env.context.get('default_project_id') or [])
-            if dev_context and project and 'dev_sprint_id' not in vals \
+            if on_board and project.dev_is_software and not vals.get('dev_sprint_id') \
                     and not self.env.context.get('default_dev_sprint_id'):
-                # Created on the board: put it in the running sprint.
-                vals['dev_sprint_id'] = project._dev_running_sprint().id
+                # Created on the board: put it in the running sprint. The form
+                # already shows it as the default (see default_get); this covers
+                # quick create and code. An emptied Sprint field in the form is kept.
+                running = project._dev_running_sprint()
+                if 'dev_sprint_id' not in vals:
+                    vals['dev_sprint_id'] = running.id
+                if not running:
+                    to_backlog.append(vals.get('name') or '')
             if vals.get('dev_history_id') and not vals.get('project_id') and not project:
                 vals['project_id'] = self.env['dev.history'].browse(vals['dev_history_id']).project_id.id
             self._dev_prepare_vals(vals)
@@ -234,15 +264,58 @@ class ProjectTask(models.Model):
         for task in software:
             if not task.dev_assignee_id and task.user_ids:
                 # Created in the Project app: first assignee is the Dev assignee.
-                task.dev_assignee_id = task.user_ids[:1]
+                task.sudo().dev_assignee_id = task.user_ids[:1]
         software._dev_mark_done_in_done_columns()
         software._dev_sync_stage_and_dates(clear=False)
         software._dev_assign_keys()
         software._dev_check_wip_limits()
+        if to_backlog:
+            self._dev_notify_backlog(to_backlog)
         return tasks
+
+    def _dev_notify_backlog(self, names):
+        """Tell the user why a new board issue is not in a sprint (so it never
+        looks like it vanished): no sprint is running, so it went to the backlog."""
+        if len(names) == 1:
+            message = _("No sprint is running, so \"%s\" went to the backlog. "
+                        "Start a sprint (Sprints > Start) to work on it from the board.", names[0])
+        else:
+            message = _("No sprint is running, so %s issues went to the backlog. "
+                        "Start a sprint (Sprints > Start) to work on them from the board.", len(names))
+        self.env['bus.bus']._sendone(self.env.user.partner_id, 'simple_notification', {
+            'title': _("Added to the backlog"),
+            'message': message,
+            'type': 'info',
+            'sticky': False,
+        })
+
+    def _dev_drop_other_project_links(self, vals):
+        """Issues moving to another project leave their sprint and history behind
+        (they belong to the old project), unless `vals` sets new ones."""
+        new_project_id = vals.get('project_id') or False
+        for fname in ('dev_sprint_id', 'dev_history_id'):
+            if fname in vals:
+                continue
+            stale = self.filtered(lambda t: t[fname] and t[fname].project_id.id != new_project_id)
+            if stale:
+                super(ProjectTask, stale).write({fname: False})
+
+    def copy_data(self, default=None):
+        vals_list = super().copy_data(default)
+        default = default or {}
+        for task, vals in zip(self, vals_list):
+            # Copied into another project (e.g. duplicating a project): the
+            # sprint and history of the original project do not apply there.
+            for fname in ('dev_sprint_id', 'dev_history_id'):
+                if fname not in default and vals.get(fname) \
+                        and task[fname].project_id.id != vals.get('project_id'):
+                    vals[fname] = False
+        return vals_list
 
     def write(self, vals):
         vals = self._dev_prepare_vals(dict(vals))
+        if 'project_id' in vals:
+            self._dev_drop_other_project_links(vals)
         reopen = self.env['project.task']
         if vals.get('stage_id') and 'state' not in vals:
             stage = self.env['project.task.type'].browse(vals['stage_id'])
@@ -260,13 +333,13 @@ class ProjectTask(models.Model):
         if 'user_ids' in vals and 'dev_assignee_id' not in vals:
             # Assignees changed in the Project app: keep the Dev assignee one of them.
             for task in software.filtered(lambda t: t.dev_assignee_id not in t.user_ids):
-                super(ProjectTask, task).write({'dev_assignee_id': task.user_ids[:1].id})
+                super(ProjectTask, task.sudo()).write({'dev_assignee_id': task.user_ids[:1].id})
         if 'priority' in vals and 'dev_priority' not in vals:
             for task in software:
                 if task.priority == '1' and task.dev_priority in ('0', '1'):
-                    super(ProjectTask, task).write({'dev_priority': '2'})
+                    super(ProjectTask, task.sudo()).write({'dev_priority': '2'})
                 elif task.priority == '0' and task.dev_priority in ('2', '3'):
-                    super(ProjectTask, task).write({'dev_priority': '0'})
+                    super(ProjectTask, task.sudo()).write({'dev_priority': '0'})
         if 'stage_id' in vals or 'state' in vals:
             software._dev_sync_stage_and_dates(keep=set(vals))
         if 'project_id' in vals:
@@ -276,7 +349,11 @@ class ProjectTask(models.Model):
         return res
 
     def _dev_sync_stage_and_dates(self, keep=(), clear=True):
-        """After a stage or state change: matching column, start/end dates, pause."""
+        """After a stage or state change: matching column, start/end dates, pause.
+
+        These follow-up writes (and the key/assignee/priority syncs) use sudo:
+        they are bookkeeping, and portal users of a shared project may move
+        cards but are not allowed to write the dev_ fields themselves."""
         Stage = self.env['project.task.type']
         now = fields.Datetime.now()
         for task in self:
@@ -285,11 +362,11 @@ class ProjectTask(models.Model):
                 if task.state in CLOSED_STATES and task.stage_id.dev_category != 'done':
                     stage = Stage._dev_for_category('done', task.project_id)
                     if stage:
-                        super(ProjectTask, task).write({'stage_id': stage.id})
+                        super(ProjectTask, task.sudo()).write({'stage_id': stage.id})
                 elif task.state not in CLOSED_STATES and task.stage_id.dev_category == 'done':
                     stage = Stage._dev_for_category('in_progress', task.project_id)
                     if stage:
-                        super(ProjectTask, task).write({'stage_id': stage.id})
+                        super(ProjectTask, task.sudo()).write({'stage_id': stage.id})
             updates = {}
             status = task.dev_status
             if status != 'todo' and not task.dev_start_date and 'dev_start_date' not in keep:
@@ -301,7 +378,7 @@ class ProjectTask(models.Model):
             if status != 'in_progress' and task.dev_is_paused:
                 updates['dev_is_paused'] = False
             if updates:
-                super(ProjectTask, task).write(updates)
+                super(ProjectTask, task.sudo()).write(updates)
 
     def _dev_assign_keys(self):
         """Give each issue a key from its project (WEB-1, WEB-2...); a new one if it changes project."""
@@ -312,7 +389,7 @@ class ProjectTask(models.Model):
             if task.dev_key and task.dev_key.startswith(project.dev_key + '-'):
                 continue
             number = project.sudo()._dev_next_issue_number()
-            super(ProjectTask, task).write({'dev_key': f"{project.dev_key}-{number}"})
+            super(ProjectTask, task.sudo()).write({'dev_key': f"{project.dev_key}-{number}"})
 
     # ------------------------------------------------------------------
     # Buttons
@@ -387,11 +464,19 @@ class DevTaskComplete(models.TransientModel):
     def action_confirm(self):
         self.ensure_one()
         tasks = self.task_ids.exists()
+        software = bool(tasks._dev_software())
+        projects = tasks.project_id
         open_tasks = tasks.filtered(lambda t: t.dev_status != 'done')
         open_tasks.write({'state': '1_done'})
         if self.mode == 'archive':
             tasks.write({'active': False})
         else:
             tasks.unlink()
-        # Back to the board: the issue is gone from it (and may not exist anymore).
-        return self.env['ir.actions.act_window']._for_xml_id('dev_projects.action_board')
+        # Back to a task screen: the issue is gone from it (and may not exist
+        # anymore). The action is also in the Project app's Action menu, so
+        # regular tasks go back to the Project app, not to Dev Projects.
+        if software:
+            return self.env['ir.actions.act_window']._for_xml_id('dev_projects.action_board')
+        if len(projects) == 1:
+            return projects.action_view_tasks()
+        return self.env['ir.actions.act_window']._for_xml_id('project.action_view_all_task')

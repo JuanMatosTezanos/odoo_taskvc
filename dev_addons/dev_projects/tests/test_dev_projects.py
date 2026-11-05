@@ -100,6 +100,29 @@ class TestDevProjects(TransactionCase):
             second.stage_id = self.stage_progress
         second.dev_sprint_id = False  # other sprint (backlog): its own count
         second.stage_id = self.stage_progress
+        # Done columns are never limited: finishing work must not be blocked.
+        self.stage_done.dev_wip_limit = 1
+        a, b = self._issue(), self._issue()
+        a.action_dev_done()
+        b.action_dev_done()
+        self.assertEqual((a.dev_status, b.dev_status), ('done', 'done'))
+
+    def test_board_issue_without_running_sprint_notifies(self):
+        sent = []
+        Bus = type(self.env['bus.bus'])
+        self.patch(Bus, '_sendone', lambda bus, target, kind, payload: sent.append((target, kind, payload)))
+        Board = self.Task.with_context(dev_board=True, default_project_id=self.project.id)
+        issue = Board.create({'name': 'Lonely'})
+        self.assertFalse(issue.dev_sprint_id, "no running sprint: it goes to the backlog")
+        self.assertEqual(len(sent), 1)
+        target, kind, payload = sent[0]
+        self.assertEqual((target, kind), (self.env.user.partner_id, 'simple_notification'))
+        self.assertIn('Lonely', payload['message'])
+        self.sprint.action_start()
+        self.assertEqual(Board.create({'name': 'In sprint'}).dev_sprint_id, self.sprint)
+        self.assertEqual(len(sent), 1, "no note when the issue joins the running sprint")
+        self._issue(name='Outside the board')
+        self.assertEqual(len(sent), 1, "no note outside the board")
 
     # People ---------------------------------------------------------------
 
@@ -171,6 +194,59 @@ class TestDevProjects(TransactionCase):
             [('project_id', '=', self.project.id)], ['stage_id'], ['stage_id'])
         self.assertEqual(len(groups), 4)
 
+    def _board_ctx(self, xmlid='dev_projects.action_board', **extra):
+        ctx = safe_eval(self.env.ref(xmlid).context)
+        ctx = {k: v for k, v in ctx.items() if not k.startswith('search_default') and k != 'group_by'}
+        return dict(ctx, **extra)
+
+    def test_board_forms_use_running_sprint(self):
+        """Every way of adding an issue from the board, the way the browser does it."""
+        self.sprint.action_start()
+        Board = self.Task.with_context(**self._board_ctx(default_project_id=self.project.id))
+        form = Form(Board, view='project.view_task_form2')  # the "New" button
+        self.assertEqual(form.dev_sprint_id, self.sprint, "shown in the form before saving")
+        form.name = 'Full form'
+        self.assertEqual(form.save().dev_sprint_id, self.sprint)
+        quick = Form(Board, view='dev_projects.task_quick_create_form')
+        quick.name = 'Quick'
+        self.assertEqual(quick.save().dev_sprint_id, self.sprint)
+        # Board from the menu (all projects): picking the project fills the sprint.
+        form = Form(self.Task.with_context(**self._board_ctx()), view='project.view_task_form2')
+        form.name = 'Menu board'
+        form.project_id = self.project
+        self.assertEqual(form.save().dev_sprint_id, self.sprint)
+        # Emptying the Sprint field on purpose is respected.
+        form = Form(Board, view='project.view_task_form2')
+        form.name = 'Not now'
+        form.dev_sprint_id = self.env['dev.sprint']
+        self.assertFalse(form.save().dev_sprint_id)
+        # The Backlog plans by hand: new rows start outside any sprint.
+        for backlog_ctx in (self._board_ctx('dev_projects.action_backlog'),
+                            self.project.action_dev_backlog()['context']):
+            ctx = {k: v for k, v in backlog_ctx.items() if k != 'group_by'}
+            row = Form(self.Task.with_context(**ctx), view='dev_projects.task_backlog_list')
+            row.name = 'Backlog row'
+            row.project_id = self.project
+            self.assertFalse(row.save().dev_sprint_id)
+
+    def test_board_form_without_running_sprint_notifies(self):
+        sent = []
+        self.patch(type(self.env['bus.bus']), '_sendone', lambda bus, *args: sent.append(args))
+        form = Form(self.Task.with_context(**self._board_ctx(default_project_id=self.project.id)),
+                    view='project.view_task_form2')
+        form.name = 'Planned only'
+        self.assertFalse(form.save().dev_sprint_id)
+        self.assertEqual(len(sent), 1, "the full form also explains it went to the backlog")
+
+    def test_complete_regular_task_returns_to_project_app(self):
+        regular = self.env['project.project'].create({'name': 'Office'})
+        task = self.Task.create({'name': 'Chairs', 'project_id': regular.id})
+        wizard = self.env['dev.task.complete'].with_context(active_model='project.task', active_ids=task.ids).create({})
+        action = wizard.action_confirm()
+        self.assertEqual(action['res_model'], 'project.task')
+        self.assertNotIn('dev_board', str(action.get('context')), "stays in the Project app")
+        self.assertFalse(task.active)
+
     def test_complete_archive_and_delete(self):
         keep = self._issue(dev_story_points=2, dev_sprint_id=self.sprint.id)
         drop = self._issue()
@@ -201,6 +277,43 @@ class TestDevProjects(TransactionCase):
         issue.date_deadline = now - timedelta(days=1)
         self.assertTrue(issue.dev_is_overdue)
         self.assertIn(issue, self.Task.search([('dev_is_overdue', '=', True)]))
+
+    def test_move_and_duplicate_leave_sprint_behind(self):
+        issue = self._issue(dev_sprint_id=self.sprint.id, dev_history_id=self.history.id)
+        # Duplicating the project copies the issue without the old sprint/history.
+        copy = self.project.copy()
+        copied = copy.with_context(active_test=False).task_ids
+        self.assertEqual(len(copied), 1)
+        self.assertFalse(copied.dev_sprint_id or copied.dev_history_id)
+        self.assertTrue(copied.dev_key.startswith(copy.dev_key + '-'))
+        # Duplicating the issue in the same project keeps them.
+        same = issue.copy()
+        self.assertEqual((same.dev_sprint_id, same.dev_history_id), (self.sprint, self.history))
+        # Moving to another project from a list or mass edit (no onchange).
+        other = self.env['project.project'].create({'name': 'Mobile', 'dev_is_software': True})
+        issue.write({'project_id': other.id})
+        self.assertFalse(issue.dev_sprint_id or issue.dev_history_id)
+        self.assertTrue(issue.dev_key.startswith('MOB'))
+        # Picking a sprint of the new project in the same write keeps it.
+        target = self.env['dev.sprint'].create({'project_id': self.project.id})
+        issue.write({'project_id': self.project.id, 'dev_sprint_id': target.id})
+        self.assertEqual(issue.dev_sprint_id, target)
+
+    def test_portal_user_of_shared_project(self):
+        self.project.privacy_visibility = 'portal'
+        portal = self.env['res.users'].create({
+            'name': 'Customer', 'login': 'dev_portal_test', 'email': 'customer@example.com',
+            'groups_id': [(6, 0, [self.env.ref('base.group_portal').id])]})
+        self.project.message_subscribe(partner_ids=portal.partner_id.ids)
+        self.project.write({'collaborator_ids': [(0, 0, {'partner_id': portal.partner_id.id})]})
+        issue = self._issue()
+        as_portal = issue.with_user(portal)
+        as_portal.write({'stage_id': self.stage_progress.id})
+        self.assertEqual(issue.dev_status, 'in_progress')
+        self.assertTrue(issue.dev_start_date)
+        as_portal.write({'state': '1_done'})
+        self.assertEqual((issue.stage_id, issue.dev_status), (self.stage_done, 'done'))
+        self.assertTrue(issue.dev_end_date)
 
     # Developers -----------------------------------------------------------
 

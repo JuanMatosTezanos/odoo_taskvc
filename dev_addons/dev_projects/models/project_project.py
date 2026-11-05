@@ -179,7 +179,7 @@ class ProjectProject(models.Model):
         action = self._dev_action('dev_projects.action_backlog')
         action['domain'] = [('project_id', '=', self.id), ('dev_status', '!=', 'done'),
                             '|', ('dev_sprint_id', '=', False), ('dev_sprint_id.state', '!=', 'closed')]
-        action['context']['group_by'] = 'dev_sprint_id'
+        action['context'].update(group_by='dev_sprint_id', dev_backlog=True)
         return action
 
     def action_dev_sprints(self):

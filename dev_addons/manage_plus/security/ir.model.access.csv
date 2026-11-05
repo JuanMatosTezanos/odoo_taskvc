@@ -1,4 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_manage_stage_user,manage.stage user,model_manage_stage,base.group_user,1,1,1,1
-access_manage_sprint_complete_user,manage.sprint.complete user,model_manage_sprint_complete,base.group_user,1,1,1,1
-access_manage_task_complete_user,manage.task.complete user,model_manage_task_complete,base.group_user,1,1,1,1

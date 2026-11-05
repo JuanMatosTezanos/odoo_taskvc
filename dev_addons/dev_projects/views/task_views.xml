@@ -278,7 +278,7 @@
         <field name="view_mode">tree,form</field>
         <field name="search_view_id" ref="task_search" />
         <field name="domain">[('project_id.dev_is_software', '=', True), ('display_in_project', '=', True), ('dev_status', '!=', 'done'), '|', ('dev_sprint_id', '=', False), ('dev_sprint_id.state', '!=', 'closed')]</field>
-        <field name="context">{'dev_board': True, 'group_by': 'dev_sprint_id'}</field>
+        <field name="context">{'dev_board': True, 'dev_backlog': True, 'group_by': 'dev_sprint_id'}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">Your backlog is empty</p>
             <p>Add issues here, drag them to rank them, and pick a sprint in the Sprint column to plan it.

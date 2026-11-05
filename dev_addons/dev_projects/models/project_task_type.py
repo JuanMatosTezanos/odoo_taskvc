@@ -20,7 +20,8 @@ class ProjectTaskType(models.Model):
              "(also in the Project app), an 'In Progress' one gets its start date.")
     dev_wip_limit = fields.Integer(
         string="WIP Limit",
-        help="Maximum number of issues of one project and sprint in this column. 0 means no limit.")
+        help="Maximum number of issues of one project and sprint in this column. 0 means no limit. "
+             "Not applied to Done columns.")
 
     @api.model
     def _dev_guess_category(self, name):
