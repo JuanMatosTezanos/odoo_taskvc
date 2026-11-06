@@ -101,7 +101,7 @@ class TestScreens(TransactionCase):
 
     def test_every_dev_menu_opens(self):
         opened = self._open_menus('dev_projects.menu_root')
-        for expected in ('Board', 'Backlog', 'Projects', 'Milestones', 'Sprints', 'My Developer Profile',
+        for expected in ('Board', 'Backlog', 'Projects', 'Milestones', 'Sprints', 'Modules', 'My Developer Profile',
                          'Developers', 'Technologies', 'Board Columns'):
             self.assertIn(expected, opened)
 
@@ -117,7 +117,7 @@ class TestScreens(TransactionCase):
 
     def test_buttons_open_screens(self):
         for method in ('action_dev_board', 'action_dev_open_issues', 'action_dev_bugs',
-                       'action_dev_backlog', 'action_dev_sprints', 'action_dev_milestones'):
+                       'action_dev_backlog', 'action_dev_sprints', 'action_dev_milestones', 'action_dev_modules'):
             with self.subTest(button=method):
                 self._open_action(getattr(self.project, method)())
         self._open_action(self.sprint.action_view_issues())
@@ -135,6 +135,10 @@ class TestScreens(TransactionCase):
         with Form(self.env['project.milestone'], view='dev_projects.milestone_form') as f:
             f.name = 'Form goal'
             f.project_id = project
+        with Form(self.env['dev.module']) as f:
+            f.name = 'Form module'
+            f.project_id = project
+            f.lead_id = self.env.user
         with Form(self.env['dev.sprint']) as f:
             f.project_id = project
         self.assertEqual((f.record.state, f.record.name), ('planned', 'Sprint 1'))
@@ -200,6 +204,10 @@ class TestScreens(TransactionCase):
                       'project.menu_project_report', 'project.menu_project_config'):
             self.assertEqual(self.env.ref(xmlid).parent_id, project_section, xmlid)
         self.assertEqual(self.env.ref('dev_projects.menu_root').parent_id, app)
+        self.assertEqual(self.env.ref('dev_projects.menu_root').child_id.mapped('name'),
+                         ['Planning', 'Work', 'Team', 'Configuration'])
+        self.assertEqual(self.env.ref('dev_projects.menu_planning').child_id.mapped('name'),
+                         ['Projects', 'Milestones', 'Sprints', 'Modules'])
         self.assertEqual(self.env['ir.ui.menu'].search_count([('name', '=', 'Dev Projects'), ('parent_id', '=', False)]), 0,
                          "no separate Dev Projects app")
         # Dev Projects > Configuration has Project's settings and configuration too.

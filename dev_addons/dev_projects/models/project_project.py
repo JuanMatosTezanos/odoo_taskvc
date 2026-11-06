@@ -26,6 +26,7 @@ class ProjectProject(models.Model):
         help="Link to the project's code, e.g. https://github.com/company/project")
 
     dev_sprint_ids = fields.One2many('dev.sprint', 'project_id', string="Sprints")
+    dev_module_ids = fields.One2many('dev.module', 'project_id', string="Modules")
     dev_running_sprint_id = fields.Many2one(
         'dev.sprint', string="Running Sprint", compute='_compute_dev_running_sprint')
     dev_open_issue_count = fields.Integer(string="Open Issues", compute='_compute_dev_counts')
@@ -147,6 +148,13 @@ class ProjectProject(models.Model):
             self.env['project.task'].with_context(active_test=False).search(
                 [('project_id', '=', project.id), ('dev_key', '=', False)], order='id')._dev_assign_keys()
 
+    def map_tasks(self, new_project_id):
+        # Duplicating a project: copy its modules first, so the copied issues
+        # can point to the copies (see project.task copy_data).
+        mapping = {module.id: module.copy({'project_id': new_project_id}).id
+                   for module in self.with_context(active_test=False).dev_module_ids}
+        return super(ProjectProject, self.with_context(dev_module_mapping=mapping)).map_tasks(new_project_id)
+
     def _dev_next_issue_number(self):
         """Reserve the next issue number; one SQL update so two users never get the same."""
         self.ensure_one()
@@ -196,3 +204,6 @@ class ProjectProject(models.Model):
 
     def action_dev_milestones(self):
         return self._dev_action('dev_projects.action_milestone')
+
+    def action_dev_modules(self):
+        return self._dev_action('dev_projects.action_module')

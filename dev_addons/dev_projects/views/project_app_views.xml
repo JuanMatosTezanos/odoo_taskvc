@@ -46,6 +46,8 @@
                 <field name="dev_sprint_id" options="{'no_create': True}" invisible="not dev_project_is_software" readonly="dev_status == 'done'" />
                 <field name="dev_story_points" invisible="not dev_project_is_software" />
                 <field name="dev_priority" widget="priority" invisible="not dev_project_is_software" />
+                <field name="dev_module_id" invisible="not dev_project_is_software"
+                       context="{'default_project_id': project_id}" options="{'no_create_edit': True}" />
                 <field name="dev_severity" invisible="dev_issue_type != 'bug' or not dev_project_is_software" required="dev_issue_type == 'bug' and dev_project_is_software" widget="badge" decoration-danger="dev_severity in ('critical', 'blocker')" decoration-warning="dev_severity == 'major'" />
             </xpath>
             <xpath expr="//notebook/page[@name='description_page']" position="after">

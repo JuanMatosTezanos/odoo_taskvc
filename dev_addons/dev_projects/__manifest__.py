@@ -13,6 +13,7 @@ Project app, so you can switch between the two:
 * Board columns are project stages with a status category and a WIP limit.
 * One assignee (kept in the task's assignees) and a reporter per issue.
 * Milestones (goals with a deadline) that group sprints and issues.
+* Modules (parts of the software, e.g. Login) to classify issues.
 * A GitHub repository link per project.
 * Technologies, and developer profiles with access codes.
 * Complete an issue to archive or delete it.
@@ -20,7 +21,7 @@ Project app, so you can switch between the two:
     'author': "My Company",
     'website': "https://www.yourcompany.com",
     'category': 'Services/Project',
-    'version': '17.0.1.1.0',
+    'version': '17.0.1.2.0',
     'license': 'LGPL-3',
     'application': True,
     'depends': ['project', 'mail'],
@@ -31,6 +32,7 @@ Project app, so you can switch between the two:
         'views/task_views.xml',
         'views/sprint_views.xml',
         'views/milestone_views.xml',
+        'views/module_views.xml',
         'views/project_views.xml',
         'views/technology_views.xml',
         'views/developer_views.xml',

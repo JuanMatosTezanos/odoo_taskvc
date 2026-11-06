@@ -55,8 +55,14 @@ Dev Projects añade claves de incidencia (`WEB-1`, `WEB-2`…), tipos de inciden
 
 **Proyectos**
 - Un enlace **GitHub Repository** en cada proyecto de software.
-- El formulario del proyecto tiene las pestañas **Development | Milestones | Sprints | Description | Settings**. Milestones y Sprints solo aparecen en los proyectos de software.
+- El formulario del proyecto tiene las pestañas **Development | Milestones | Sprints | Modules | Description | Settings**. Milestones, Sprints y Modules solo aparecen en los proyectos de software.
 - Los proyectos de software llaman a sus tareas **Issues** y ocultan los campos "Name of the Tasks" y Tags de Odoo.
+
+**Módulos (Modules)**
+- Los módulos son las partes de tu software, p. ej. *Login*, *Payments*, *Camera*. Cada proyecto tiene su propia lista.
+- Elige uno en el campo **Module** de una incidencia (debajo de Dev Priority). Si escribes un nombre nuevo, te ofrece crearlo en el momento.
+- Cada módulo tiene un **Lead** (responsable) opcional y muestra sus incidencias, incidencias abiertas, bugs abiertos y tecnologías usadas. Las tarjetas del Board, las listas de incidencias y el Backlog muestran el módulo, y puedes filtrar o agrupar por él.
+- Al duplicar un proyecto también se copian sus módulos.
 
 **Tecnologías y desarrolladores**
 - Las tecnologías obtienen su logo automáticamente de una carpeta de imágenes (`Docker` → `Docker.png`).
@@ -73,8 +79,8 @@ Tras la instalación, la pantalla de inicio muestra una sola app **Projects** co
 
 ```
 Projects  |  Project ▾          |  Dev Projects ▾
-          |  Menús propios de   |  Work:     Board, Backlog
-          |  Odoo, sin cambios  |  Planning: Projects, Milestones, Sprints
+          |  Menús propios de   |  Planning: Projects, Milestones, Sprints, Modules
+          |  Odoo, sin cambios  |  Work:     Board, Backlog
           |                     |  Team:     My Developer Profile, Developers, Technologies
           |                     |  Configuration
 ```
@@ -215,6 +221,7 @@ odoo_taskvc/
         │   ├── project_task_type.py   Columnas del tablero: categoría de estado, límite WIP
         │   ├── dev_sprint.py          Sprints y el asistente Complete Sprint
         │   ├── project_milestone.py   Milestones: progreso, sprints, Complete
+        │   ├── dev_module.py          Módulos: partes del software que clasifican incidencias
         │   ├── dev_technology.py      Tecnologías y carga de logos
         │   ├── res_partner.py         Perfiles de desarrollador y códigos de acceso
         │   └── res_config_settings.py Ajustes
@@ -231,7 +238,7 @@ odoo_taskvc/
 
 ## Desinstalar
 
-Al desinstalar Dev Projects desde *Apps*, la app Project vuelve a quedar como la entrega Odoo: menús originales y sin filtro por defecto. Tus proyectos y tareas se conservan. Solo se eliminan los campos de Dev, los sprints y las tecnologías. Los milestones se conservan, porque pertenecen a la app Project de Odoo.
+Al desinstalar Dev Projects desde *Apps*, la app Project vuelve a quedar como la entrega Odoo: menús originales y sin filtro por defecto. Tus proyectos y tareas se conservan. Solo se eliminan los campos de Dev, los sprints, los módulos y las tecnologías. Los milestones se conservan, porque pertenecen a la app Project de Odoo.
 
 ---
 

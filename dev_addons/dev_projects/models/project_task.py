@@ -55,6 +55,10 @@ class ProjectTask(models.Model):
     dev_sprint_id = fields.Many2one(
         'dev.sprint', string="Sprint", index=True, tracking=True, ondelete='set null',
         domain="[('project_id', '=', project_id), ('state', '!=', 'closed')]")
+    dev_module_id = fields.Many2one(
+        'dev.module', string="Module", index=True, tracking=True, ondelete='set null',
+        domain="[('project_id', '=', project_id)]",
+        help="The part of the software this issue is about, e.g. Login or Payments.")
     dev_assignee_id = fields.Many2one(
         'res.users', string="Assignee", index=True, tracking=True,
         domain="[('share', '=', False), ('active', '=', True)]",
@@ -151,6 +155,8 @@ class ProjectTask(models.Model):
         for task in self:
             if task.dev_sprint_id.project_id != task.project_id:
                 task.dev_sprint_id = False
+            if task.dev_module_id.project_id != task.project_id:
+                task.dev_module_id = False
             if not task._origin and not task.dev_sprint_id and task.project_id and self._dev_on_board():
                 # Project picked in a new board issue: its running sprint.
                 task.dev_sprint_id = task.project_id._dev_running_sprint()
@@ -165,10 +171,10 @@ class ProjectTask(models.Model):
     # Constraints
     # ------------------------------------------------------------------
 
-    @api.constrains('project_id', 'milestone_id', 'dev_sprint_id')
+    @api.constrains('project_id', 'milestone_id', 'dev_sprint_id', 'dev_module_id')
     def _check_dev_project_consistency(self):
         for task in self:
-            records = [(task.dev_sprint_id, _("sprint"))]
+            records = [(task.dev_sprint_id, _("sprint")), (task.dev_module_id, _("module"))]
             if task.project_id.dev_is_software:
                 # Regular projects keep Odoo's own (looser) milestone rules.
                 records.append((task.milestone_id, _("milestone")))
@@ -297,26 +303,30 @@ class ProjectTask(models.Model):
             super(ProjectTask, task.sudo()).write({'milestone_id': task.dev_sprint_id.milestone_id.id})
 
     def _dev_drop_other_project_links(self, vals):
-        """Issues moving to another project leave their sprint behind (it belongs
-        to the old project), unless `vals` sets a new one. Odoo already does
-        the same for the milestone."""
+        """Issues moving to another project leave their sprint and module behind
+        (they belong to the old project), unless `vals` sets new ones. Odoo
+        already does the same for the milestone."""
         new_project_id = vals.get('project_id') or False
-        if 'dev_sprint_id' not in vals:
-            stale = self.filtered(lambda t: t.dev_sprint_id and t.dev_sprint_id.project_id.id != new_project_id)
+        for fname in ('dev_sprint_id', 'dev_module_id'):
+            if fname in vals:
+                continue
+            stale = self.filtered(lambda t: t[fname] and t[fname].project_id.id != new_project_id)
             if stale:
-                super(ProjectTask, stale).write({'dev_sprint_id': False})
+                super(ProjectTask, stale).write({fname: False})
 
     def copy_data(self, default=None):
         vals_list = super().copy_data(default)
         default = default or {}
-        # Duplicating a project copies its milestones first: point to the copies.
-        mapping = self.env.context.get('milestone_mapping') or {}
+        # Duplicating a project copies its milestones and modules first: point to the copies.
+        mappings = {'milestone_id': self.env.context.get('milestone_mapping') or {},
+                    'dev_module_id': self.env.context.get('dev_module_mapping') or {}}
         for vals in vals_list:
-            if vals.get('milestone_id') and 'milestone_id' not in default:
-                vals['milestone_id'] = mapping.get(vals['milestone_id'], vals['milestone_id'])
-            # Copied into another project: the old project's sprint and
-            # milestone do not apply there.
-            for fname in ('dev_sprint_id', 'milestone_id'):
+            for fname, mapping in mappings.items():
+                if vals.get(fname) and fname not in default:
+                    vals[fname] = mapping.get(vals[fname], vals[fname])
+            # Copied into another project: the old project's sprint, milestone
+            # and module do not apply there.
+            for fname in ('dev_sprint_id', 'milestone_id', 'dev_module_id'):
                 if fname not in default and vals.get(fname):
                     record = self.env[self._fields[fname].comodel_name].browse(vals[fname])
                     if record.project_id.id != vals.get('project_id'):

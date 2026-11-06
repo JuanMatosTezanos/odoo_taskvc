@@ -355,6 +355,54 @@ class TestDevProjects(TransactionCase):
                 line.name = 'From the project tab'
         self.assertIn('From the project tab', self.project.milestone_ids.mapped('name'))
 
+    # Modules --------------------------------------------------------------
+
+    def test_modules(self):
+        Module = self.env['dev.module']
+        login = Module.create({'name': 'Login', 'project_id': self.project.id, 'lead_id': self.user.id})
+        bug = self._issue(dev_module_id=login.id, dev_issue_type='bug')
+        done = self._issue(dev_module_id=login.id)
+        done.action_dev_done()
+        self.assertEqual((login.issue_count, login.open_count, login.bug_count), (2, 1, 1))
+        self.assertEqual(self.Task.search(login.action_view_issues()['domain']), bug | done)
+        # Shown on the issue form; a new name can be created right there.
+        form = Form(self.Task.with_context(default_project_id=self.project.id), view='project.view_task_form2')
+        form.name = 'Camera crash'
+        module_id, _name = Module.with_context(default_project_id=self.project.id).name_create('Camera')
+        form.dev_module_id = Module.browse(module_id)
+        issue = form.save()
+        self.assertEqual((issue.dev_module_id.name, issue.dev_module_id.project_id), ('Camera', self.project))
+        # Same name twice in one project is refused; another project may reuse it.
+        with self.assertRaises(IntegrityError), mute_logger('odoo.sql_db'):
+            with self.cr.savepoint():
+                Module.create({'name': 'Login', 'project_id': self.project.id})
+        other = self.env['project.project'].create({'name': 'Mobile', 'dev_is_software': True})
+        Module.create({'name': 'Login', 'project_id': other.id})
+        # A module of another project is refused, and moving the issue drops it.
+        with self.assertRaises(ValidationError):
+            self._issue(project_id=other.id, dev_module_id=login.id)
+        bug.write({'project_id': other.id})
+        self.assertFalse(bug.dev_module_id)
+
+    def test_project_modules_tab(self):
+        with Form(self.project) as form:
+            with form.dev_module_ids.new() as line:
+                line.name = 'UI'
+        self.assertEqual(self.project.dev_module_ids.mapped('name'), ['UI'])
+        # Odoo's "Tasks" button is hidden on software projects ("Open Issues" replaces it).
+        arch = self.env['project.project'].get_views([(False, 'form')])['views']['form']['arch']
+        button = etree.fromstring(arch).find(".//button[@name='action_view_tasks']")
+        self.assertEqual(button.get('invisible'), 'dev_is_software')
+
+    def test_duplicate_project_copies_modules(self):
+        login = self.env['dev.module'].create({'name': 'Login', 'project_id': self.project.id})
+        self._issue(dev_module_id=login.id)
+        copy = self.project.copy()
+        self.assertEqual(copy.dev_module_ids.mapped('name'), ['Login'])
+        copied = copy.with_context(active_test=False).task_ids
+        self.assertEqual(copied.dev_module_id, copy.dev_module_ids, "points to the copied module")
+        self.assertEqual(login.issue_count, 1, "the original keeps its issue")
+
     # Checks ---------------------------------------------------------------
 
     def test_consistency_and_dates(self):

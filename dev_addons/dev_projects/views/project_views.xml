@@ -16,6 +16,10 @@
                     <field name="dev_open_issue_count" widget="statinfo" string="Open Issues" />
                 </button>
             </xpath>
+            <!-- Odoo's "Tasks" button: software projects use "Open Issues" instead. -->
+            <xpath expr="//button[@name='action_view_tasks']" position="attributes">
+                <attribute name="invisible">dev_is_software</attribute>
+            </xpath>
             <!-- Software projects call their tasks "Issues" and don't use tags. -->
             <field name="label_tasks" position="attributes">
                 <attribute name="invisible">dev_is_software</attribute>
@@ -23,8 +27,8 @@
             <field name="tag_ids" position="attributes">
                 <attribute name="invisible">dev_is_software</attribute>
             </field>
-            <!-- Tabs: Development | Milestones | Sprints | Description | Settings.
-                 Milestones and Sprints only show on software projects. -->
+            <!-- Tabs: Development | Milestones | Sprints | Modules | Description | Settings.
+                 Milestones, Sprints and Modules only show on software projects. -->
             <xpath expr="//notebook/page[@name='description']" position="before">
                 <page name="dev" string="Development">
                     <group>
@@ -64,6 +68,19 @@
                             <field name="end_date" />
                             <field name="progress" widget="progressbar" />
                             <field name="state" widget="badge" decoration-success="state == 'running'" decoration-info="state == 'planned'" />
+                        </tree>
+                    </field>
+                </page>
+                <page name="dev_modules" string="Modules" invisible="not dev_is_software">
+                    <field name="dev_module_ids" context="{'default_project_id': id}">
+                        <tree editable="bottom">
+                            <field name="sequence" widget="handle" />
+                            <field name="name" placeholder="e.g. Login" />
+                            <field name="lead_id" widget="many2one_avatar_user" options="{'no_create': True}" />
+                            <field name="issue_count" string="Issues" />
+                            <field name="open_count" string="Open" />
+                            <field name="bug_count" string="Open Bugs" />
+                            <button name="action_view_issues" type="object" string="View Issues" class="btn-link" invisible="not id" />
                         </tree>
                     </field>
                 </page>

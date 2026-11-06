@@ -57,8 +57,14 @@ Dev Projects adds issue keys (`WEB-1`, `WEB-2`…), issue types, a board with WI
 
 **Projects**
 - A **GitHub Repository** link on each software project.
-- The project form has the tabs **Development | Milestones | Sprints | Description | Settings**. Milestones and Sprints only appear on software projects.
+- The project form has the tabs **Development | Milestones | Sprints | Modules | Description | Settings**. Milestones, Sprints and Modules only appear on software projects.
 - Software projects call their tasks **Issues**, and hide Odoo's "Name of the Tasks" and Tags fields.
+
+**Modules**
+- Modules are the parts of your software, e.g. *Login*, *Payments*, *Camera*. Each project has its own list.
+- Pick one in the **Module** field of an issue (under Dev Priority). Typing a new name offers to create it on the spot.
+- Each module has an optional **Lead** and shows its issues, open issues, open bugs and technologies used. The Board cards, issue lists and Backlog show the module, and you can filter or group by it.
+- Duplicating a project copies its modules too.
 
 **Technologies and developers**
 - Technologies get their logo automatically from an image folder (`Docker` → `Docker.png`).
@@ -75,8 +81,8 @@ After installing, the home screen shows one **Projects** app with two menus:
 
 ```
 Projects  |  Project ▾          |  Dev Projects ▾
-          |  Odoo's own menus,  |  Work:     Board, Backlog
-          |  unchanged          |  Planning: Projects, Milestones, Sprints
+          |  Odoo's own menus,  |  Planning: Projects, Milestones, Sprints, Modules
+          |  unchanged          |  Work:     Board, Backlog
           |                     |  Team:     My Developer Profile, Developers, Technologies
           |                     |  Configuration
 ```
@@ -217,6 +223,7 @@ odoo_taskvc/
         │   ├── project_task_type.py   Board columns: status category, WIP limit
         │   ├── dev_sprint.py          Sprints and the Complete Sprint wizard
         │   ├── project_milestone.py   Milestones: progress, sprints, Complete
+        │   ├── dev_module.py          Modules: parts of the software that classify issues
         │   ├── dev_technology.py      Technologies and logo loading
         │   ├── res_partner.py         Developer profiles and access codes
         │   └── res_config_settings.py Settings
@@ -233,7 +240,7 @@ odoo_taskvc/
 
 ## Uninstalling
 
-Uninstalling Dev Projects from *Apps* puts the Project app back the way Odoo ships it: original menus, no default filter. Your projects and tasks stay. Only the Dev fields, sprints and technologies are removed. Milestones stay, because they belong to Odoo's Project app.
+Uninstalling Dev Projects from *Apps* puts the Project app back the way Odoo ships it: original menus, no default filter. Your projects and tasks stay. Only the Dev fields, sprints, modules and technologies are removed. Milestones stay, because they belong to Odoo's Project app.
 
 ---
 
