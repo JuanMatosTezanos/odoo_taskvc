@@ -19,7 +19,7 @@ class TestDevProjects(TransactionCase):
         super().setUpClass()
         cls.Task = cls.env['project.task']
         cls.project = cls.env['project.project'].create({'name': 'Web Shop', 'dev_is_software': True})
-        cls.history = cls.env['dev.history'].create({'name': 'Login', 'project_id': cls.project.id})
+        cls.milestone = cls.env['project.milestone'].create({'name': 'Login', 'project_id': cls.project.id})
         cls.sprint = cls.env['dev.sprint'].create({'name': 'S1', 'project_id': cls.project.id})
         cls.user = cls.env['res.users'].create({'name': 'Dev One', 'login': 'dev_one_test'})
         cls.user2 = cls.env['res.users'].create({'name': 'Dev Two', 'login': 'dev_two_test'})
@@ -263,14 +263,108 @@ class TestDevProjects(TransactionCase):
         self.assertEqual(self.project.dev_open_issue_count, 0)
         self.assertEqual((self.sprint.done_points, self.sprint.progress), (2, 100.0), "archived work still counts")
 
+    # Milestones -------------------------------------------------------------
+
+    def test_software_project_setup(self):
+        """Software projects: milestones on, tasks called Issues, a repository link."""
+        self.assertTrue(self.project.allow_milestones)
+        self.assertEqual(self.project.label_tasks, 'Issues')
+        self.assertTrue(self.env.user.has_group('project.group_project_milestone'))
+        self.project.dev_repository_url = 'https://github.com/company/web-shop'
+        regular = self.env['project.project'].create({'name': 'Picnic', 'label_tasks': 'Chores'})
+        self.assertEqual(regular.label_tasks, 'Chores', "regular projects keep their own label")
+        regular.dev_is_software = True
+        self.assertEqual((regular.label_tasks, regular.allow_milestones), ('Issues', True))
+        # The form hides "Name of the Tasks" and Tags on software projects only.
+        with Form(self.project) as form:
+            self.assertTrue(form._get_modifier('label_tasks', 'invisible'))
+            self.assertTrue(form._get_modifier('tag_ids', 'invisible'))
+        with Form(self.env['project.project'].create({'name': 'Garden'})) as form:
+            self.assertFalse(form._get_modifier('label_tasks', 'invisible'))
+            self.assertFalse(form._get_modifier('tag_ids', 'invisible'))
+
+    def test_sprint_issues_join_its_milestone(self):
+        self.sprint.milestone_id = self.milestone
+        # Created in the sprint (code, quick create, the sprint's issue list, the form).
+        a = self._issue(dev_sprint_id=self.sprint.id)
+        self.assertEqual(a.milestone_id, self.milestone)
+        form = Form(self.Task.with_context(default_project_id=self.project.id, default_dev_sprint_id=self.sprint.id),
+                    view='project.view_task_form2')
+        self.assertEqual(form.milestone_id, self.milestone, "shown in the form before saving")
+        form.name = 'From the sprint'
+        self.assertEqual(form.save().milestone_id, self.milestone)
+        # Planned into the sprint later (backlog), or picked in the form.
+        b = self._issue()
+        b.dev_sprint_id = self.sprint
+        self.assertEqual(b.milestone_id, self.milestone)
+        form = Form(self._issue(), view='project.view_task_form2')
+        form.dev_sprint_id = self.sprint
+        self.assertEqual(form.milestone_id, self.milestone)
+        # An issue that already has a milestone keeps it.
+        other_goal = self.env['project.milestone'].create({'name': 'Payments', 'project_id': self.project.id})
+        c = self._issue(milestone_id=other_goal.id)
+        c.dev_sprint_id = self.sprint
+        self.assertEqual(c.milestone_id, other_goal)
+        # Linking a sprint to a milestone later fills its issues without one.
+        later = self.env['dev.sprint'].create({'project_id': self.project.id})
+        d = self._issue(dev_sprint_id=later.id)
+        later.milestone_id = other_goal
+        self.assertEqual(d.milestone_id, other_goal)
+        self.assertEqual(self.milestone.dev_sprint_ids, self.sprint)
+
+    def test_milestone_progress_and_complete(self):
+        self.sprint.milestone_id = self.milestone
+        done = self._issue(milestone_id=self.milestone.id, dev_story_points=3, dev_issue_type='bug')
+        self._issue(milestone_id=self.milestone.id, dev_story_points=5)
+        done.action_dev_done()
+        m = self.milestone
+        self.assertEqual((m.dev_issue_count, m.dev_done_count, m.dev_open_count), (2, 1, 1))
+        self.assertEqual((m.dev_planned_points, m.dev_done_points, m.dev_bug_count), (8, 3, 1))
+        self.assertEqual((m.dev_progress, m.dev_sprint_count), (50.0, 1))
+        # Completed (archived) issues still count as done work.
+        action = done.action_dev_open_complete_wizard()
+        Form(self.env[action['res_model']].with_context(**action['context'])).save().action_confirm()
+        m.invalidate_recordset()
+        self.assertEqual((m.dev_issue_count, m.dev_done_count), (2, 1))
+        m.action_dev_complete()
+        self.assertTrue(m.is_reached)
+        self.assertTrue(m.reached_date)
+        m.action_dev_reopen()
+        self.assertFalse(m.is_reached)
+        # Its buttons open the board and the sprints, filtered on it.
+        board = m.action_dev_view_issues()
+        self.assertEqual(self.Task.search(board['domain']), m.task_ids)
+        self.assertEqual(board['context']['default_milestone_id'], m.id)
+        sprints = m.action_dev_view_sprints()
+        self.assertEqual(self.env['dev.sprint'].search(sprints['domain']), self.sprint)
+
+    def test_milestone_forms(self):
+        with Form(self.env['project.milestone'].with_context(default_project_id=self.project.id),
+                  view='dev_projects.milestone_form') as form:
+            form.name = 'Beta launch'
+            form.deadline = fields.Date.today() - timedelta(days=1)
+        milestone = form.record
+        self.assertTrue(milestone.is_deadline_exceeded, "late: shown in red with a Late ribbon")
+        with Form(self.env['dev.sprint']) as form:
+            form.project_id = self.project
+            form.milestone_id = milestone
+        self.assertEqual(form.record.milestone_id, milestone)
+        # The project form's Milestones tab.
+        with Form(self.project) as form:
+            with form.milestone_ids.new() as line:
+                line.name = 'From the project tab'
+        self.assertIn('From the project tab', self.project.milestone_ids.mapped('name'))
+
     # Checks ---------------------------------------------------------------
 
     def test_consistency_and_dates(self):
-        other = self.env['project.project'].create({'name': 'Other'})
+        other = self.env['project.project'].create({'name': 'Other', 'dev_is_software': True})
         with self.assertRaises(ValidationError):
-            self._issue(project_id=other.id, dev_history_id=self.history.id)
-        issue = self._issue(dev_history_id=self.history.id)
-        self.assertEqual(self.history.task_count, 1)
+            self._issue(project_id=other.id, milestone_id=self.milestone.id)
+        with self.assertRaises(ValidationError):
+            self.env['dev.sprint'].create({'project_id': other.id, 'milestone_id': self.milestone.id})
+        issue = self._issue(milestone_id=self.milestone.id)
+        self.assertEqual(self.milestone.dev_issue_count, 1)
         now = fields.Datetime.now()
         with self.assertRaises(ValidationError):
             issue.write({'dev_start_date': now, 'dev_end_date': now - timedelta(days=1)})
@@ -279,20 +373,26 @@ class TestDevProjects(TransactionCase):
         self.assertIn(issue, self.Task.search([('dev_is_overdue', '=', True)]))
 
     def test_move_and_duplicate_leave_sprint_behind(self):
-        issue = self._issue(dev_sprint_id=self.sprint.id, dev_history_id=self.history.id)
-        # Duplicating the project copies the issue without the old sprint/history.
+        issue = self._issue(dev_sprint_id=self.sprint.id, milestone_id=self.milestone.id)
+        # Duplicating the project copies the milestones too (Odoo does that) and
+        # points the copied issue to the copied milestone; the sprint stays behind.
         copy = self.project.copy()
         copied = copy.with_context(active_test=False).task_ids
         self.assertEqual(len(copied), 1)
-        self.assertFalse(copied.dev_sprint_id or copied.dev_history_id)
+        self.assertFalse(copied.dev_sprint_id)
+        self.assertEqual(copied.milestone_id.project_id, copy)
+        self.assertEqual(copied.milestone_id.name, 'Login')
         self.assertTrue(copied.dev_key.startswith(copy.dev_key + '-'))
         # Duplicating the issue in the same project keeps them.
         same = issue.copy()
-        self.assertEqual((same.dev_sprint_id, same.dev_history_id), (self.sprint, self.history))
-        # Moving to another project from a list or mass edit (no onchange).
+        self.assertEqual((same.dev_sprint_id, same.milestone_id), (self.sprint, self.milestone))
+        # Duplicating it into another project drops them.
         other = self.env['project.project'].create({'name': 'Mobile', 'dev_is_software': True})
+        elsewhere = issue.copy({'project_id': other.id})
+        self.assertFalse(elsewhere.dev_sprint_id or elsewhere.milestone_id)
+        # Moving to another project from a list or mass edit (no onchange).
         issue.write({'project_id': other.id})
-        self.assertFalse(issue.dev_sprint_id or issue.dev_history_id)
+        self.assertFalse(issue.dev_sprint_id or issue.milestone_id)
         self.assertTrue(issue.dev_key.startswith('MOB'))
         # Picking a sprint of the new project in the same write keeps it.
         target = self.env['dev.sprint'].create({'project_id': self.project.id})
@@ -371,9 +471,9 @@ class TestDevProjects(TransactionCase):
     def test_technology(self):
         tech = self.env['dev.technology'].create({'name': 'Zig Test'})
         issue = self._issue(dev_issue_type='bug', dev_technology_ids=[(6, 0, tech.ids)],
-                            dev_history_id=self.history.id)
+                            milestone_id=self.milestone.id)
         self.assertEqual((tech.task_count, tech.bug_count), (1, 1))
-        self.assertEqual(self.history.used_technology_ids, tech)
+        self.assertEqual(self.milestone.dev_technology_ids, tech)
         self.assertEqual(issue.dev_severity, 'minor')
         with self.assertRaises(IntegrityError), mute_logger('odoo.sql_db'):
             with self.cr.savepoint():

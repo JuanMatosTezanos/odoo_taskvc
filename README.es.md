@@ -2,7 +2,7 @@
 
 Gestión de proyectos de software al estilo Jira, construida sobre la app **Project** de Odoo.
 
-Dev Projects añade claves de incidencia (`WEB-1`, `WEB-2`…), tipos de incidencia, un tablero con límites WIP, un backlog ordenado, sprints que se inician y se completan a mano, épicas ("histories"), tecnologías y perfiles de desarrollador. Trabaja sobre **los mismos proyectos y tareas** que la app Project. Una incidencia es una tarea normal de Odoo con campos extra, así que puedes cambiar entre las dos apps en cualquier momento.
+Dev Projects añade claves de incidencia (`WEB-1`, `WEB-2`…), tipos de incidencia, un tablero con límites WIP, un backlog ordenado, sprints que se inician y se completan a mano, milestones (hitos), tecnologías y perfiles de desarrollador. Trabaja sobre **los mismos proyectos y tareas** que la app Project. Una incidencia es una tarea normal de Odoo con campos extra, así que puedes cambiar entre las dos apps en cualquier momento.
 
 ---
 
@@ -41,8 +41,24 @@ Dev Projects añade claves de incidencia (`WEB-1`, `WEB-2`…), tipos de inciden
 - Al completar un sprint, las incidencias sin terminar pasan al siguiente sprint o vuelven al backlog.
 - Progreso del sprint, puntos planificados y puntos completados.
 
-**Historias, tecnologías y desarrolladores**
-- Las historias (épicas) agrupan incidencias y muestran el progreso y las tecnologías usadas.
+**Milestones (hitos)**
+- Un milestone es un objetivo con fecha límite, p. ej. *"Login completo — 20 nov"*. Agrupa **sprints** e **incidencias**:
+  ```
+  Proyecto: AI glasses
+  └─ Milestone: Login completo (vence 20 nov)   ███░░ 60%
+     ├─ Sprint 1 → AG-1 Story: formulario de login, AG-2 Bug: mensaje de contraseña incorrecta
+     └─ Sprint 2 → AG-3 Improvement: login con Google
+  ```
+- Vincula un sprint a un milestone y todas las incidencias de ese sprint se unen al milestone automáticamente. También se puede asignar un milestone directamente a una incidencia.
+- Cada milestone muestra su progreso (incidencias y puntos de historia completados), bugs y tecnologías usadas. Se pone en rojo con una cinta **Late** al pasar su fecha límite, y tiene un botón **Mark as Complete**.
+- Son los milestones propios de Odoo, así que la app Project muestra los mismos.
+
+**Proyectos**
+- Un enlace **GitHub Repository** en cada proyecto de software.
+- El formulario del proyecto tiene las pestañas **Development | Milestones | Sprints | Description | Settings**. Milestones y Sprints solo aparecen en los proyectos de software.
+- Los proyectos de software llaman a sus tareas **Issues** y ocultan los campos "Name of the Tasks" y Tags de Odoo.
+
+**Tecnologías y desarrolladores**
 - Las tecnologías obtienen su logo automáticamente de una carpeta de imágenes (`Docker` → `Docker.png`).
 - Perfiles de desarrollador en los contactos:
   - Un código de acceso: 8 dígitos seguidos de letras, p. ej. `12345678A`. Debe ser único y no se puede cambiar una vez guardado.
@@ -58,7 +74,7 @@ Tras la instalación, la pantalla de inicio muestra una sola app **Projects** co
 ```
 Projects  |  Project ▾          |  Dev Projects ▾
           |  Menús propios de   |  Work:     Board, Backlog
-          |  Odoo, sin cambios  |  Planning: Projects, Sprints, Histories
+          |  Odoo, sin cambios  |  Planning: Projects, Milestones, Sprints
           |                     |  Team:     My Developer Profile, Developers, Technologies
           |                     |  Configuration
 ```
@@ -121,10 +137,13 @@ La app **Project** se instala automáticamente si no la tienes.
 ## Flujo de trabajo diario
 
 1. **Crea un proyecto.** Ve a *Dev Projects → Planning → Projects → New*. Recibe una clave y las cuatro columnas por defecto: To Do, In Progress, In Review, Done.
-2. **Llena el backlog.** En *Work → Backlog*, añade incidencias, arrástralas para ordenarlas y rellena la columna **Sprint** para planificarlas.
-3. **Inicia el sprint.** En *Planning → Sprints*, abre el sprint y haz clic en **Start Sprint**.
-4. **Trabaja en el Board.** En *Work → Board*, arrastra las tarjetas entre columnas. Las incidencias nuevas creadas aquí entran automáticamente en el sprint en curso.
-5. **Completa el sprint.** Haz clic en **Complete Sprint** y elige a dónde van las incidencias sin terminar: al siguiente sprint o al backlog.
+2. **Define un milestone.** En la pestaña **Milestones** del proyecto (o en *Planning → Milestones*), añade un objetivo con fecha límite, p. ej. "Login completo".
+3. **Planifica un sprint para él.** En la pestaña **Sprints**, añade un sprint y elige el milestone al que contribuye.
+4. **Llena el backlog.** En *Work → Backlog*, añade incidencias, arrástralas para ordenarlas y rellena la columna **Sprint** para planificarlas. Se unen automáticamente al milestone del sprint.
+5. **Inicia el sprint.** En *Planning → Sprints*, abre el sprint y haz clic en **Start Sprint**.
+6. **Trabaja en el Board.** En *Work → Board*, arrastra las tarjetas entre columnas. Las incidencias nuevas creadas aquí entran automáticamente en el sprint en curso.
+7. **Completa el sprint.** Haz clic en **Complete Sprint** y elige a dónde van las incidencias sin terminar: al siguiente sprint o al backlog.
+8. **Completa el milestone.** Cuando se alcance su objetivo, ábrelo y haz clic en **Mark as Complete**.
 
 > **¿Por qué no veo las incidencias de mi sprint en el Board?**
 > El Board muestra el sprint *en curso* más las incidencias que no están en ningún sprint. Las incidencias de un sprint que no se ha iniciado quedan ocultas hasta que haces clic en **Start Sprint**. Para verlas antes, usa el botón **Issues** del sprint o quita el filtro "Current Work".
@@ -195,7 +214,7 @@ odoo_taskvc/
         │   ├── project_project.py     Proyectos de software, claves, acciones de pantallas
         │   ├── project_task_type.py   Columnas del tablero: categoría de estado, límite WIP
         │   ├── dev_sprint.py          Sprints y el asistente Complete Sprint
-        │   ├── dev_history.py         Historias (épicas)
+        │   ├── project_milestone.py   Milestones: progreso, sprints, Complete
         │   ├── dev_technology.py      Tecnologías y carga de logos
         │   ├── res_partner.py         Perfiles de desarrollador y códigos de acceso
         │   └── res_config_settings.py Ajustes
@@ -212,7 +231,7 @@ odoo_taskvc/
 
 ## Desinstalar
 
-Al desinstalar Dev Projects desde *Apps*, la app Project vuelve a quedar como la entrega Odoo: menús originales y sin filtro por defecto. Tus proyectos y tareas se conservan. Solo se eliminan los campos de Dev, los sprints, las historias y las tecnologías.
+Al desinstalar Dev Projects desde *Apps*, la app Project vuelve a quedar como la entrega Odoo: menús originales y sin filtro por defecto. Tus proyectos y tareas se conservan. Solo se eliminan los campos de Dev, los sprints y las tecnologías. Los milestones se conservan, porque pertenecen a la app Project de Odoo.
 
 ---
 

@@ -4,7 +4,7 @@
 
 Jira-style software project management built on top of Odoo's own **Project** app.
 
-Dev Projects adds issue keys (`WEB-1`, `WEB-2`…), issue types, a board with WIP limits, a ranked backlog, sprints you start and complete by hand, epics ("histories"), technologies and developer profiles. It works on the **same projects and tasks** as the Project app. An issue is a normal Odoo task with extra fields, so you can switch between the two apps at any time.
+Dev Projects adds issue keys (`WEB-1`, `WEB-2`…), issue types, a board with WIP limits, a ranked backlog, sprints you start and complete by hand, milestones, technologies and developer profiles. It works on the **same projects and tasks** as the Project app. An issue is a normal Odoo task with extra fields, so you can switch between the two apps at any time.
 
 ---
 
@@ -43,8 +43,24 @@ Dev Projects adds issue keys (`WEB-1`, `WEB-2`…), issue types, a board with WI
 - When you complete a sprint, unfinished issues move to the next sprint or back to the backlog.
 - Sprint progress, planned points and done points.
 
-**Histories, technologies and developers**
-- Histories (epics) group issues and show progress and the technologies used.
+**Milestones**
+- A milestone is a goal with a deadline, e.g. *"Login complete — Nov 20"*. It groups **sprints** and **issues**:
+  ```
+  Project: AI glasses
+  └─ Milestone: Login complete (due Nov 20)   ███░░ 60%
+     ├─ Sprint 1 → AG-1 Story: login form, AG-2 Bug: wrong password message
+     └─ Sprint 2 → AG-3 Improvement: Google login
+  ```
+- Link a sprint to a milestone, and every issue in that sprint joins the milestone automatically. An issue can also be given a milestone directly.
+- Each milestone shows its progress (issues and story points done), bugs and technologies used. It turns red with a **Late** ribbon after its deadline, and has a **Mark as Complete** button.
+- These are Odoo's own milestones, so the Project app shows the same ones.
+
+**Projects**
+- A **GitHub Repository** link on each software project.
+- The project form has the tabs **Development | Milestones | Sprints | Description | Settings**. Milestones and Sprints only appear on software projects.
+- Software projects call their tasks **Issues**, and hide Odoo's "Name of the Tasks" and Tags fields.
+
+**Technologies and developers**
 - Technologies get their logo automatically from an image folder (`Docker` → `Docker.png`).
 - Developer profiles on contacts:
   - An access code: 8 digits followed by letters, e.g. `12345678A`. It must be unique and can't be changed once saved.
@@ -60,7 +76,7 @@ After installing, the home screen shows one **Projects** app with two menus:
 ```
 Projects  |  Project ▾          |  Dev Projects ▾
           |  Odoo's own menus,  |  Work:     Board, Backlog
-          |  unchanged          |  Planning: Projects, Sprints, Histories
+          |  unchanged          |  Planning: Projects, Milestones, Sprints
           |                     |  Team:     My Developer Profile, Developers, Technologies
           |                     |  Configuration
 ```
@@ -123,10 +139,13 @@ The **Project** app is installed automatically if you don't have it.
 ## Day-to-day workflow
 
 1. **Create a project.** Go to *Dev Projects → Planning → Projects → New*. It gets a key and the four default columns: To Do, In Progress, In Review, Done.
-2. **Fill the backlog.** In *Work → Backlog*, add issues, drag them to rank them, and set the **Sprint** column to plan them.
-3. **Start the sprint.** In *Planning → Sprints*, open the sprint and click **Start Sprint**.
-4. **Work on the Board.** In *Work → Board*, drag cards across the columns. New issues created here go into the running sprint automatically.
-5. **Complete the sprint.** Click **Complete Sprint** and choose where unfinished issues go: the next sprint or the backlog.
+2. **Set a milestone.** In the project's **Milestones** tab (or *Planning → Milestones*), add a goal with a deadline, e.g. "Login complete".
+3. **Plan a sprint for it.** In the **Sprints** tab, add a sprint and pick the milestone it works towards.
+4. **Fill the backlog.** In *Work → Backlog*, add issues, drag them to rank them, and set the **Sprint** column to plan them. They join the sprint's milestone automatically.
+5. **Start the sprint.** In *Planning → Sprints*, open the sprint and click **Start Sprint**.
+6. **Work on the Board.** In *Work → Board*, drag cards across the columns. New issues created here go into the running sprint automatically.
+7. **Complete the sprint.** Click **Complete Sprint** and choose where unfinished issues go: the next sprint or the backlog.
+8. **Complete the milestone.** When its goal is reached, open it and click **Mark as Complete**.
 
 > **Why don't I see my sprint's issues on the Board?**
 > The Board shows the *running* sprint plus issues not in any sprint. Issues in a sprint that hasn't been started stay hidden until you click **Start Sprint**. To see them earlier, use the sprint's **Issues** button or remove the "Current Work" filter.
@@ -197,7 +216,7 @@ odoo_taskvc/
         │   ├── project_project.py     Software projects, keys, screen actions
         │   ├── project_task_type.py   Board columns: status category, WIP limit
         │   ├── dev_sprint.py          Sprints and the Complete Sprint wizard
-        │   ├── dev_history.py         Histories (epics)
+        │   ├── project_milestone.py   Milestones: progress, sprints, Complete
         │   ├── dev_technology.py      Technologies and logo loading
         │   ├── res_partner.py         Developer profiles and access codes
         │   └── res_config_settings.py Settings
@@ -214,7 +233,7 @@ odoo_taskvc/
 
 ## Uninstalling
 
-Uninstalling Dev Projects from *Apps* puts the Project app back the way Odoo ships it: original menus, no default filter. Your projects and tasks stay. Only the Dev fields, sprints, histories and technologies are removed.
+Uninstalling Dev Projects from *Apps* puts the Project app back the way Odoo ships it: original menus, no default filter. Your projects and tasks stay. Only the Dev fields, sprints and technologies are removed. Milestones stay, because they belong to Odoo's Project app.
 
 ---
 

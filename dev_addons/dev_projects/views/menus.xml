@@ -5,7 +5,7 @@
 
          Projects  |  Project ▾       |  Dev Projects ▾
                    |  Projects        |  Work: Board, Backlog
-                   |  Tasks           |  Planning: Projects, Sprints, Histories
+                   |  Tasks           |  Planning: Projects, Milestones, Sprints
                    |  Reporting       |  Team: ...
                    |  Configuration   |  Configuration: ...
     -->
@@ -40,8 +40,8 @@
 
     <menuitem id="menu_planning" name="Planning" parent="menu_root" sequence="20" />
     <menuitem id="menu_projects" name="Projects" parent="menu_planning" action="action_project" sequence="1" />
-    <menuitem id="menu_sprints" name="Sprints" parent="menu_planning" action="action_sprint" sequence="2" />
-    <menuitem id="menu_histories" name="Histories" parent="menu_planning" action="action_history" sequence="3" />
+    <menuitem id="menu_sprints" name="Sprints" parent="menu_planning" action="action_sprint" sequence="3" />
+    <menuitem id="menu_milestones" name="Milestones" parent="menu_planning" action="action_milestone" sequence="2" />
 
     <menuitem id="menu_team" name="Team" parent="menu_root" sequence="30" />
     <menuitem id="menu_my_profile" name="My Developer Profile" parent="menu_team" action="action_my_developer_profile" sequence="1" />

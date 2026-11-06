@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Milestones: Odoo's own (shared with the Project app), with Dev
+         Projects' sprints, progress and Complete button. Priority 90 so the
+         Project app keeps its own milestone screens. -->
+    <record id="milestone_list" model="ir.ui.view">
+        <field name="name">dev.milestone.list</field>
+        <field name="model">project.milestone</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <tree decoration-muted="is_reached" decoration-danger="is_deadline_exceeded" sample="1">
+                <field name="name" />
+                <field name="project_id" optional="show" />
+                <field name="deadline" widget="remaining_days" invisible="is_reached" />
+                <field name="reached_date" string="Completed On" optional="hide" />
+                <field name="dev_sprint_count" string="Sprints" optional="show" />
+                <field name="dev_issue_count" string="Issues" />
+                <field name="dev_open_count" string="Open" optional="show" />
+                <field name="dev_planned_points" string="Points" optional="hide" sum="Total" />
+                <field name="dev_progress" widget="progressbar" />
+                <field name="is_reached" string="Complete" widget="boolean" />
+                <field name="is_deadline_exceeded" column_invisible="1" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="milestone_form" model="ir.ui.view">
+        <field name="name">dev.milestone.form</field>
+        <field name="model">project.milestone</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_dev_complete" type="object" string="Mark as Complete" class="btn-primary"
+                            invisible="is_reached or not id or dev_open_count" />
+                    <button name="action_dev_complete" type="object" string="Mark as Complete" class="btn-primary"
+                            invisible="is_reached or not id or not dev_open_count"
+                            confirm="Some issues of this milestone are not done yet. Mark it as complete anyway?" />
+                    <button name="action_dev_reopen" type="object" string="Reopen" invisible="not is_reached" />
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_dev_view_issues" type="object" class="oe_stat_button" icon="fa-tasks" invisible="not id">
+                            <field name="dev_issue_count" widget="statinfo" string="Issues" />
+                        </button>
+                        <button name="action_dev_view_sprints" type="object" class="oe_stat_button" icon="fa-refresh" invisible="not id">
+                            <field name="dev_sprint_count" widget="statinfo" string="Sprints" />
+                        </button>
+                    </div>
+                    <field name="is_reached" invisible="1" />
+                    <field name="is_deadline_exceeded" invisible="1" />
+                    <field name="dev_open_count" invisible="1" />
+                    <widget name="web_ribbon" title="Complete" bg_color="text-bg-success" invisible="not is_reached" />
+                    <widget name="web_ribbon" title="Late" bg_color="text-bg-danger" invisible="not is_deadline_exceeded" />
+                    <div class="oe_title">
+                        <label for="name" />
+                        <h1><field name="name" placeholder="e.g. Login complete" /></h1>
+                    </div>
+                    <group>
+                        <group string="Planning">
+                            <field name="project_id" options="{'no_create': True}" domain="[('dev_is_software', '=', True)]" readonly="id" />
+                            <field name="deadline" />
+                            <field name="reached_date" string="Completed On" invisible="not is_reached" />
+                        </group>
+                        <group string="Progress">
+                            <label for="dev_done_count" string="Issues Done" />
+                            <div class="o_row">
+                                <field name="dev_done_count" /> <span>/</span> <field name="dev_issue_count" />
+                            </div>
+                            <label for="dev_done_points" string="Story Points" />
+                            <div class="o_row">
+                                <field name="dev_done_points" /> <span>/</span> <field name="dev_planned_points" />
+                            </div>
+                            <field name="dev_progress" widget="progressbar" />
+                            <field name="dev_bug_count" />
+                            <field name="dev_technology_ids" widget="many2many_tags" options="{'color_field': 'color'}" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="issues" string="Issues">
+                            <field name="task_ids" context="{'default_project_id': project_id, 'default_milestone_id': id, 'form_view_ref': 'project.view_task_form2'}">
+                                <tree>
+                                    <field name="dev_issue_type" />
+                                    <field name="dev_key" />
+                                    <field name="name" />
+                                    <field name="dev_sprint_id" optional="show" />
+                                    <field name="dev_assignee_id" widget="many2one_avatar_user" />
+                                    <field name="dev_priority" widget="priority" />
+                                    <field name="dev_story_points" sum="Total" />
+                                    <field name="dev_status" column_invisible="1" />
+                                    <field name="stage_id" widget="badge" decoration-success="dev_status == 'done'" decoration-info="dev_status == 'in_progress'" decoration-warning="dev_status == 'review'" />
+                                </tree>
+                            </field>
+                        </page>
+                        <page name="sprints" string="Sprints">
+                            <field name="dev_sprint_ids" context="{'default_project_id': project_id, 'default_milestone_id': id}">
+                                <tree decoration-info="state == 'running'" decoration-muted="state == 'closed'">
+                                    <field name="name" />
+                                    <field name="goal" optional="show" />
+                                    <field name="start_date" />
+                                    <field name="end_date" />
+                                    <field name="progress" widget="progressbar" />
+                                    <field name="state" widget="badge" decoration-success="state == 'running'" decoration-info="state == 'planned'" />
+                                </tree>
+                            </field>
+                        </page>
+                        <page name="description" string="Description">
+                            <field name="description" placeholder="What does reaching this milestone mean? E.g. users can sign up, log in and reset their password." />
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" />
+                    <field name="message_ids" />
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="milestone_search" model="ir.ui.view">
+        <field name="name">dev.milestone.search</field>
+        <field name="model">project.milestone</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" />
+                <field name="project_id" />
+                <filter name="dev_open" string="Open" domain="[('is_reached', '=', False)]" />
+                <filter name="dev_complete" string="Complete" domain="[('is_reached', '=', True)]" />
+                <filter name="dev_late" string="Late" domain="[('is_reached', '=', False), ('deadline', '&lt;', context_today().strftime('%Y-%m-%d'))]" />
+                <group expand="0" string="Group By">
+                    <filter name="group_project" string="Project" context="{'group_by': 'project_id'}" />
+                    <filter name="group_reached" string="Complete" context="{'group_by': 'is_reached'}" />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_milestone" model="ir.actions.act_window">
+        <field name="name">Milestones</field>
+        <field name="res_model">project.milestone</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="milestone_search" />
+        <field name="domain">[('project_id.dev_is_software', '=', True)]</field>
+        <field name="context">{'search_default_dev_open': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Set your first milestone</p>
+            <p>A milestone is a goal with a deadline, e.g. "Login complete by Nov 20".
+               Link sprints to it to work towards it; their issues join the milestone.</p>
+        </field>
+    </record>
+    <record id="action_milestone_view_list" model="ir.actions.act_window.view">
+        <field name="sequence">1</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="milestone_list" />
+        <field name="act_window_id" ref="action_milestone" />
+    </record>
+    <record id="action_milestone_view_form" model="ir.actions.act_window.view">
+        <field name="sequence">2</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="milestone_form" />
+        <field name="act_window_id" ref="action_milestone" />
+    </record>
+</odoo>

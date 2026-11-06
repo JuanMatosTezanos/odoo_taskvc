@@ -18,7 +18,18 @@ PROJECT_MENUS = ('project.menu_projects', 'project.menu_projects_group_stage',
                  'project.menu_project_config')
 
 
+def enable_milestones(env):
+    """Dev Projects plans with Odoo's milestones: switch the feature on (the same
+    as ticking Settings > Project > Milestones) and on every software project."""
+    group = env.ref('project.group_project_milestone')
+    for xmlid in ('base.group_user', 'base.group_portal'):
+        env.ref(xmlid).write({'implied_ids': [(4, group.id)]})
+    software = env['project.project'].with_context(active_test=False).search([('dev_is_software', '=', True)])
+    software.write(software._dev_software_defaults())
+
+
 def post_init_hook(env):
+    enable_milestones(env)
     # Existing projects stay regular projects (tick "Software Project" to move
     # one to Dev Projects). Existing columns get a status category guessed
     # from their name, for when they are used by a software project.

@@ -43,7 +43,6 @@
                 <field name="dev_technology_ids" widget="many2many_tags" options="{'color_field': 'color'}" invisible="not dev_project_is_software" />
             </field>
             <xpath expr="//div[@id='date_deadline_and_recurring_task']" position="after">
-                <field name="dev_history_id" options="{'no_create': True}" invisible="not dev_project_is_software" />
                 <field name="dev_sprint_id" options="{'no_create': True}" invisible="not dev_project_is_software" readonly="dev_status == 'done'" />
                 <field name="dev_story_points" invisible="not dev_project_is_software" />
                 <field name="dev_priority" widget="priority" invisible="not dev_project_is_software" />

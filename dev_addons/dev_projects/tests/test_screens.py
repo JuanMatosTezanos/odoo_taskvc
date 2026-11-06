@@ -16,11 +16,11 @@ class TestScreens(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.project = cls.env['project.project'].create({'name': 'Screens', 'dev_is_software': True})
-        cls.history = cls.env['dev.history'].create({'name': 'Epic', 'project_id': cls.project.id})
+        cls.milestone = cls.env['project.milestone'].create({'name': 'Epic', 'project_id': cls.project.id})
         cls.sprint = cls.env['dev.sprint'].create({'project_id': cls.project.id})
         cls.sprint.action_start()
         cls.issue = cls.env['project.task'].create({
-            'name': 'Screen issue', 'project_id': cls.project.id, 'dev_history_id': cls.history.id,
+            'name': 'Screen issue', 'project_id': cls.project.id, 'milestone_id': cls.milestone.id,
             'dev_sprint_id': cls.sprint.id, 'dev_assignee_id': cls.env.user.id,
             'dev_issue_type': 'bug', 'dev_severity': 'major'})
         cls.tech = cls.env['dev.technology'].create({'name': 'Screens Tech'})
@@ -101,7 +101,7 @@ class TestScreens(TransactionCase):
 
     def test_every_dev_menu_opens(self):
         opened = self._open_menus('dev_projects.menu_root')
-        for expected in ('Board', 'Backlog', 'Projects', 'Sprints', 'Histories', 'My Developer Profile',
+        for expected in ('Board', 'Backlog', 'Projects', 'Milestones', 'Sprints', 'My Developer Profile',
                          'Developers', 'Technologies', 'Board Columns'):
             self.assertIn(expected, opened)
 
@@ -117,7 +117,7 @@ class TestScreens(TransactionCase):
 
     def test_buttons_open_screens(self):
         for method in ('action_dev_board', 'action_dev_open_issues', 'action_dev_bugs',
-                       'action_dev_backlog', 'action_dev_sprints', 'action_dev_histories'):
+                       'action_dev_backlog', 'action_dev_sprints', 'action_dev_milestones'):
             with self.subTest(button=method):
                 self._open_action(getattr(self.project, method)())
         self._open_action(self.sprint.action_view_issues())
@@ -132,8 +132,8 @@ class TestScreens(TransactionCase):
             f.name = 'From Form'
         project = f.record
         self.assertTrue(project.dev_key)
-        with Form(self.env['dev.history']) as f:
-            f.name = 'Form epic'
+        with Form(self.env['project.milestone'], view='dev_projects.milestone_form') as f:
+            f.name = 'Form goal'
             f.project_id = project
         with Form(self.env['dev.sprint']) as f:
             f.project_id = project
@@ -181,7 +181,9 @@ class TestScreens(TransactionCase):
         complete.save().action_confirm()
         self.assertEqual(self.sprint.with_user(user).state, 'closed')
         self.env['dev.sprint'].create({'project_id': project.id}).action_start()
-        self.env['dev.history'].create({'name': 'User epic', 'project_id': project.id})
+        milestone = self.env['project.milestone'].create({'name': 'User goal', 'project_id': project.id})
+        self._open_action(milestone.action_dev_view_issues())
+        milestone.action_dev_complete()
 
         with Form(user.partner_id, view='dev_projects.developer_form') as f:
             f.dev_is_developer = True

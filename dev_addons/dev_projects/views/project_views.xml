@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Project form (used by both apps): Dev buttons and a "Development" tab. -->
+    <!-- Project form (used by both apps): Dev buttons and tabs. -->
     <record id="project_form_inherit" model="ir.ui.view">
         <field name="name">project.project.form.dev</field>
         <field name="model">project.project</field>
@@ -16,42 +16,56 @@
                     <field name="dev_open_issue_count" widget="statinfo" string="Open Issues" />
                 </button>
             </xpath>
+            <!-- Software projects call their tasks "Issues" and don't use tags. -->
+            <field name="label_tasks" position="attributes">
+                <attribute name="invisible">dev_is_software</attribute>
+            </field>
+            <field name="tag_ids" position="attributes">
+                <attribute name="invisible">dev_is_software</attribute>
+            </field>
+            <!-- Tabs: Development | Milestones | Sprints | Description | Settings.
+                 Milestones and Sprints only show on software projects. -->
             <xpath expr="//notebook/page[@name='description']" position="before">
                 <page name="dev" string="Development">
                     <group>
-                        <field name="dev_is_software" />
-                    </group>
-                    <div invisible="not dev_is_software">
-                    <group>
                         <group>
-                            <field name="dev_key" placeholder="Filled in from the name, e.g. WEB" readonly="dev_issue_sequence" required="dev_is_software" />
+                            <field name="dev_is_software" />
+                            <field name="dev_key" placeholder="Filled in from the name, e.g. WEB" readonly="dev_issue_sequence"
+                                   required="dev_is_software" invisible="not dev_is_software" />
                             <field name="dev_issue_sequence" invisible="1" />
+                            <field name="dev_repository_url" widget="url" placeholder="https://github.com/company/project"
+                                   invisible="not dev_is_software" />
                         </group>
-                        <group>
+                        <group invisible="not dev_is_software">
                             <field name="dev_running_sprint_id" />
                             <field name="dev_open_bug_count" />
                         </group>
                     </group>
-                    <separator string="Sprints" />
+                </page>
+                <page name="dev_milestones" string="Milestones" invisible="not dev_is_software">
+                    <field name="milestone_ids" context="{'default_project_id': id, 'form_view_ref': 'dev_projects.milestone_form'}">
+                        <tree decoration-muted="is_reached" decoration-danger="is_deadline_exceeded">
+                            <field name="name" />
+                            <field name="deadline" />
+                            <field name="dev_sprint_count" string="Sprints" />
+                            <field name="dev_issue_count" string="Issues" />
+                            <field name="dev_progress" widget="progressbar" />
+                            <field name="is_reached" string="Complete" widget="boolean" />
+                            <field name="is_deadline_exceeded" column_invisible="1" />
+                        </tree>
+                    </field>
+                </page>
+                <page name="dev_sprints" string="Sprints" invisible="not dev_is_software">
                     <field name="dev_sprint_ids" context="{'default_project_id': id}">
                         <tree decoration-info="state == 'running'" decoration-muted="state == 'closed'">
                             <field name="name" />
+                            <field name="milestone_id" optional="show" />
                             <field name="start_date" />
                             <field name="end_date" />
                             <field name="progress" widget="progressbar" />
                             <field name="state" widget="badge" decoration-success="state == 'running'" decoration-info="state == 'planned'" />
                         </tree>
                     </field>
-                    <separator string="Histories" />
-                    <field name="dev_history_ids" context="{'default_project_id': id}">
-                        <tree editable="bottom">
-                            <field name="name" />
-                            <field name="description" />
-                            <field name="task_count" string="Issues" />
-                            <field name="progress" widget="progressbar" />
-                        </tree>
-                    </field>
-                    </div>
                 </page>
             </xpath>
         </field>
@@ -71,6 +85,7 @@
                 <field name="dev_open_issue_count" />
                 <field name="dev_open_bug_count" />
                 <field name="dev_sprint_count" string="Sprints" optional="hide" />
+                <field name="dev_repository_url" widget="url" optional="hide" />
                 <field name="company_id" column_invisible="1" />
             </tree>
         </field>

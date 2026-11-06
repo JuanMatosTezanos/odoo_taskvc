@@ -24,6 +24,10 @@ class DevSprint(models.Model):
     project_id = fields.Many2one('project.project', string="Project", required=True,
                                  domain=[('dev_is_software', '=', True)],
                                  index=True, ondelete='cascade', tracking=True)
+    milestone_id = fields.Many2one(
+        'project.milestone', string="Milestone", index=True, tracking=True, ondelete='set null',
+        domain="[('project_id', '=', project_id), ('is_reached', '=', False)]",
+        help="The goal this sprint works towards. Issues added to the sprint get this milestone.")
     active = fields.Boolean(default=True)
     # Started and completed by hand, like in Jira, instead of following the calendar.
     state = fields.Selection(SPRINT_STATES, string="Status", default='planned', required=True,
@@ -85,6 +89,28 @@ class DevSprint(models.Model):
                 raise ValidationError(_(
                     "Project %s already has a running sprint. Complete it first.",
                     sprint.project_id.name))
+
+    @api.constrains('milestone_id', 'project_id')
+    def _check_milestone_project(self):
+        for sprint in self:
+            if sprint.milestone_id and sprint.milestone_id.project_id != sprint.project_id:
+                raise ValidationError(_(
+                    "Sprint %(sprint)s: milestone %(milestone)s belongs to project %(other)s, not %(project)s.",
+                    sprint=sprint.name, milestone=sprint.milestone_id.name,
+                    other=sprint.milestone_id.project_id.name, project=sprint.project_id.name))
+
+    @api.onchange('project_id')
+    def _onchange_project_id_milestone(self):
+        for sprint in self:
+            if sprint.milestone_id.project_id != sprint.project_id:
+                sprint.milestone_id = False
+
+    def write(self, vals):
+        res = super().write(vals)
+        if vals.get('milestone_id'):
+            # Issues already in the sprint join its milestone (unless they have one).
+            self.with_context(active_test=False).task_ids._dev_fill_milestone_from_sprint()
+        return res
 
     @api.model
     def default_get(self, fields_list):

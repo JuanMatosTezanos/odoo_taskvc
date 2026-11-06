@@ -21,14 +21,16 @@ class ProjectProject(models.Model):
         help="Short uppercase code used in issue keys, e.g. WEB gives WEB-1, WEB-2...")
     dev_issue_sequence = fields.Integer(string="Last Issue Number", default=0, copy=False, readonly=True)
 
+    dev_repository_url = fields.Char(
+        string="GitHub Repository", tracking=True,
+        help="Link to the project's code, e.g. https://github.com/company/project")
+
     dev_sprint_ids = fields.One2many('dev.sprint', 'project_id', string="Sprints")
-    dev_history_ids = fields.One2many('dev.history', 'project_id', string="Histories")
     dev_running_sprint_id = fields.Many2one(
         'dev.sprint', string="Running Sprint", compute='_compute_dev_running_sprint')
     dev_open_issue_count = fields.Integer(string="Open Issues", compute='_compute_dev_counts')
     dev_open_bug_count = fields.Integer(string="Open Bugs", compute='_compute_dev_counts')
     dev_sprint_count = fields.Integer(string="Sprint Count", compute='_compute_dev_counts')
-    dev_history_count = fields.Integer(string="History Count", compute='_compute_dev_counts')
 
     _sql_constraints = [
         ('dev_key_unique', 'unique(dev_key)', "Another project already uses this key."),
@@ -44,7 +46,6 @@ class ProjectProject(models.Model):
             project.dev_open_issue_count = open_counts.get(project, 0)
             project.dev_open_bug_count = bug_counts.get(project, 0)
             project.dev_sprint_count = len(project.dev_sprint_ids)
-            project.dev_history_count = len(project.dev_history_ids)
 
     @api.depends('dev_sprint_ids.state')
     def _compute_dev_running_sprint(self):
@@ -112,7 +113,14 @@ class ProjectProject(models.Model):
             if not vals.get('type_ids') and default_stages:
                 # Give new software projects the default board columns.
                 vals['type_ids'] = [Command.link(stage.id) for stage in default_stages]
+            vals.update(self._dev_software_defaults())
         return super().create(vals_list)
+
+    @api.model
+    def _dev_software_defaults(self):
+        # Software projects plan with milestones, and their tasks are "Issues"
+        # (the "Name of the Tasks" field is hidden on them).
+        return {'allow_milestones': True, 'label_tasks': 'Issues'}
 
     def write(self, vals):
         if 'dev_key' in vals:
@@ -128,8 +136,9 @@ class ProjectProject(models.Model):
         return res
 
     def _dev_make_software(self):
-        """A project just became a software project: key, columns, numbered issues."""
+        """A project just became a software project: key, columns, milestones, numbered issues."""
         default_stages = self.env['project.task.type']._dev_default_stages()
+        self.write(self._dev_software_defaults())
         for project in self:
             if not project.dev_key:
                 project.dev_key = self._dev_suggest_key(project.name)
@@ -185,5 +194,5 @@ class ProjectProject(models.Model):
     def action_dev_sprints(self):
         return self._dev_action('dev_projects.action_sprint')
 
-    def action_dev_histories(self):
-        return self._dev_action('dev_projects.action_history')
+    def action_dev_milestones(self):
+        return self._dev_action('dev_projects.action_milestone')
