@@ -93,7 +93,11 @@
                             </field>
                         </page>
                         <page name="sprints" string="Sprints">
-                            <field name="dev_sprint_ids" context="{'default_project_id': project_id, 'default_milestone_id': id}">
+                            <!-- "Add" picks existing sprints of the project (or creates one);
+                                 removing a line only unlinks the sprint, it is not deleted. -->
+                            <field name="dev_sprint_ids" widget="many2many"
+                                   domain="[('project_id', '=', project_id), ('state', '!=', 'closed')]"
+                                   context="{'default_project_id': project_id, 'default_milestone_id': id}">
                                 <tree decoration-info="state == 'running'" decoration-muted="state == 'closed'">
                                     <field name="name" />
                                     <field name="goal" optional="show" />

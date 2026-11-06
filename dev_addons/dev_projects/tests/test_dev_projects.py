@@ -4,8 +4,8 @@ from datetime import timedelta
 from lxml import etree
 from psycopg2 import IntegrityError
 
-from odoo import fields
-from odoo.exceptions import UserError, ValidationError
+from odoo import Command, fields
+from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tests import Form, TransactionCase, tagged
 from odoo.tools import mute_logger
 from odoo.tools.safe_eval import safe_eval
@@ -356,6 +356,23 @@ class TestDevProjects(TransactionCase):
         sprints = m.action_dev_view_sprints()
         self.assertEqual(self.env['dev.sprint'].search(sprints['domain']), self.sprint)
 
+    def test_milestone_links_existing_sprints(self):
+        """From a milestone's Sprints tab, "Add" links a sprint that already exists."""
+        issue = self._issue(dev_sprint_id=self.sprint.id)
+        # What the screen sends when you pick a sprint in the list ("Add").
+        self.milestone.write({'dev_sprint_ids': [Command.link(self.sprint.id)]})
+        self.assertEqual(self.sprint.milestone_id, self.milestone)
+        self.assertEqual(issue.milestone_id, self.milestone, "the sprint's issues join the milestone")
+        # Removing the line unlinks the sprint; the sprint itself stays.
+        self.milestone.write({'dev_sprint_ids': [Command.unlink(self.sprint.id)]})
+        self.assertTrue(self.sprint.exists())
+        self.assertFalse(self.sprint.milestone_id)
+        # The tab uses the "pick existing" widget, limited to this project's open sprints.
+        arch = self.env['project.milestone'].get_views(
+            [(self.env.ref('dev_projects.milestone_form').id, 'form')])['views']['form']['arch']
+        field = etree.fromstring(arch).find(".//field[@name='dev_sprint_ids']")
+        self.assertEqual(field.get('widget'), 'many2many')
+
     def test_milestone_forms(self):
         with Form(self.env['project.milestone'].with_context(default_project_id=self.project.id),
                   view='dev_projects.milestone_form') as form:
@@ -411,6 +428,25 @@ class TestDevProjects(TransactionCase):
         arch = self.env['project.project'].get_views([(False, 'form')])['views']['form']['arch']
         button = etree.fromstring(arch).find(".//button[@name='action_view_tasks']")
         self.assertEqual(button.get('invisible'), 'dev_is_software')
+
+    def test_delete_project_with_status_updates(self):
+        """A project with status updates can be deleted in one go (regular or software)."""
+        for vals in ({'name': 'Old Software', 'dev_is_software': True}, {'name': 'Old Office'}):
+            project = self.env['project.project'].create(vals)
+            updates = self.env['project.update'].create([
+                {'name': f'Week {n}', 'project_id': project.id, 'status': 'on_track'} for n in range(1, 4)])
+            self.Task.create({'name': 'Leftover', 'project_id': project.id})
+            project.unlink()
+            self.assertFalse(project.exists())
+            self.assertFalse(updates.exists(), "its updates are deleted with it")
+        # Still only for people allowed to delete projects.
+        project = self.env['project.project'].create({'name': 'Kept'})
+        update = self.env['project.update'].create({'name': 'Note', 'project_id': project.id, 'status': 'on_track'})
+        viewer = self.env['res.users'].create({'name': 'Viewer', 'login': 'viewer_dev_test',
+                                               'groups_id': [Command.set([self.env.ref('base.group_user').id])]})
+        with self.assertRaises(AccessError):
+            project.with_user(viewer).unlink()
+        self.assertTrue(update.exists(), "nothing is deleted when the project can't be")
 
     def test_duplicate_project_copies_modules(self):
         login = self.env['dev.module'].create({'name': 'Login', 'project_id': self.project.id})

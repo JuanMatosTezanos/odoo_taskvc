@@ -148,6 +148,15 @@ class ProjectProject(models.Model):
             self.env['project.task'].with_context(active_test=False).search(
                 [('project_id', '=', project.id), ('dev_key', '=', False)], order='id')._dev_assign_keys()
 
+    def unlink(self):
+        # Odoo refuses to delete a project that has status updates (Project
+        # Status), so each one had to be deleted by hand first. Delete them
+        # with the project instead, like Odoo already does with its tasks.
+        self.check_access_rights('unlink')
+        self.check_access_rule('unlink')
+        self.env['project.update'].sudo().search([('project_id', 'in', self.ids)]).unlink()
+        return super().unlink()
+
     def map_tasks(self, new_project_id):
         # Duplicating a project: copy its modules first, so the copied issues
         # can point to the copies (see project.task copy_data).
