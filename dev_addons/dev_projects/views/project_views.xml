@@ -60,7 +60,7 @@
                     </field>
                 </page>
                 <page name="dev_sprints" string="Sprints" invisible="not dev_is_software">
-                    <field name="dev_sprint_ids" context="{'default_project_id': id}">
+                    <field name="dev_sprint_ids" context="{'default_project_id': id, 'dev_reload_project': True}">
                         <tree decoration-info="state == 'running'" decoration-muted="state == 'closed'">
                             <field name="name" />
                             <field name="milestone_id" optional="show" />

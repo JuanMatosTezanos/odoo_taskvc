@@ -150,6 +150,14 @@ class DevSprint(models.Model):
             if not sprint.start_date or sprint.start_date > now:
                 vals['start_date'] = now
             sprint.write(vals)
+        return self._dev_reload_project_form()
+
+    def _dev_reload_project_form(self):
+        """Opened from a project's Sprints tab (a pop-up over the project): reload
+        the project behind it, so "Running Sprint" shows the change at once."""
+        if self.env.context.get('dev_reload_project'):
+            return {'type': 'ir.actions.client', 'tag': 'soft_reload'}
+        return False
 
     def action_open_complete_wizard(self):
         self.ensure_one()
@@ -161,7 +169,8 @@ class DevSprint(models.Model):
             'res_model': 'dev.sprint.complete',
             'view_mode': 'form',
             'target': 'new',
-            'context': {'default_sprint_id': self.id},
+            'context': {'default_sprint_id': self.id,
+                        'dev_reload_project': self.env.context.get('dev_reload_project', False)},
         }
 
     def _complete(self, target_sprint=None):
@@ -227,4 +236,4 @@ class DevSprintComplete(models.TransientModel):
             raise UserError(_("Pick the sprint that receives the unfinished issues."))
         target = self.target_sprint_id if self.destination == 'sprint' else None
         self.sprint_id._complete(target)
-        return {'type': 'ir.actions.act_window_close'}
+        return self.sprint_id._dev_reload_project_form() or {'type': 'ir.actions.act_window_close'}

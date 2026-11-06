@@ -176,6 +176,24 @@ class TestDevProjects(TransactionCase):
         with self.assertRaises(ValidationError):
             self.env['dev.sprint'].create({'project_id': self.project.id, 'duration': 0})
 
+    def test_sprint_buttons_refresh_project_form(self):
+        """From the project's Sprints tab, Start/Complete reload the project so
+        "Running Sprint" is up to date; from the Sprints menu nothing changes."""
+        from_menu = self.env['dev.sprint'].create({'project_id': self.project.id})
+        self.assertFalse(from_menu.action_start(), "Sprints menu: stay on the sprint")
+        action = from_menu.action_open_complete_wizard()
+        wizard = Form(self.env['dev.sprint.complete'].with_context(**action['context'])).save()
+        wizard.destination = 'backlog'
+        self.assertEqual(wizard.action_confirm()['type'], 'ir.actions.act_window_close')
+        from_tab = self.sprint.with_context(dev_reload_project=True)
+        self.assertEqual(from_tab.action_start()['tag'], 'soft_reload')
+        self.assertEqual(self.project.dev_running_sprint_id, self.sprint)
+        action = from_tab.action_open_complete_wizard()
+        wizard = Form(self.env['dev.sprint.complete'].with_context(**action['context'])).save()
+        wizard.destination = 'backlog'
+        self.assertEqual(wizard.action_confirm()['tag'], 'soft_reload')
+        self.assertFalse(self.project.dev_running_sprint_id)
+
     def test_board(self):
         board = self.env.ref('dev_projects.action_board')
         ctx = safe_eval(board.context)

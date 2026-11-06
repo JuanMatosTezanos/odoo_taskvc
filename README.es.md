@@ -2,7 +2,7 @@
 
 Gestión de proyectos de software al estilo Jira, construida sobre la app **Project** de Odoo.
 
-Dev Projects añade claves de incidencia (`WEB-1`, `WEB-2`…), tipos de incidencia, un tablero con límites WIP, un backlog ordenado, sprints que se inician y se completan a mano, milestones (hitos), tecnologías y perfiles de desarrollador. Trabaja sobre **los mismos proyectos y tareas** que la app Project. Una incidencia es una tarea normal de Odoo con campos extra, así que puedes cambiar entre las dos apps en cualquier momento.
+Dev Projects añade claves de incidencia (`WEB-1`, `WEB-2`…), tipos de incidencia, un tablero con límites WIP, un backlog ordenado, sprints que se inician y se completan a mano, milestones (hitos), módulos, tecnologías y perfiles de desarrollador. Trabaja sobre **los mismos proyectos y tareas** que la app Project. Una incidencia es una tarea normal de Odoo con campos extra, así que puedes cambiar entre las dos apps en cualquier momento.
 
 ---
 
@@ -56,7 +56,7 @@ Dev Projects añade claves de incidencia (`WEB-1`, `WEB-2`…), tipos de inciden
 **Proyectos**
 - Un enlace **GitHub Repository** en cada proyecto de software.
 - El formulario del proyecto tiene las pestañas **Development | Milestones | Sprints | Modules | Description | Settings**. Milestones, Sprints y Modules solo aparecen en los proyectos de software.
-- Los proyectos de software llaman a sus tareas **Issues** y ocultan los campos "Name of the Tasks" y Tags de Odoo.
+- Los proyectos de software llaman a sus tareas **Issues** y ocultan los campos "Name of the Tasks" y Tags de Odoo. El botón **Tasks** de Odoo se sustituye por **Open Issues**.
 
 **Módulos (Modules)**
 - Los módulos son las partes de tu software, p. ej. *Login*, *Payments*, *Camera*. Cada proyecto tiene su propia lista.
@@ -70,6 +70,7 @@ Dev Projects añade claves de incidencia (`WEB-1`, `WEB-2`…), tipos de inciden
   - Un código de acceso: 8 dígitos seguidos de letras, p. ej. `12345678A`. Debe ser único y no se puede cambiar una vez guardado.
   - Las tecnologías que conoce el desarrollador.
   - Una etiqueta "Devs", que se añade automáticamente.
+  - Un botón **Create User** que da al desarrollador un acceso a Odoo (su email), para poder asignarle incidencias. Vincula el acceso al mismo contacto, así que el perfil se conserva.
 
 ---
 
@@ -142,14 +143,54 @@ La app **Project** se instala automáticamente si no la tienes.
 
 ## Flujo de trabajo diario
 
-1. **Crea un proyecto.** Ve a *Dev Projects → Planning → Projects → New*. Recibe una clave y las cuatro columnas por defecto: To Do, In Progress, In Review, Done.
-2. **Define un milestone.** En la pestaña **Milestones** del proyecto (o en *Planning → Milestones*), añade un objetivo con fecha límite, p. ej. "Login completo".
-3. **Planifica un sprint para él.** En la pestaña **Sprints**, añade un sprint y elige el milestone al que contribuye.
-4. **Llena el backlog.** En *Work → Backlog*, añade incidencias, arrástralas para ordenarlas y rellena la columna **Sprint** para planificarlas. Se unen automáticamente al milestone del sprint.
-5. **Inicia el sprint.** En *Planning → Sprints*, abre el sprint y haz clic en **Start Sprint**.
-6. **Trabaja en el Board.** En *Work → Board*, arrastra las tarjetas entre columnas. Las incidencias nuevas creadas aquí entran automáticamente en el sprint en curso.
-7. **Completa el sprint.** Haz clic en **Complete Sprint** y elige a dónde van las incidencias sin terminar: al siguiente sprint o al backlog.
-8. **Completa el milestone.** Cuando se alcance su objetivo, ábrelo y haz clic en **Mark as Complete**.
+**En una línea:** configura Modules y Milestones → escribe incidencias en el **Backlog** → planifica e **inicia** un sprint → arrastra tarjetas en el **Board** → **Complete Sprint** → repite → **marca el milestone como completo**.
+
+Cómo encajan las piezas:
+
+```
+Proyecto: AI glasses
+├─ Milestones  → ¿POR QUÉ / qué objetivo?   "Login completo", "Lanzamiento beta"
+├─ Sprints     → ¿CUÁNDO se hace?           "Sprint 1", "Sprint 2"
+└─ Modules     → ¿QUÉ parte es?             "Login", "Camera", "UI"
+```
+
+Una incidencia puede tener las tres, p. ej. **AG-4 Bug: Mensaje de contraseña incorrecta**, con Milestone *Login completo*, Sprint *Sprint 1* y Module *Login*.
+
+### 1. Configura el proyecto (una vez)
+*Dev Projects → Planning → Projects → New*. Escribe el nombre y guarda; recibe una clave (p. ej. `AG`) y columnas de tablero. Después rellena las pestañas:
+- **Development:** revisa la clave y pega el enlace **GitHub Repository**.
+- **Modules:** añade las partes de tu app con **Add a line**, p. ej. *Login, Camera, UI*.
+- **Milestones:** añade tus objetivos grandes con fecha límite, p. ej. *"Lanzamiento beta — 1 dic"*.
+
+### 2. Anota el trabajo (en cualquier momento)
+*Work → **Backlog***
+- **Add a line** por cada cosa que hacer y elige su tipo: Story, Task, Bug o Improvement.
+- Asigna su **Module**.
+- Arrastra las líneas para dejar las más importantes arriba.
+
+### 3. Planifica un sprint (cada 1–2 semanas)
+En la pestaña **Sprints** del proyecto, o en *Planning → Sprints*:
+1. Crea un sprint y elige el **Milestone** al que contribuye.
+2. En el **Backlog**, rellena la columna **Sprint** en las incidencias que vas a hacer. Se unen automáticamente al milestone del sprint.
+3. Abre el sprint y haz clic en **Start Sprint**.
+
+### 4. Haz el trabajo (cada día)
+*Work → **Board***
+- Arrastra tarjetas: **To Do → In Progress → In Review → Done**.
+- Las incidencias nuevas creadas aquí entran directamente en el sprint en curso.
+
+### 5. Termina el sprint
+Abre el sprint y haz clic en **Complete Sprint**. Las incidencias sin terminar pasan al siguiente sprint o vuelven al backlog. Luego repite desde el paso 3.
+
+### 6. Termina el milestone
+Cuando se alcance su objetivo, ábrelo (pestaña **Milestones** del proyecto) y haz clic en **Mark as Complete**.
+
+**Botones que puedes ignorar al principio**
+- **Start / Send to Review / Mark as Done** en una incidencia hacen lo mismo que arrastrar su tarjeta.
+- **Pause / Resume** y **Assign to Me** son atajos pequeños.
+- **Complete** en una incidencia la marca como hecha *y* quita la tarjeta del tablero (archivar o eliminar). Úsalo solo cuando quieras que desaparezca.
+- **Reopen** es solo para algo marcado como hecho por error.
+- El menú **Project** es la app normal de Odoo para proyectos que no son de software. Puedes trabajar solo en **Dev Projects**.
 
 > **¿Por qué no veo las incidencias de mi sprint en el Board?**
 > El Board muestra el sprint *en curso* más las incidencias que no están en ningún sprint. Las incidencias de un sprint que no se ha iniciado quedan ocultas hasta que haces clic en **Start Sprint**. Para verlas antes, usa el botón **Issues** del sprint o quita el filtro "Current Work".
@@ -215,6 +256,7 @@ odoo_taskvc/
         ├── __manifest__.py
         ├── hooks.py           Pasos de instalación / desinstalación
         ├── data/              Columnas de tablero por defecto, ajustes
+        ├── migrations/        Pasos de actualización (p. ej. convertir las antiguas Histories en Milestones)
         ├── models/
         │   ├── project_task.py        Incidencias: tipos, claves, sincronización tablero/Done, asistente Complete
         │   ├── project_project.py     Proyectos de software, claves, acciones de pantallas
@@ -225,7 +267,7 @@ odoo_taskvc/
         │   ├── dev_technology.py      Tecnologías y carga de logos
         │   ├── res_partner.py         Perfiles de desarrollador y códigos de acceso
         │   └── res_config_settings.py Ajustes
-        ├── views/             Tablero, backlog, sprints, formularios, menús, ajustes
+        ├── views/             Tablero, backlog, milestones, sprints, módulos, formularios, menús, ajustes
         ├── security/          Permisos de acceso
         └── tests/
             ├── test_dev_projects.py   Pruebas de comportamiento

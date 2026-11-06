@@ -4,7 +4,7 @@
 
 Jira-style software project management built on top of Odoo's own **Project** app.
 
-Dev Projects adds issue keys (`WEB-1`, `WEB-2`…), issue types, a board with WIP limits, a ranked backlog, sprints you start and complete by hand, milestones, technologies and developer profiles. It works on the **same projects and tasks** as the Project app. An issue is a normal Odoo task with extra fields, so you can switch between the two apps at any time.
+Dev Projects adds issue keys (`WEB-1`, `WEB-2`…), issue types, a board with WIP limits, a ranked backlog, sprints you start and complete by hand, milestones, modules, technologies and developer profiles. It works on the **same projects and tasks** as the Project app. An issue is a normal Odoo task with extra fields, so you can switch between the two apps at any time.
 
 ---
 
@@ -58,7 +58,7 @@ Dev Projects adds issue keys (`WEB-1`, `WEB-2`…), issue types, a board with WI
 **Projects**
 - A **GitHub Repository** link on each software project.
 - The project form has the tabs **Development | Milestones | Sprints | Modules | Description | Settings**. Milestones, Sprints and Modules only appear on software projects.
-- Software projects call their tasks **Issues**, and hide Odoo's "Name of the Tasks" and Tags fields.
+- Software projects call their tasks **Issues**, and hide Odoo's "Name of the Tasks" and Tags fields. Odoo's **Tasks** button is replaced by **Open Issues**.
 
 **Modules**
 - Modules are the parts of your software, e.g. *Login*, *Payments*, *Camera*. Each project has its own list.
@@ -72,6 +72,7 @@ Dev Projects adds issue keys (`WEB-1`, `WEB-2`…), issue types, a board with WI
   - An access code: 8 digits followed by letters, e.g. `12345678A`. It must be unique and can't be changed once saved.
   - Technologies the developer knows.
   - A "Devs" tag, added automatically.
+  - A **Create User** button that gives the developer an Odoo login (their email), so issues can be assigned to them. It links the login to the same contact, so the profile stays.
 
 ---
 
@@ -144,14 +145,54 @@ The **Project** app is installed automatically if you don't have it.
 
 ## Day-to-day workflow
 
-1. **Create a project.** Go to *Dev Projects → Planning → Projects → New*. It gets a key and the four default columns: To Do, In Progress, In Review, Done.
-2. **Set a milestone.** In the project's **Milestones** tab (or *Planning → Milestones*), add a goal with a deadline, e.g. "Login complete".
-3. **Plan a sprint for it.** In the **Sprints** tab, add a sprint and pick the milestone it works towards.
-4. **Fill the backlog.** In *Work → Backlog*, add issues, drag them to rank them, and set the **Sprint** column to plan them. They join the sprint's milestone automatically.
-5. **Start the sprint.** In *Planning → Sprints*, open the sprint and click **Start Sprint**.
-6. **Work on the Board.** In *Work → Board*, drag cards across the columns. New issues created here go into the running sprint automatically.
-7. **Complete the sprint.** Click **Complete Sprint** and choose where unfinished issues go: the next sprint or the backlog.
-8. **Complete the milestone.** When its goal is reached, open it and click **Mark as Complete**.
+**In one line:** set up Modules and Milestones → write issues in the **Backlog** → plan and **Start** a sprint → drag cards on the **Board** → **Complete Sprint** → repeat → **Mark the milestone as Complete**.
+
+How the pieces fit:
+
+```
+Project: AI glasses
+├─ Milestones  → WHY / what goal?     "Login complete", "Beta launch"
+├─ Sprints     → WHEN do we do it?    "Sprint 1", "Sprint 2"
+└─ Modules     → WHAT part is it?     "Login", "Camera", "UI"
+```
+
+One issue can have all three, e.g. **AG-4 Bug: Wrong password message**, with Milestone *Login complete*, Sprint *Sprint 1* and Module *Login*.
+
+### 1. Set up the project (once)
+*Dev Projects → Planning → Projects → New*. Type the name and save; it gets a key (e.g. `AG`) and board columns. Then fill in the tabs:
+- **Development:** check the key and paste the **GitHub Repository** link.
+- **Modules:** add the parts of your app with **Add a line**, e.g. *Login, Camera, UI*.
+- **Milestones:** add your big goals with a deadline, e.g. *"Beta launch — Dec 1"*.
+
+### 2. Write down the work (any time)
+*Work → **Backlog***
+- **Add a line** for each thing to do and pick its type: Story, Task, Bug or Improvement.
+- Set its **Module**.
+- Drag lines so the most important ones are at the top.
+
+### 3. Plan a sprint (every 1–2 weeks)
+In the project's **Sprints** tab, or *Planning → Sprints*:
+1. Create a sprint and pick the **Milestone** it works towards.
+2. In the **Backlog**, set the **Sprint** column on the issues you'll do. They join the sprint's milestone automatically.
+3. Open the sprint and click **Start Sprint**.
+
+### 4. Do the work (every day)
+*Work → **Board***
+- Drag cards: **To Do → In Progress → In Review → Done**.
+- New issues created here go straight into the running sprint.
+
+### 5. Finish the sprint
+Open the sprint and click **Complete Sprint**. Unfinished issues go to the next sprint or back to the backlog. Then repeat from step 3.
+
+### 6. Finish the milestone
+When its goal is reached, open it (project **Milestones** tab) and click **Mark as Complete**.
+
+**Buttons you can ignore at first**
+- **Start / Send to Review / Mark as Done** on an issue do the same as dragging its card.
+- **Pause / Resume** and **Assign to Me** are small shortcuts.
+- **Complete** on an issue marks it done *and* takes the card off the board (archive or delete). Use it only when you want the card gone.
+- **Reopen** is only for something marked done by mistake.
+- The **Project** menu is Odoo's normal app for non-software projects. You can work entirely in **Dev Projects**.
 
 > **Why don't I see my sprint's issues on the Board?**
 > The Board shows the *running* sprint plus issues not in any sprint. Issues in a sprint that hasn't been started stay hidden until you click **Start Sprint**. To see them earlier, use the sprint's **Issues** button or remove the "Current Work" filter.
@@ -217,6 +258,7 @@ odoo_taskvc/
         ├── __manifest__.py
         ├── hooks.py           Install / uninstall steps
         ├── data/              Default board columns, settings
+        ├── migrations/        Upgrade steps (e.g. turning old Histories into Milestones)
         ├── models/
         │   ├── project_task.py        Issues: types, keys, board/Done sync, Complete wizard
         │   ├── project_project.py     Software projects, keys, screen actions
@@ -227,7 +269,7 @@ odoo_taskvc/
         │   ├── dev_technology.py      Technologies and logo loading
         │   ├── res_partner.py         Developer profiles and access codes
         │   └── res_config_settings.py Settings
-        ├── views/             Board, backlog, sprints, forms, menus, settings
+        ├── views/             Board, backlog, milestones, sprints, modules, forms, menus, settings
         ├── security/          Access rights
         └── tests/
             ├── test_dev_projects.py   Behaviour tests
