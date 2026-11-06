@@ -4,6 +4,8 @@
 
 Jira-style software project management built on top of Odoo's own **Project** app.
 
+> **Just using the app?** Read the plain-language [User Guide](USER_GUIDE.md) ([Guía de usuario en español](GUIA_DE_USUARIO.md)). This README is for the people who install and maintain it.
+
 Dev Projects adds issue keys (`WEB-1`, `WEB-2`…), issue types, a board with WIP limits, a ranked backlog, sprints you start and complete by hand, milestones, modules, technologies and developer profiles. It works on the **same projects and tasks** as the Project app. An issue is a normal Odoo task with extra fields, so you can switch between the two apps at any time.
 
 ---

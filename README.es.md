@@ -2,6 +2,8 @@
 
 Gestión de proyectos de software al estilo Jira, construida sobre la app **Project** de Odoo.
 
+> **¿Solo vas a usar la app?** Lee la [Guía de usuario](GUIA_DE_USUARIO.md) en lenguaje sencillo ([User Guide in English](USER_GUIDE.md)). Este README es para quienes la instalan y la mantienen.
+
 Dev Projects añade claves de incidencia (`WEB-1`, `WEB-2`…), tipos de incidencia, un tablero con límites WIP, un backlog ordenado, sprints que se inician y se completan a mano, milestones (hitos), módulos, tecnologías y perfiles de desarrollador. Trabaja sobre **los mismos proyectos y tareas** que la app Project. Una incidencia es una tarea normal de Odoo con campos extra, así que puedes cambiar entre las dos apps en cualquier momento.
 
 ---
