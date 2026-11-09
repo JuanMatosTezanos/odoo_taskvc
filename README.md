@@ -6,7 +6,7 @@ Jira-style software project management built on top of Odoo's own **Project** ap
 
 > **Just using the app?** Read the plain-language [User Guide](USER_GUIDE.md) ([Guía de usuario en español](GUIA_DE_USUARIO.md)). This README is for the people who install and maintain it.
 
-Dev Projects adds issue keys (`WEB-1`, `WEB-2`…), issue types, sub-tasks, a **Board** with WIP limits, a ranked backlog, sprints you start and complete by hand (with a recap of each one), milestones with versions, components, technologies and developer profiles. A **report icon** (📢) in the top bar lets anyone in the company send problems and ideas to the dev team. It works on the **same projects and tasks** as the Project app. An issue is a normal Odoo task with extra fields, so you can switch between the two apps at any time. The whole module is available in **English and Spanish**.
+Dev Projects adds issue keys (`WEB-1`, `WEB-2`…), issue types, sub-tasks, a **Board** with WIP limits, a ranked backlog, sprints you start and complete by hand (with a recap of each one), milestones with versions, components, technologies and developer profiles. A **ticket icon** (📢) in the top bar lets anyone in the company send problems, ideas and IT requests to the team, who handle them on their own Tickets board. It works on the **same projects and tasks** as the Project app. An issue is a normal Odoo task with extra fields, so you can switch between the two apps at any time. The whole module is available in **English and Spanish**.
 
 ---
 
@@ -95,37 +95,45 @@ Dev Projects adds issue keys (`WEB-1`, `WEB-2`…), issue types, sub-tasks, a **
   - A "Devs" tag, added automatically.
   - A **Create User** button that gives the developer an Odoo login (their email), so issues can be assigned to them. It links the login to the same contact, so the profile stays.
 
-**Reports (for people outside the dev team)**
+**Tickets (for people outside the team)**
+
+Tickets are problems, ideas and questions that people in the company send to the team (devs and IT). They live on their **own board** and never go into projects, Backlogs or sprints. Dev Projects stays for the team's own scrum work.
+
+*Sending (everyone):*
 - A 📢 icon in the top bar, next to chat and activities, on every screen and for every internal user. People without Project rights don't need (or see) the Projects app.
-- The icon's menu has **New Report** and **My Reports**.
-- **New Report** opens a pop-up form:
+- The icon's menu has **New Ticket** and **My Tickets**.
+- **New Ticket** opens a pop-up form:
   - *Reported by* (filled in)
-  - **App**: the Odoo app where it happens, e.g. Sales. Required, and it only lists the apps that person can open.
+  - **What's it about?**: *An Odoo app* or *IT Support* (computer, printer, internet, email, passwords)
+  - **App** (for app tickets): the Odoo app where it happens, e.g. Sales. Required. It only lists the installed apps that person can open, so a regular worker never sees Dev Projects.
   - *What is it?*: Something's broken / Request a feature / Question
-  - Title and details (screenshots can be pasted in)
+  - Title and details (screenshots can be pasted in). For *Something's broken*, a short note asks for the steps: where they clicked, what they expected, what happened instead.
   - *How urgent is it?*: It can wait / Normal / Urgent / I can't work
-  - **Send** saves it and says thanks.
-- **My Reports** lists what you sent and where it stands: *Waiting for review → Accepted → Being worked on → Done*, or *Declined* with the reason. Reporters only see their own reports.
-- The dev team reviews them in **Dev Projects → Work → Reports**:
-  - **Accept** asks which project's Backlog gets the issue. It's pre-filled when there's only one software project, or with the project last used for the same app. The issue goes in outside any sprint, with:
-    - the reporter as *Reported by*
-    - the details, screenshots and app copied over
-    - type from the report: *Something's broken* → Bug, *Request a feature* → Story, *Question* → Task
-    - priority from urgency: *Urgent* → High, *I can't work* → Critical (and Blocker severity for bugs)
-  - **Decline** asks for a reason, which the reporter sees. **Review Again** puts a declined report back in the queue.
-  - Select several reports in the list and use **Actions → Accept** to accept them at once.
-- The reporter follows the report and is notified when it's accepted or declined, and once when its issue is done. The report also shows the issue key and live status.
+  - **Send** saves it and shows its number, e.g. *TCK-12*.
+- **My Tickets** lists what you sent and where it stands: *Waiting for review → Accepted → Being worked on → Done*, or *Declined* with the reason. People only see their own tickets.
+- **Still not fixed:** for 7 days after a ticket is done, the person who sent it can send it back to To Do with a comment.
+- The sender follows the ticket and is notified when it's accepted, declined and done.
+
+*Handling (the team): Dev Projects → Work → Tickets*
+- A board with **New → To Do → In Progress → Done**, most urgent first in each column. Declined tickets are hidden; the *Declined* filter shows them.
+- The **Tickets** menu item shows how many new tickets are waiting, e.g. *Tickets 3*.
+- **Accept** moves a new ticket to To Do; **Decline** asks for a reason, which the sender sees. **Review Again** puts a declined one back in New. Cards can also be dragged between columns.
+- **Assigned to**: who on the team is handling it, with an **Assign to Me** button. Whoever moves a ticket to In Progress takes it if nobody has.
+- Every ticket has a number (**TCK-1**, **TCK-2**…) you can search for.
+- **Urgent** and **I can't work** tickets notify the whole team as soon as they're sent.
+- Filters: New, Open, Assigned to Me, Unassigned, IT, Apps, Urgent. Select several and use **Actions → Accept** to accept them at once.
+- The team is everyone with Project user rights, so give the IT person those rights too.
 
 ---
 
 ## How it fits with the Project app
 
-After installing, the home screen shows one **Projects** app (for the dev team) with two menus. Everyone else uses the 📢 report icon in the top bar (see [Features](#features)).
+After installing, the home screen shows one **Projects** app (for the dev team) with two menus. Everyone else uses the 📢 ticket icon in the top bar (see [Features](#features)).
 
 ```
 Projects  |  Project ▾          |  Dev Projects ▾
           |  Odoo's own menus,  |  Planning: Projects, Milestones, Sprints, Components
-          |  unchanged          |  Work:     Board, Backlog, Reports
+          |  unchanged          |  Work:     Board, Backlog, Tickets
           |                     |  Team:     My Developer Profile, Developers, Technologies
           |                     |  Configuration
 ```
@@ -214,7 +222,7 @@ One issue can have all three, e.g. **AG-4 Bug: Wrong password message**, with Mi
 - Set its **Component**.
 - Drag lines so the most important ones are at the top.
 - For a big issue, open it (**View** at the end of the line) and add steps in its **Sub-tasks** tab.
-- Check *Work → **Reports*** for what people outside the team sent: **Accept** puts it in the Backlog, **Decline** tells them why not.
+- Check *Work → **Tickets*** for what people outside the team sent. Tickets have their own board and never go into the Backlog.
 
 ### 3. Plan a sprint (every 1–2 weeks)
 In the project's **Sprints** tab, or *Planning → Sprints*:
@@ -285,8 +293,8 @@ Main screens in each language:
 | Sub-tasks | Subtareas |
 | Reported by | Reportado por |
 | Board Columns | Columnas del tablero |
-| New Report / My Reports (📢 icon) | Nuevo reporte / Mis reportes |
-| Reports (Dev Projects) | Reportes |
+| New Ticket / My Tickets (📢 icon) | Nuevo ticket / Mis tickets |
+| Tickets (Work menu) / IT Support | Tickets / Soporte de TI |
 
 **Changing a text?** After editing a label or message in the code, export the template again and add the Spanish text to `es.po`, then upgrade the module:
 
@@ -341,7 +349,7 @@ odoo_taskvc/
     ├── hooks.py               Install / uninstall steps
     ├── data/                  Default board columns, settings
     ├── i18n/                  Translations: dev_addons.pot (template), es.po (Spanish)
-    ├── migrations/            Upgrade steps (old Histories → Milestones; recaps for old sprints)
+    ├── migrations/            Upgrade steps (old Histories → Milestones; recaps for old sprints; reports → numbered tickets)
     ├── models/
     │   ├── project_task.py        Issues: types, keys, board/Done sync, sub-tasks, Complete wizard
     │   ├── project_project.py     Software projects, keys, screen actions
@@ -349,18 +357,18 @@ odoo_taskvc/
     │   ├── dev_sprint.py          Sprints, the Complete Sprint wizard and the sprint recap
     │   ├── project_milestone.py   Milestones: version, progress, sprints, Complete
     │   ├── dev_module.py          Components (parts of the software that classify issues)
-    │   ├── dev_report.py          Reports: send, accept (→ issue, project picked then) or decline
+    │   ├── dev_report.py          Tickets: send, the ticket board, assign, decline, "Still not fixed"
     │   ├── dev_technology.py      Technologies and logo loading
     │   ├── res_partner.py         Developer profiles and access codes
     │   └── res_config_settings.py Settings
-    ├── views/                 Board, backlog, reports, milestones, sprints, components, forms, menus, settings
-    ├── security/              Access rights (everyone can send reports and sees only their own)
+    ├── views/                 Board, backlog, tickets, milestones, sprints, components, forms, menus, settings
+    ├── security/              Access rights (everyone can send tickets and sees only their own)
     ├── static/
     │   ├── description/       App icon
-    │   └── src/report_systray/ The 📢 report icon in the top bar
+    │   └── src/               The 📢 ticket icon (report_systray) and the Tickets count in the menu (tickets_counter)
     └── tests/
         ├── test_dev_projects.py   Behaviour tests
-        ├── test_reports.py        Reports: sending, accepting, declining, who sees what
+        ├── test_reports.py        Tickets: sending, the board, IT / App, reopening, who sees what
         └── test_screens.py        Every screen opens; Project app still works
 ```
 
