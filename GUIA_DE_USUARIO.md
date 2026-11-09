@@ -36,7 +36,7 @@ No necesitas conocimientos técnicos para usarlo. Esta guía te lo explica todo 
 2. Haz clic en la app **Proyectos** (*Projects*) de la pantalla de inicio.
 3. Arriba verás dos menús: **Proyecto** (*Project*) y **Proyectos Dev** (*Dev Projects*). Usa **Proyectos Dev** para el trabajo de software.
 
-> **¿No eres del equipo de desarrollo?** Abre también la app **Proyectos**: solo verás el menú **Reportar** (*Report*), donde envías un problema o una idea (ver sección 12).
+> **¿No eres del equipo de desarrollo?** No verás la app Proyectos, y no la necesitas. Haz clic en el icono 📢 de arriba a la derecha, en cualquier pantalla, para enviar un problema o una idea (ver sección 12).
 
 **Para ver todo en español:**
 
@@ -174,6 +174,7 @@ El **Tablero** tiene cuatro columnas:
 
 **Por hacer → En curso → En revisión → Hecho**
 
+- Cada columna muestra primero las **tarjetas más importantes**: los errores graves (Críticos o Bloqueantes) arriba del todo, y luego según las estrellas de prioridad. Para subir una tarjeta, dale más estrellas.
 - **Arrastra una tarjeta** a la siguiente columna según avance el trabajo.
 - Al mover una tarjeta a **En curso** se guarda cuándo empezaste; al moverla a **Hecho**, cuándo terminaste.
 - Haz clic en una tarjeta para abrirla, escribir comentarios o adjuntar archivos.
@@ -237,21 +238,23 @@ También puedes escribir la clave de una incidencia, p. ej. **AG-12**, para enco
 
 No necesitas ser desarrollador para esto. Cualquier persona de la empresa puede avisarle algo al equipo de desarrollo.
 
-1. En la pantalla de inicio, abre la app **Proyectos** y haz clic en **Reportar** (*Report*) arriba, a la derecha de Proyectos Dev.
-2. Haz clic en **Nuevo reporte** (*New Report*).
+1. Haz clic en el icono 📢 de arriba a la derecha (junto a los iconos del chat y del reloj). Está en todas las pantallas.
+2. Haz clic en **Nuevo reporte** (*New Report*). Se abre una ventana pequeña.
 3. Rellena:
    - **Título**: unas pocas palabras, p. ej. *"No puedo imprimir facturas"*.
-   - **Proyecto**: la aplicación o el sistema al que se refiere.
+   - **Aplicación** (*App*): la aplicación donde ocurre, p. ej. *Ventas* o *Inventario*. Es obligatoria.
    - **¿Qué es?**: *Algo no funciona*, *Pedir una función nueva* o *Pregunta*.
    - **¿Qué tan urgente es?**: desde *Puede esperar* hasta *No puedo trabajar*.
-   - **Detalles**: qué pasó, qué esperabas y cómo volver a verlo.
-4. Agrega capturas de pantalla con el **clip** de abajo y haz clic en **Guardar**.
+   - **Detalles**: qué pasó, qué esperabas y cómo volver a verlo. Puedes pegar capturas de pantalla aquí.
+4. Haz clic en **Enviar** (*Send*). Verás un breve mensaje de "¡Gracias!".
 
-**Seguimiento:** ve a **Reportar → Mis reportes**. Cada reporte muestra en qué punto está:
+**Reportado por** se rellena con tu nombre, para que el equipo sepa quién lo envió.
+
+**Seguimiento:** haz clic en el icono 📢 → **Mis reportes** (*My Reports*). Cada reporte muestra en qué punto está:
 
 **Esperando revisión → Aceptado → En curso → Hecho**
 
-Si el equipo decide no hacerlo, aparece como **Rechazado** con el motivo. También recibirás un aviso cuando se acepte o se rechace, y puedes escribirle al equipo en la parte de abajo del reporte.
+Si el equipo decide no hacerlo, aparece como **Rechazado** con el motivo. Recibirás un aviso cuando se acepte o se rechace, y otro cuando el trabajo esté hecho. También puedes escribirle al equipo en la parte de abajo del reporte.
 
 Solo ves tus propios reportes. Cuando el equipo ya revisó un reporte, no se puede editar, pero puedes seguir agregando mensajes.
 
@@ -261,11 +264,16 @@ Solo ves tus propios reportes. Cuando el equipo ya revisó un reporte, no se pue
 
 *Para el equipo de desarrollo.*
 
-Ve a **Proyectos Dev → Trabajo → Reportes**. Se abre con los reportes **Por revisar**. Cada proyecto muestra además un botón **Reportes nuevos** con cuántos están esperando.
+Ve a **Proyectos Dev → Trabajo → Reportes**. Se abre con los reportes **Por revisar**. Cada uno muestra la **Aplicación** de la que trata y quién lo envió.
 
 Abre un reporte y elige:
 
-- **Aceptar**: se convierte en una incidencia del **Backlog** del proyecto, con quien lo envió como **Reportado por** y con sus detalles y capturas copiados. El tipo sale del reporte (*Algo no funciona* = Error, *Pedir una función nueva* = Historia, *Pregunta* = Tarea), y la prioridad también. A partir de ahí, planifícala como cualquier otra incidencia.
+- **Aceptar**: elige el **proyecto** a cuyo backlog va. El proyecto viene sugerido si solo hay uno, o si un reporte de la misma aplicación ya fue a un proyecto antes. Se convierte en una incidencia de ese **Backlog**, con:
+  - quien lo envió como **Reportado por**;
+  - sus detalles, capturas y la aplicación copiados;
+  - el tipo según el reporte (*Algo no funciona* = Error, *Pedir una función nueva* = Historia, *Pregunta* = Tarea), y la prioridad también.
+
+  A partir de ahí, planifícala como cualquier otra incidencia. Cuando esté hecha, a quien lo envió se le avisa automáticamente.
 - **Rechazar**: escribe un motivo breve y amable. Quien lo envió lo verá.
 
 Para aceptar varios a la vez, márcalos en la lista y usa **Acciones → Aceptar**. ¿Lo rechazaste por error? Ábrelo y haz clic en **Revisar de nuevo**.

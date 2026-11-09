@@ -35,7 +35,7 @@ You don't need any technical knowledge to use it. This guide walks you through e
 2. Click the **Projects** app on the home screen.
 3. At the top you'll see two menus: **Project** and **Dev Projects**. Use **Dev Projects** for software work.
 
-> **Not on the dev team?** Open the **Projects** app too: you'll only see a **Report** menu, where you send a problem or an idea (see section 13).
+> **Not on the dev team?** You won't see the Projects app, and you don't need it. Click the 📢 icon at the top right of any screen to send a problem or an idea (see section 13).
 
 The **Dev Projects** menu has four parts:
 
@@ -165,6 +165,7 @@ The **Board** has four columns:
 
 **To Do → In Progress → In Review → Done**
 
+- Each column shows the **most important cards first**: serious bugs (Critical or Blocker) at the very top, then by priority stars. To move a card up, give it more stars.
 - **Drag a card** to the next column as the work moves along.
 - Moving a card to **In Progress** records when you started; moving it to **Done** records when you finished.
 - Click a card to open it, write comments, or attach files.
@@ -238,7 +239,7 @@ The page reloads in Spanish. To go back, choose **English** the same way.
 
 If you don't see **Español** in the list, ask a manager to add it once in **Settings → General Settings → Languages → Add Languages**.
 
-Some names change in Spanish: **Issues** become **Incidencias**, **Milestones** become **Hitos**, **Components** become **Componentes**, **Sub-tasks** become **Subtareas**, the **Recap** is the **Resumen**, the **Board** is the **Tablero** and the **Report** menu is **Reportar**. **Backlog** and **Sprints** keep their names.
+Some names change in Spanish: **Issues** become **Incidencias**, **Milestones** become **Hitos**, **Components** become **Componentes**, **Sub-tasks** become **Subtareas**, the **Recap** is the **Resumen**, the **Board** is the **Tablero**, and **New Report** / **My Reports** are **Nuevo reporte** / **Mis reportes**. **Backlog** and **Sprints** keep their names.
 
 ---
 
@@ -246,21 +247,23 @@ Some names change in Spanish: **Issues** become **Incidencias**, **Milestones** 
 
 You don't need to be a developer for this. Anyone in the company can tell the dev team about something.
 
-1. On the home screen, open the **Projects** app and click **Report** at the top (right of Dev Projects).
-2. Click **New Report**.
+1. Click the 📢 icon at the top right of the screen (next to the chat and clock icons). It's there on every screen.
+2. Click **New Report**. A small window opens.
 3. Fill in:
    - **Title**: a few words, e.g. *"Can't print invoices"*.
-   - **Project**: the app or system it's about.
+   - **App**: the app where it happens, e.g. *Sales* or *Inventory*. You must pick one.
    - **What is it?**: *Something's broken*, *Request a feature* or *Question*.
    - **How urgent is it?**: from *It can wait* to *I can't work*.
-   - **Details**: what happened, what you expected, and how to see it again.
-4. Add screenshots with the **paperclip** at the bottom, then click **Save**.
+   - **Details**: what happened, what you expected, and how to see it again. You can paste screenshots here.
+4. Click **Send**. You'll see a short "Thanks!" message.
 
-**Following it:** go to **Report → My Reports**. Each report shows where it stands:
+**Reported by** is filled in with your name, so the team knows who sent it.
+
+**Following it:** click the 📢 icon → **My Reports**. Each report shows where it stands:
 
 **Waiting for review → Accepted → Being worked on → Done**
 
-If the team decides not to do it, it shows **Declined** with the reason. You'll also get a notification when it's accepted or declined, and you can write to the team at the bottom of the report.
+If the team decides not to do it, it shows **Declined** with the reason. You'll get a notification when it's accepted or declined, and again when the work is done. You can also write to the team at the bottom of the report.
 
 You only see your own reports. Once the team has reviewed a report it can't be edited, but you can still add a message.
 
@@ -270,11 +273,16 @@ You only see your own reports. Once the team has reviewed a report it can't be e
 
 *For the dev team.*
 
-Go to **Dev Projects → Work → Reports**. It opens on the reports **To Review**. A project also shows a **New Reports** button with how many are waiting.
+Go to **Dev Projects → Work → Reports**. It opens on the reports **To Review**. Each one shows the **App** it's about and who sent it.
 
 Open a report and choose:
 
-- **Accept**: it becomes an issue in the project's **Backlog**, with the person who sent it as **Reported by** and their details and screenshots copied over. The type comes from the report (*Something's broken* = Bug, *Request a feature* = Story, *Question* = Task), and so does the priority. From there, plan it like any other issue.
+- **Accept**: pick the **project** whose Backlog it goes to. The project is suggested when there's only one, or when a report from the same app went to a project before. It becomes an issue in that **Backlog**, with:
+  - the person who sent it as **Reported by**;
+  - their details, screenshots and the app copied over;
+  - the type from the report (*Something's broken* = Bug, *Request a feature* = Story, *Question* = Task), and the priority too.
+
+  From there, plan it like any other issue. When it's done, the person who sent it is told automatically.
 - **Decline**: write a short, friendly reason. The person who sent it will see it.
 
 To accept several at once, tick them in the list and use **Actions → Accept**. Declined by mistake? Open it and click **Review Again**.
