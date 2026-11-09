@@ -22,8 +22,8 @@ You don't need any technical knowledge to use it. This guide walks you through e
 10. [Finishing a milestone](#10-finishing-a-milestone)
 11. [Finding things](#11-finding-things)
 12. [Using Dev Projects in Spanish](#12-using-dev-projects-in-spanish)
-13. [Reporting a problem or an idea (for everyone)](#13-reporting-a-problem-or-an-idea-for-everyone)
-14. [Reviewing reports](#14-reviewing-reports)
+13. [Sending a ticket (for everyone)](#13-sending-a-ticket-for-everyone)
+14. [Handling tickets](#14-handling-tickets)
 15. [Adding a new team member](#15-adding-a-new-team-member)
 16. [Common questions](#16-common-questions)
 
@@ -35,14 +35,14 @@ You don't need any technical knowledge to use it. This guide walks you through e
 2. Click the **Projects** app on the home screen.
 3. At the top you'll see two menus: **Project** and **Dev Projects**. Use **Dev Projects** for software work.
 
-> **Not on the dev team?** You won't see the Projects app, and you don't need it. Click the 📢 icon at the top right of any screen to send a problem or an idea (see section 13).
+> **Not on the dev team?** You won't see the Projects app, and you don't need it. Click the 📢 icon at the top right of any screen to send a ticket: a problem, an idea or an IT request (see section 13).
 
 The **Dev Projects** menu has four parts:
 
 | Menu | What's inside |
 |---|---|
 | **Planning** | Projects, Milestones, Sprints, Components: the big picture |
-| **Work** | Board, Backlog and Reports: the day-to-day work |
+| **Work** | Board, Backlog and Tickets: the day-to-day work |
 | **Team** | Your developer profile, the developers, and the technologies you use |
 | **Configuration** | Settings (managers only) |
 
@@ -64,7 +64,7 @@ The **Dev Projects** menu has four parts:
 | **Sprint** | A short work period, usually 1–2 weeks | *Sprint 1* |
 | **Recap** | The summary of a finished sprint | *"12 of 15 issues finished"* |
 | **Board** | The screen with columns where you move work forward | |
-| **Report** | A problem or idea sent by someone outside the dev team | *"Can't print invoices"* |
+| **Ticket** | A problem, idea or IT request sent by someone outside the team | *TCK-12 "Can't print invoices"* |
 | **Milestone** | A big goal with a deadline | *"Beta launch by Dec 1"* |
 | **Version** | The version number a milestone comes out as | *1.0.0* |
 | **Component** | A part of the app | *Login, Camera, Settings* |
@@ -239,53 +239,60 @@ The page reloads in Spanish. To go back, choose **English** the same way.
 
 If you don't see **Español** in the list, ask a manager to add it once in **Settings → General Settings → Languages → Add Languages**.
 
-Some names change in Spanish: **Issues** become **Incidencias**, **Milestones** become **Hitos**, **Components** become **Componentes**, **Sub-tasks** become **Subtareas**, the **Recap** is the **Resumen**, the **Board** is the **Tablero**, and **New Report** / **My Reports** are **Nuevo reporte** / **Mis reportes**. **Backlog** and **Sprints** keep their names.
+Some names change in Spanish: **Issues** become **Incidencias**, **Milestones** become **Hitos**, **Components** become **Componentes**, **Sub-tasks** become **Subtareas**, the **Recap** is the **Resumen**, the **Board** is the **Tablero**, **New Ticket** / **My Tickets** are **Nuevo ticket** / **Mis tickets**, and **IT Support** is **Soporte de TI**. **Backlog** and **Sprints** keep their names.
 
 ---
 
-## 13. Reporting a problem or an idea (for everyone)
+## 13. Sending a ticket (for everyone)
 
-You don't need to be a developer for this. Anyone in the company can tell the dev team about something.
+You don't need to be a developer for this. Anyone in the company can send a ticket to the team (developers and IT): something broken, an idea, or a question.
 
 1. Click the 📢 icon at the top right of the screen (next to the chat and clock icons). It's there on every screen.
-2. Click **New Report**. A small window opens.
+2. Click **New Ticket**. A small window opens.
 3. Fill in:
    - **Title**: a few words, e.g. *"Can't print invoices"*.
-   - **App**: the app where it happens, e.g. *Sales* or *Inventory*. You must pick one.
+   - **What's it about?**:
+     - **An Odoo app**: then pick the **App** where it happens, e.g. *Sales* or *Inventory*. You only see the apps you use.
+     - **IT Support**: your computer, printer, internet, email or passwords.
    - **What is it?**: *Something's broken*, *Request a feature* or *Question*.
    - **How urgent is it?**: from *It can wait* to *I can't work*.
-   - **Details**: what happened, what you expected, and how to see it again. You can paste screenshots here.
-4. Click **Send**. You'll see a short "Thanks!" message.
+   - **Details**: for something broken, a short note shows what to write: where you were and what you clicked, what you expected, and what happened instead. You can paste screenshots here.
+4. Click **Send**. You'll see "Thanks!" and your ticket's number, e.g. **TCK-12**. Mention that number if you talk to the team about it.
 
 **Reported by** is filled in with your name, so the team knows who sent it.
 
-**Following it:** click the 📢 icon → **My Reports**. Each report shows where it stands:
+**Following it:** click the 📢 icon → **My Tickets**. Each ticket shows where it stands:
 
 **Waiting for review → Accepted → Being worked on → Done**
 
-If the team decides not to do it, it shows **Declined** with the reason. You'll get a notification when it's accepted or declined, and again when the work is done. You can also write to the team at the bottom of the report.
+If the team decides not to do it, it shows **Declined** with the reason. You'll get a notification when it's accepted, declined and done. You can also write to the team at the bottom of the ticket.
 
-You only see your own reports. Once the team has reviewed a report it can't be edited, but you can still add a message.
+**Still not fixed?** For 7 days after a ticket is marked Done, open it and click **Still not fixed**. Write what's still wrong and it goes back to the team.
+
+You only see your own tickets. Once the team has accepted a ticket it can't be edited, but you can still add a message.
 
 ---
 
-## 14. Reviewing reports
+## 14. Handling tickets
 
-*For the dev team.*
+*For the team (developers and IT).*
 
-Go to **Dev Projects → Work → Reports**. It opens on the reports **To Review**. Each one shows the **App** it's about and who sent it.
+Go to **Dev Projects → Work → Tickets**. The menu shows how many new tickets are waiting, e.g. **Tickets 3**.
 
-Open a report and choose:
+Tickets have their **own board**. They never go into a project, the Backlog or a sprint, so your scrum work stays separate.
 
-- **Accept**: pick the **project** whose Backlog it goes to. The project is suggested when there's only one, or when a report from the same app went to a project before. It becomes an issue in that **Backlog**, with:
-  - the person who sent it as **Reported by**;
-  - their details, screenshots and the app copied over;
-  - the type from the report (*Something's broken* = Bug, *Request a feature* = Story, *Question* = Task), and the priority too.
+**New → To Do → In Progress → Done**
 
-  From there, plan it like any other issue. When it's done, the person who sent it is told automatically.
-- **Decline**: write a short, friendly reason. The person who sent it will see it.
+- The most urgent tickets are at the top of each column. **Urgent** and **I can't work** tickets also send everyone on the team a notification as soon as they arrive.
+- **Accept** moves a new ticket to **To Do**. **Decline** asks for a short, friendly reason, which the person who sent it will see.
+- **Start** and **Mark as Done** move it along, or just drag the card.
+- **Assigned to** shows who's handling it. Click **Assign to Me** to take it. If you start a ticket nobody has, it's assigned to you.
+- Each card shows the ticket number, whether it's **IT** or which **App**, how urgent it is, who sent it and who's on it.
+- Filters: **New**, **Open**, **Assigned to Me**, **Unassigned**, **IT**, **Apps**, **Urgent**. Type a number like **TCK-12** to find a ticket.
 
 To accept several at once, tick them in the list and use **Actions → Accept**. Declined by mistake? Open it and click **Review Again**.
+
+If someone clicks **Still not fixed**, the ticket comes back to **To Do** with their comment, and whoever was handling it is told.
 
 ---
 
@@ -327,6 +334,12 @@ The **Version** box only takes version numbers, like *1.0*, *1.2.0* or *v2.0.1*.
 
 **I can't pick someone as the Assignee.**
 They don't have a login yet. A manager can create one (see section 15).
+
+**Why don't tickets show up in the Backlog?**
+On purpose. Tickets are requests from people outside the team and have their own board in **Work → Tickets**. The Backlog and sprints are only for the team's own work.
+
+**Our IT person can't see the Tickets menu.**
+They need Project user rights, like the developers. A manager can add that in **Settings → Users** (Project: User).
 
 **What's the "Project" menu next to "Dev Projects"?**
 It's for the company's other, non-software projects. For software work, use **Dev Projects**.

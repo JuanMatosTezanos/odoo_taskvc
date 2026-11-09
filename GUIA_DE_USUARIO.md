@@ -23,8 +23,8 @@ No necesitas conocimientos técnicos para usarlo. Esta guía te lo explica todo 
 9. [Terminar un sprint y leer su resumen](#9-terminar-un-sprint-y-leer-su-resumen)
 10. [Terminar un hito](#10-terminar-un-hito)
 11. [Encontrar cosas](#11-encontrar-cosas)
-12. [Reportar un problema o una idea (para todos)](#12-reportar-un-problema-o-una-idea-para-todos)
-13. [Revisar reportes](#13-revisar-reportes)
+12. [Enviar un ticket (para todos)](#12-enviar-un-ticket-para-todos)
+13. [Atender tickets](#13-atender-tickets)
 14. [Agregar a un nuevo miembro del equipo](#14-agregar-a-un-nuevo-miembro-del-equipo)
 15. [Preguntas frecuentes](#15-preguntas-frecuentes)
 
@@ -36,7 +36,7 @@ No necesitas conocimientos técnicos para usarlo. Esta guía te lo explica todo 
 2. Haz clic en la app **Proyectos** (*Projects*) de la pantalla de inicio.
 3. Arriba verás dos menús: **Proyecto** (*Project*) y **Proyectos Dev** (*Dev Projects*). Usa **Proyectos Dev** para el trabajo de software.
 
-> **¿No eres del equipo de desarrollo?** No verás la app Proyectos, y no la necesitas. Haz clic en el icono 📢 de arriba a la derecha, en cualquier pantalla, para enviar un problema o una idea (ver sección 12).
+> **¿No eres del equipo de desarrollo?** No verás la app Proyectos, y no la necesitas. Haz clic en el icono 📢 de arriba a la derecha, en cualquier pantalla, para enviar un ticket: un problema, una idea o un pedido de TI (ver sección 12).
 
 **Para ver todo en español:**
 
@@ -51,7 +51,7 @@ El menú **Proyectos Dev** tiene cuatro partes:
 | Menú | Qué contiene |
 |---|---|
 | **Planificación** (*Planning*) | Proyectos, Hitos, Sprints, Componentes: la visión general |
-| **Trabajo** (*Work*) | Tablero, Backlog y Reportes: el trabajo del día a día |
+| **Trabajo** (*Work*) | Tablero, Backlog y Tickets: el trabajo del día a día |
 | **Equipo** (*Team*) | Tu perfil de desarrollador, los desarrolladores y las tecnologías que usan |
 | **Configuración** (*Configuration*) | Ajustes (solo responsables) |
 
@@ -73,7 +73,7 @@ El menú **Proyectos Dev** tiene cuatro partes:
 | **Sprint** | Un periodo corto de trabajo, normalmente de 1–2 semanas | *Sprint 1* |
 | **Resumen** (*Recap*) | El balance de un sprint terminado | *"12 de 15 incidencias terminadas"* |
 | **Tablero** (*Board*) | La pantalla con columnas donde avanzas el trabajo | |
-| **Reporte** (*Report*) | Un problema o una idea que envía alguien de fuera del equipo de desarrollo | *"No puedo imprimir facturas"* |
+| **Ticket** | Un problema, una idea o un pedido de TI que envía alguien de fuera del equipo | *TCK-12 "No puedo imprimir facturas"* |
 | **Hito** (*Milestone*) | Un objetivo grande con fecha límite | *"Lanzamiento beta el 1 dic"* |
 | **Versión** (*Version*) | El número de versión con el que sale un hito | *1.0.0* |
 | **Componente** (*Component*) | Una parte de la app | *Inicio de sesión, Cámara, Ajustes* |
@@ -234,49 +234,56 @@ También puedes escribir la clave de una incidencia, p. ej. **AG-12**, para enco
 
 ---
 
-## 12. Reportar un problema o una idea (para todos)
+## 12. Enviar un ticket (para todos)
 
-No necesitas ser desarrollador para esto. Cualquier persona de la empresa puede avisarle algo al equipo de desarrollo.
+No necesitas ser desarrollador para esto. Cualquier persona de la empresa puede enviarle un ticket al equipo (desarrolladores y TI): algo que no funciona, una idea o una pregunta.
 
 1. Haz clic en el icono 📢 de arriba a la derecha (junto a los iconos del chat y del reloj). Está en todas las pantallas.
-2. Haz clic en **Nuevo reporte** (*New Report*). Se abre una ventana pequeña.
+2. Haz clic en **Nuevo ticket** (*New Ticket*). Se abre una ventana pequeña.
 3. Rellena:
    - **Título**: unas pocas palabras, p. ej. *"No puedo imprimir facturas"*.
-   - **Aplicación** (*App*): la aplicación donde ocurre, p. ej. *Ventas* o *Inventario*. Es obligatoria.
+   - **¿De qué se trata?** (*What's it about?*):
+     - **Una aplicación de Odoo**: luego elige la **Aplicación** donde ocurre, p. ej. *Ventas* o *Inventario*. Solo ves las aplicaciones que usas.
+     - **Soporte de TI**: tu computadora, impresora, internet, correo o contraseñas.
    - **¿Qué es?**: *Algo no funciona*, *Pedir una función nueva* o *Pregunta*.
    - **¿Qué tan urgente es?**: desde *Puede esperar* hasta *No puedo trabajar*.
-   - **Detalles**: qué pasó, qué esperabas y cómo volver a verlo. Puedes pegar capturas de pantalla aquí.
-4. Haz clic en **Enviar** (*Send*). Verás un breve mensaje de "¡Gracias!".
+   - **Detalles**: si algo no funciona, una nota breve te indica qué escribir: dónde estabas y en qué hiciste clic, qué esperabas y qué pasó en cambio. Puedes pegar capturas de pantalla aquí.
+4. Haz clic en **Enviar** (*Send*). Verás "¡Gracias!" y el número de tu ticket, p. ej. **TCK-12**. Menciona ese número si hablas con el equipo sobre él.
 
 **Reportado por** se rellena con tu nombre, para que el equipo sepa quién lo envió.
 
-**Seguimiento:** haz clic en el icono 📢 → **Mis reportes** (*My Reports*). Cada reporte muestra en qué punto está:
+**Seguimiento:** haz clic en el icono 📢 → **Mis tickets** (*My Tickets*). Cada ticket muestra en qué punto está:
 
 **Esperando revisión → Aceptado → En curso → Hecho**
 
-Si el equipo decide no hacerlo, aparece como **Rechazado** con el motivo. Recibirás un aviso cuando se acepte o se rechace, y otro cuando el trabajo esté hecho. También puedes escribirle al equipo en la parte de abajo del reporte.
+Si el equipo decide no hacerlo, aparece como **Rechazado** con el motivo. Recibirás un aviso cuando se acepte, se rechace y se termine. También puedes escribirle al equipo en la parte de abajo del ticket.
 
-Solo ves tus propios reportes. Cuando el equipo ya revisó un reporte, no se puede editar, pero puedes seguir agregando mensajes.
+**¿Sigue sin funcionar?** Durante 7 días después de que un ticket se marque como Hecho, ábrelo y haz clic en **Sigue sin funcionar** (*Still not fixed*). Escribe qué sigue mal y vuelve al equipo.
+
+Solo ves tus propios tickets. Cuando el equipo ya aceptó un ticket, no se puede editar, pero puedes seguir agregando mensajes.
 
 ---
 
-## 13. Revisar reportes
+## 13. Atender tickets
 
-*Para el equipo de desarrollo.*
+*Para el equipo (desarrolladores y TI).*
 
-Ve a **Proyectos Dev → Trabajo → Reportes**. Se abre con los reportes **Por revisar**. Cada uno muestra la **Aplicación** de la que trata y quién lo envió.
+Ve a **Proyectos Dev → Trabajo → Tickets**. El menú muestra cuántos tickets nuevos están esperando, p. ej. **Tickets 3**.
 
-Abre un reporte y elige:
+Los tickets tienen su **propio tablero**. Nunca entran en un proyecto, el backlog ni un sprint, así que el trabajo scrum queda aparte.
 
-- **Aceptar**: elige el **proyecto** a cuyo backlog va. El proyecto viene sugerido si solo hay uno, o si un reporte de la misma aplicación ya fue a un proyecto antes. Se convierte en una incidencia de ese **Backlog**, con:
-  - quien lo envió como **Reportado por**;
-  - sus detalles, capturas y la aplicación copiados;
-  - el tipo según el reporte (*Algo no funciona* = Error, *Pedir una función nueva* = Historia, *Pregunta* = Tarea), y la prioridad también.
+**Nuevo → Por hacer → En curso → Hecho**
 
-  A partir de ahí, planifícala como cualquier otra incidencia. Cuando esté hecha, a quien lo envió se le avisa automáticamente.
-- **Rechazar**: escribe un motivo breve y amable. Quien lo envió lo verá.
+- Los tickets más urgentes aparecen arriba en cada columna. Los **Urgente** y **No puedo trabajar** además avisan a todo el equipo en cuanto llegan.
+- **Aceptar** pasa un ticket nuevo a **Por hacer**. **Rechazar** pide un motivo breve y amable, que verá quien lo envió.
+- **Iniciar** y **Marcar como hecho** lo avanzan, o simplemente arrastra la tarjeta.
+- **Asignado a** muestra quién lo atiende. Haz clic en **Asignarme** para tomarlo. Si inicias un ticket que nadie tiene, queda asignado a ti.
+- Cada tarjeta muestra el número del ticket, si es de **TI** o de qué **Aplicación**, qué tan urgente es, quién lo envió y quién lo atiende.
+- Filtros: **Nuevo**, **Abiertos**, **Asignados a mí**, **Sin asignar**, **TI**, **Aplicaciones**, **Urgente**. Escribe un número como **TCK-12** para encontrar un ticket.
 
 Para aceptar varios a la vez, márcalos en la lista y usa **Acciones → Aceptar**. ¿Lo rechazaste por error? Ábrelo y haz clic en **Revisar de nuevo**.
+
+Si alguien hace clic en **Sigue sin funcionar**, el ticket vuelve a **Por hacer** con su comentario, y a quien lo atendía se le avisa.
 
 ---
 
@@ -318,6 +325,12 @@ El cuadro **Versión** solo acepta números de versión, como *1.0*, *1.2.0* o *
 
 **No puedo elegir a alguien como Responsable.**
 Todavía no tiene acceso. Un responsable puede crearle uno (ver sección 14).
+
+**¿Por qué los tickets no aparecen en el backlog?**
+Es a propósito. Los tickets son pedidos de personas de fuera del equipo y tienen su propio tablero en **Trabajo → Tickets**. El backlog y los sprints son solo para el trabajo del propio equipo.
+
+**Nuestra persona de TI no ve el menú Tickets.**
+Necesita permisos de usuario de Proyecto, como los desarrolladores. Un responsable puede agregarlos en **Ajustes → Usuarios** (Proyecto: Usuario).
 
 **¿Qué es el menú "Proyecto" que está junto a "Proyectos Dev"?**
 Es para los otros proyectos de la empresa que no son de software. Para el trabajo de software, usa **Proyectos Dev**.

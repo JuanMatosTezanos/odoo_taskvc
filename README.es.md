@@ -4,7 +4,7 @@ Gestión de proyectos de software al estilo Jira, construida sobre la app **Proy
 
 > **¿Solo vas a usar la app?** Lee la [Guía de usuario](GUIA_DE_USUARIO.md) en lenguaje sencillo ([User Guide in English](USER_GUIDE.md)). Este README es para quienes la instalan y la mantienen.
 
-Dev Projects añade claves de incidencia (`WEB-1`, `WEB-2`…), tipos de incidencia, subtareas, un **Tablero** con límites WIP, un backlog ordenado, sprints que se inician y se completan a mano (con un resumen de cada uno), hitos con versión, componentes, tecnologías y perfiles de desarrollador. Un **icono de reportes** (📢) en la barra superior permite que cualquier persona de la empresa envíe problemas e ideas al equipo de desarrollo. Trabaja sobre **los mismos proyectos y tareas** que la app Proyecto. Una incidencia es una tarea normal de Odoo con campos extra, así que puedes cambiar entre las dos apps en cualquier momento. Todo el módulo está disponible en **inglés y español**.
+Dev Projects añade claves de incidencia (`WEB-1`, `WEB-2`…), tipos de incidencia, subtareas, un **Tablero** con límites WIP, un backlog ordenado, sprints que se inician y se completan a mano (con un resumen de cada uno), hitos con versión, componentes, tecnologías y perfiles de desarrollador. Un **icono de tickets** (📢) en la barra superior permite que cualquier persona de la empresa envíe problemas, ideas y pedidos de TI al equipo, que los atiende en su propio tablero de tickets. Trabaja sobre **los mismos proyectos y tareas** que la app Proyecto. Una incidencia es una tarea normal de Odoo con campos extra, así que puedes cambiar entre las dos apps en cualquier momento. Todo el módulo está disponible en **inglés y español**.
 
 > Este README usa los nombres de la app en español. Si tu Odoo está en inglés, la [tabla de idiomas](#idiomas-inglés--español) muestra cómo se llama cada pantalla.
 
@@ -95,37 +95,45 @@ Dev Projects añade claves de incidencia (`WEB-1`, `WEB-2`…), tipos de inciden
   - Una etiqueta "Devs", que se añade automáticamente.
   - Un botón **Crear usuario** que da al desarrollador un acceso a Odoo (su email), para poder asignarle incidencias. Vincula el acceso al mismo contacto, así que el perfil se conserva.
 
-**Reportes (para quienes no son del equipo de desarrollo)**
+**Tickets (para quienes no son del equipo)**
+
+Los tickets son problemas, ideas y preguntas que las personas de la empresa envían al equipo (desarrolladores y TI). Viven en su **propio tablero** y nunca entran en proyectos, backlogs ni sprints. Proyectos Dev queda para el trabajo scrum del propio equipo.
+
+*Enviar (todos):*
 - Un icono 📢 en la barra superior, junto al chat y las actividades, en todas las pantallas y para todos los usuarios internos. Quienes no tienen permisos de Proyecto no necesitan (ni ven) la app Proyectos.
-- El menú del icono tiene **Nuevo reporte** y **Mis reportes**.
-- **Nuevo reporte** abre un formulario emergente:
+- El menú del icono tiene **Nuevo ticket** y **Mis tickets**.
+- **Nuevo ticket** abre un formulario emergente:
   - *Reportado por* (ya rellenado)
-  - **Aplicación**: la app de Odoo donde ocurre, p. ej. Ventas. Es obligatoria y solo muestra las apps que esa persona puede abrir.
+  - **¿De qué se trata?**: *Una aplicación de Odoo* o *Soporte de TI* (computadora, impresora, internet, correo, contraseñas)
+  - **Aplicación** (en los tickets de aplicación): la app de Odoo donde ocurre, p. ej. Ventas. Es obligatoria y solo muestra las apps instaladas que esa persona puede abrir, así que un trabajador normal nunca ve Proyectos Dev.
   - *¿Qué es?*: Algo no funciona / Pedir una función nueva / Pregunta
-  - Título y detalles (se pueden pegar capturas de pantalla)
+  - Título y detalles (se pueden pegar capturas de pantalla). Con *Algo no funciona*, una nota breve pide los pasos: dónde hizo clic, qué esperaba y qué pasó en cambio.
   - *¿Qué tan urgente es?*: Puede esperar / Normal / Urgente / No puedo trabajar
-  - **Enviar** lo guarda y da las gracias.
-- **Mis reportes** lista lo que enviaste y en qué punto está: *Esperando revisión → Aceptado → En curso → Hecho*, o *Rechazado* con el motivo. Cada persona solo ve sus propios reportes.
-- El equipo de desarrollo los revisa en **Proyectos Dev → Trabajo → Reportes**:
-  - **Aceptar** pregunta a qué backlog de proyecto va la incidencia. Viene rellenado si solo hay un proyecto de software, o con el proyecto que se usó la última vez para la misma aplicación. La incidencia entra fuera de cualquier sprint, con:
-    - quien lo envió como *Reportado por*
-    - los detalles, las capturas y la aplicación copiados
-    - el tipo según el reporte: *Algo no funciona* → Error, *Pedir una función nueva* → Historia, *Pregunta* → Tarea
-    - la prioridad según la urgencia: *Urgente* → Alta, *No puedo trabajar* → Crítica (y severidad Bloqueante en los errores)
-  - **Rechazar** pide un motivo, que ve quien lo envió. **Revisar de nuevo** devuelve un reporte rechazado a la cola.
-  - Selecciona varios reportes en la lista y usa **Acciones → Aceptar** para aceptarlos de una vez.
-- Quien envía el reporte lo sigue y recibe un aviso cuando se acepta o se rechaza, y una vez cuando su incidencia está hecha. El reporte también muestra la clave de la incidencia y su estado al día.
+  - **Enviar** lo guarda y muestra su número, p. ej. *TCK-12*.
+- **Mis tickets** lista lo que enviaste y en qué punto está: *Esperando revisión → Aceptado → En curso → Hecho*, o *Rechazado* con el motivo. Cada persona solo ve sus propios tickets.
+- **Sigue sin funcionar:** durante 7 días después de terminado, quien lo envió puede devolverlo a Por hacer con un comentario.
+- Quien envía el ticket lo sigue y recibe un aviso cuando se acepta, se rechaza y se termina.
+
+*Atender (el equipo): Proyectos Dev → Trabajo → Tickets*
+- Un tablero con **Nuevo → Por hacer → En curso → Hecho**, lo más urgente primero en cada columna. Los tickets rechazados se ocultan; el filtro *Rechazados* los muestra.
+- La opción **Tickets** del menú muestra cuántos tickets nuevos están esperando, p. ej. *Tickets 3*.
+- **Aceptar** pasa un ticket nuevo a Por hacer; **Rechazar** pide un motivo, que ve quien lo envió. **Revisar de nuevo** devuelve uno rechazado a Nuevo. También se pueden arrastrar las tarjetas entre columnas.
+- **Asignado a**: quién del equipo lo atiende, con un botón **Asignarme**. Quien pasa un ticket a En curso se lo queda si nadie lo tiene.
+- Cada ticket tiene un número (**TCK-1**, **TCK-2**…) que se puede buscar.
+- Los tickets **Urgente** y **No puedo trabajar** avisan a todo el equipo en cuanto se envían.
+- Filtros: Nuevo, Abiertos, Asignados a mí, Sin asignar, TI, Aplicaciones, Urgente. Selecciona varios y usa **Acciones → Aceptar** para aceptarlos de una vez.
+- El equipo son todas las personas con permisos de usuario de Proyecto, así que dale esos permisos también a la persona de TI.
 
 ---
 
 ## Cómo encaja con la app Proyecto
 
-Tras la instalación, la pantalla de inicio muestra una sola app **Proyectos** (para el equipo de desarrollo) con dos menús. Los demás usan el icono 📢 de reportes de la barra superior (ver [Funcionalidades](#funcionalidades)).
+Tras la instalación, la pantalla de inicio muestra una sola app **Proyectos** (para el equipo de desarrollo) con dos menús. Los demás usan el icono 📢 de tickets de la barra superior (ver [Funcionalidades](#funcionalidades)).
 
 ```
 Proyectos  |  Proyecto ▾          |  Proyectos Dev ▾
            |  Menús propios de    |  Planificación: Proyectos, Hitos, Sprints, Componentes
-           |  Odoo, sin cambios   |  Trabajo:       Tablero, Backlog, Reportes
+           |  Odoo, sin cambios   |  Trabajo:       Tablero, Backlog, Tickets
            |                      |  Equipo:        Mi perfil de desarrollador, Desarrolladores, Tecnologías
            |                      |  Configuración
 ```
@@ -214,7 +222,7 @@ Una incidencia puede tener las tres, p. ej. **AG-4 Error: Mensaje de contraseña
 - Asigna su **Componente**.
 - Arrastra las líneas para dejar las más importantes arriba.
 - Para una incidencia grande, ábrela (**Ver** al final de la línea) y añade pasos en su pestaña **Subtareas**.
-- Revisa *Trabajo → **Reportes*** para ver lo que enviaron personas de fuera del equipo: **Aceptar** lo pasa al backlog y **Rechazar** les explica por qué no.
+- Revisa *Trabajo → **Tickets*** para ver lo que enviaron personas de fuera del equipo. Los tickets tienen su propio tablero y nunca entran en el backlog.
 
 ### 3. Planifica un sprint (cada 1–2 semanas)
 En la pestaña **Sprints** del proyecto, o en *Planificación → Sprints*:
@@ -285,8 +293,8 @@ Las pantallas principales en cada idioma:
 | Sub-tasks | Subtareas |
 | Reported by | Reportado por |
 | Board Columns | Columnas del tablero |
-| New Report / My Reports (📢 icon) | Nuevo reporte / Mis reportes |
-| Reports (Dev Projects) | Reportes |
+| New Ticket / My Tickets (📢 icon) | Nuevo ticket / Mis tickets |
+| Tickets (Work menu) / IT Support | Tickets / Soporte de TI |
 
 **¿Cambias un texto?** Después de editar una etiqueta o un mensaje en el código, vuelve a exportar la plantilla y añade el texto en español a `es.po`; luego actualiza el módulo:
 
@@ -341,7 +349,7 @@ odoo_taskvc/
     ├── hooks.py               Pasos de instalación / desinstalación
     ├── data/                  Columnas del tablero por defecto, ajustes
     ├── i18n/                  Traducciones: dev_addons.pot (plantilla), es.po (español)
-    ├── migrations/            Pasos de actualización (Histories antiguas → Hitos; resúmenes de sprints antiguos)
+    ├── migrations/            Pasos de actualización (Histories antiguas → Hitos; resúmenes de sprints antiguos; reportes → tickets numerados)
     ├── models/
     │   ├── project_task.py        Incidencias: tipos, claves, sincronización tablero/Hecho, subtareas, asistente Completar
     │   ├── project_project.py     Proyectos de software, claves, acciones de pantallas
@@ -349,18 +357,18 @@ odoo_taskvc/
     │   ├── dev_sprint.py          Sprints, el asistente Completar sprint y el resumen del sprint
     │   ├── project_milestone.py   Hitos: versión, progreso, sprints, Completar
     │   ├── dev_module.py          Componentes (partes del software que clasifican incidencias)
-    │   ├── dev_report.py          Reportes: enviar, aceptar (→ incidencia, se elige el proyecto ahí) o rechazar
+    │   ├── dev_report.py          Tickets: enviar, el tablero de tickets, asignar, rechazar, "Sigue sin funcionar"
     │   ├── dev_technology.py      Tecnologías y carga de logos
     │   ├── res_partner.py         Perfiles de desarrollador y códigos de acceso
     │   └── res_config_settings.py Ajustes
-    ├── views/                 Tablero, backlog, reportes, hitos, sprints, componentes, formularios, menús, ajustes
-    ├── security/              Permisos de acceso (todos pueden enviar reportes y solo ven los suyos)
+    ├── views/                 Tablero, backlog, tickets, hitos, sprints, componentes, formularios, menús, ajustes
+    ├── security/              Permisos de acceso (todos pueden enviar tickets y solo ven los suyos)
     ├── static/
     │   ├── description/       Icono de la app
-    │   └── src/report_systray/ El icono 📢 de reportes en la barra superior
+    │   └── src/               El icono 📢 de tickets (report_systray) y el número de tickets en el menú (tickets_counter)
     └── tests/
         ├── test_dev_projects.py   Pruebas de comportamiento
-        ├── test_reports.py        Reportes: enviar, aceptar, rechazar, quién ve qué
+        ├── test_reports.py        Tickets: enviar, el tablero, TI / aplicación, reabrir, quién ve qué
         └── test_screens.py        Todas las pantallas abren; la app Proyecto sigue funcionando
 ```
 
