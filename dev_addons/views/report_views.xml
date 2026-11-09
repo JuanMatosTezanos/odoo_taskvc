@@ -48,7 +48,7 @@
                         <group>
                             <field name="reporter_id" widget="many2one_avatar_user" />
                             <field name="app_menu_id" options="{'no_create': True, 'no_open': True}"
-                                   placeholder="e.g. Sales, Inventory..." readonly="state != 'new'" />
+                                   placeholder="e.g. Sales, Inventory..." readonly="state != 'new'" required="state == 'new'" />
                             <field name="kind" widget="radio" readonly="state != 'new'" />
                         </group>
                         <group>

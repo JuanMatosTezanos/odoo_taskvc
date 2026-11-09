@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 17.0-20260908\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-09 19:08+0000\n"
-"PO-Revision-Date: 2026-11-09 19:08+0000\n"
+"POT-Creation-Date: 2026-11-09 19:29+0000\n"
+"PO-Revision-Date: 2026-11-09 19:29+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -173,6 +173,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:dev_addons.sprint_form
 #: model_terms:ir.ui.view,arch_db:dev_addons.sprint_recap_form
 msgid "<span>of</span>"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,help:dev_addons.field_project_task__dev_is_blocking
+msgid "A Critical or Blocker bug: shown first on the Board."
 msgstr ""
 
 #. module: dev_addons
@@ -441,6 +446,11 @@ msgstr ""
 #. module: dev_addons
 #: model:ir.model.fields.selection,name:dev_addons.selection__project_task__dev_severity__blocker
 msgid "Blocker"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_project_task__dev_is_blocking
+msgid "Blocking Bug"
 msgstr ""
 
 #. module: dev_addons
@@ -865,6 +875,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__done_points
 #: model:ir.model.fields,field_description:dev_addons.field_project_milestone__dev_done_points
 msgid "Done Points"
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/dev_report.py:0
+#, python-format
+msgid "Done! %(key)s is finished. Thanks for reporting it."
 msgstr ""
 
 #. module: dev_addons
@@ -1861,6 +1878,11 @@ msgid "Reported by Me"
 msgstr ""
 
 #. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__done_notified
+msgid "Reporter Told It's Done"
+msgstr ""
+
+#. module: dev_addons
 #: model:ir.actions.act_window,name:dev_addons.action_report_triage
 #: model:ir.model.fields,field_description:dev_addons.field_dev_report_accept__report_ids
 #: model:ir.model.fields,field_description:dev_addons.field_dev_report_decline__report_ids
@@ -2286,6 +2308,11 @@ msgstr ""
 #. module: dev_addons
 #: model:ir.model.fields,help:dev_addons.field_dev_report__project_id
 msgid "The project whose Backlog received the issue."
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,help:dev_addons.field_dev_report__done_notified
+msgid "The reporter got the \"it's done\" message (sent only once)."
 msgstr ""
 
 #. module: dev_addons

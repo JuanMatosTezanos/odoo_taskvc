@@ -77,6 +77,9 @@ class DevReport(models.Model):
     issue_key = fields.Char(string="Issue Key", compute='_compute_issue_info', compute_sudo=True)
     progress = fields.Selection(
         PROGRESS, string="Status", compute='_compute_progress', store=True, compute_sudo=True)
+    done_notified = fields.Boolean(
+        string="Reporter Told It's Done", readonly=True, copy=False,
+        help="The reporter got the \"it's done\" message (sent only once).")
 
     @api.depends_context('uid')
     def _compute_allowed_app_ids(self):
@@ -217,6 +220,14 @@ class DevReport(models.Model):
                 raise UserError(_("\"%s\" was already reviewed.", report.name))
             report.write({'state': 'declined', 'decline_reason': reason})
             report._dev_tell_reporter(_("Declined: %s", reason))
+
+    def _dev_tell_done(self):
+        """The issue made from this report is finished: tell the reporter (once)."""
+        for report in self:
+            report._dev_tell_reporter(
+                _("Done! %(key)s is finished. Thanks for reporting it.",
+                  key=report.task_id.dev_key or report.task_id.name))
+        self.sudo().write({'done_notified': True})
 
     def action_reopen(self):
         """Put a declined report back up for review."""

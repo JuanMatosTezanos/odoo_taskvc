@@ -257,10 +257,12 @@ class TestDevProjects(TransactionCase):
         normal = self._issue(name='Normal', dev_priority='0')
         critical = self._issue(name='Critical', dev_priority='3')
         high = self._issue(name='High', dev_priority='2')
+        blocker = self._issue(name='Blocker bug', dev_priority='0', dev_issue_type='bug', dev_severity='blocker')
+        minor_bug = self._issue(name='Minor bug', dev_priority='0', dev_issue_type='bug', dev_severity='minor')
         arch = self.Task.get_views([(self.env.ref('dev_addons.task_kanban').id, 'kanban')])['views']['kanban']['arch']
         order = etree.fromstring(arch).get('default_order')
-        found = self.Task.search([('id', 'in', (normal | critical | high).ids)], order=order)
-        self.assertEqual(found.mapped('name'), ['Critical', 'High', 'Normal'])
+        found = self.Task.search([('id', 'in', (normal | critical | high | blocker | minor_bug).ids)], order=order)
+        self.assertEqual(found.mapped('name'), ['Blocker bug', 'Critical', 'High', 'Normal', 'Minor bug'])
 
     def test_backlog_rows_can_be_opened(self):
         # Rows edit in place, so each one needs a "View" button to open the full issue.

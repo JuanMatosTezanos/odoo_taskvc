@@ -52,6 +52,9 @@ class ProjectTask(models.Model):
     dev_priority = fields.Selection(DEV_PRIORITIES, string="Dev Priority", default='0', tracking=True)
     dev_story_points = fields.Integer(string="Story Points", help="Relative effort estimate.")
     dev_severity = fields.Selection(SEVERITIES, string="Severity", default='minor', tracking=True)
+    dev_is_blocking = fields.Boolean(
+        string="Blocking Bug", compute='_compute_dev_is_blocking', store=True,
+        help="A Critical or Blocker bug: shown first on the Board.")
     dev_sprint_id = fields.Many2one(
         'dev.sprint', string="Sprint", index=True, tracking=True, ondelete='set null',
         domain="[('project_id', '=', project_id), ('state', '!=', 'closed')]")
@@ -92,6 +95,11 @@ class ProjectTask(models.Model):
                 # Done is driven by Project's state; a reopened task in a
                 # Done column counts as in progress until it is moved.
                 task.dev_status = 'in_progress' if category == 'done' else category
+
+    @api.depends('dev_issue_type', 'dev_severity')
+    def _compute_dev_is_blocking(self):
+        for task in self:
+            task.dev_is_blocking = task.dev_issue_type == 'bug' and task.dev_severity in ('critical', 'blocker')
 
     @api.depends('date_deadline', 'dev_status')
     def _compute_dev_is_overdue(self):
@@ -428,7 +436,17 @@ class ProjectTask(models.Model):
             software._dev_assign_keys()
         if {'stage_id', 'project_id', 'dev_sprint_id'} & set(vals):
             software._dev_check_wip_limits()
+        if {'stage_id', 'state'} & set(vals):
+            self._dev_tell_reporters_done()
         return res
+
+    def _dev_tell_reporters_done(self):
+        """Issues that came from a report: tell the reporter once it's done."""
+        done = self.filtered(lambda t: t.dev_status == 'done')
+        if done:
+            self.env['dev.report'].sudo().search([
+                ('task_id', 'in', done.ids), ('done_notified', '=', False),
+            ])._dev_tell_done()
 
     def _dev_sync_stage_and_dates(self, keep=(), clear=True):
         """After a stage or state change: matching column, start/end dates, pause.

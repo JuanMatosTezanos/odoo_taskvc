@@ -33,6 +33,7 @@ class TestReports(TransactionCase):
         form = Form(self.env['dev.report'].with_user(user or self.alice),
                     view='dev_addons.report_form')
         form.name = vals.pop('name', "Can't print invoices")
+        form.app_menu_id = vals.pop('app_menu_id', self.discuss)
         for field, value in vals.items():
             setattr(form, field, value)
         report = form.save()
@@ -76,6 +77,12 @@ class TestReports(TransactionCase):
         self.assertIn(self.env.ref('project.menu_main_pm'),
                       self.env['dev.report'].with_user(self.dev).new({}).allowed_app_ids._origin)
 
+    def test_app_is_required(self):
+        form = Form(self.env['dev.report'].with_user(self.alice), view='dev_addons.report_form')
+        form.name = 'No app'
+        with self.assertRaises(AssertionError):
+            form.save()
+
     def test_reporter_cannot_decide(self):
         report = self._send()
         as_alice = report.with_user(self.alice)
@@ -111,8 +118,17 @@ class TestReports(TransactionCase):
         self.assertEqual((as_alice.issue_key, as_alice.progress), (issue.dev_key, 'accepted'))
         issue.stage_id = self.env.ref('dev_addons.stage_in_progress')
         self.assertEqual(as_alice.progress, 'in_progress')
+        told = report.message_ids
         issue.stage_id = self.env.ref('dev_addons.stage_done')
         self.assertEqual(as_alice.progress, 'done')
+        # The reporter is told it's done, once (even if it's reopened and done again).
+        done_messages = (report.message_ids - told).filtered(lambda m: 'is finished' in (m.body or ''))
+        self.assertEqual(len(done_messages), 1)
+        self.assertIn(issue.dev_key, done_messages.body)
+        self.assertTrue(report.done_notified)
+        issue.stage_id = self.env.ref('dev_addons.stage_in_progress')
+        issue.stage_id = self.env.ref('dev_addons.stage_done')
+        self.assertEqual(len(report.message_ids.filtered(lambda m: 'is finished' in (m.body or ''))), 1)
         with self.assertRaises(UserError):
             as_alice.write({'name': 'Changed after review'})
         with self.assertRaises(UserError):
