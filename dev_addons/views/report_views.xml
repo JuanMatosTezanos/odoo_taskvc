@@ -1,65 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- ================= Report form ================= -->
-    <!-- Used by everyone: a pop-up from the top-bar icon to send a report
-         (with "Send" / "Cancel"), and the full page in My Reports and in
-         Dev Projects > Work > Reports. -->
+    <!-- Tickets: what people outside the team send from the top-bar icon.
+         They live on their own board (Dev Projects > Work > Tickets) and never
+         go into projects, Backlogs or sprints. (Technical name: dev.report.) -->
+
+    <!-- ================= Ticket form ================= -->
+    <!-- A pop-up to send one (with "Send" / "Cancel"), and the full page in
+         My Tickets and on the team's Tickets board. -->
     <record id="report_form" model="ir.ui.view">
         <field name="name">dev.report.form</field>
         <field name="model">dev.report</field>
         <field name="arch" type="xml">
-            <form string="Report">
+            <form string="Ticket">
                 <header>
-                    <button name="action_open_accept" type="object" string="Accept" class="btn-primary"
+                    <!-- The team -->
+                    <button name="action_accept" type="object" string="Accept" class="btn-primary"
                             invisible="state != 'new' or not id" groups="project.group_project_user"
-                            help="Turn it into an issue in a project's Backlog" />
+                            help="Put it in To Do on the Tickets board" />
                     <button name="action_open_decline" type="object" string="Decline"
                             invisible="state != 'new' or not id" groups="project.group_project_user" />
-                    <button name="action_reopen" type="object" string="Review Again"
+                    <button name="action_start" type="object" string="Start" class="btn-primary"
+                            invisible="state != 'todo'" groups="project.group_project_user" />
+                    <button name="action_done" type="object" string="Mark as Done" class="btn-primary"
+                            invisible="state not in ('todo', 'in_progress')" groups="project.group_project_user" />
+                    <button name="action_assign_to_me" type="object" string="Assign to Me"
+                            invisible="not id or state in ('done', 'declined') or user_id == uid" groups="project.group_project_user" />
+                    <button name="action_review_again" type="object" string="Review Again"
                             invisible="state != 'declined'" groups="project.group_project_user" />
-                    <field name="progress" widget="statusbar" statusbar_visible="new,accepted,in_progress,done" invisible="not id" />
+                    <field name="state" widget="statusbar" statusbar_visible="new,todo,in_progress,done"
+                           invisible="not id" groups="project.group_project_user" />
+                    <!-- The person who sent it -->
+                    <button name="action_open_reopen" type="object" string="Still not fixed" class="btn-warning"
+                            invisible="not can_reopen" />
+                    <field name="progress" widget="statusbar" statusbar_visible="new,accepted,in_progress,done"
+                           invisible="not id" groups="!project.group_project_user" />
                 </header>
                 <sheet>
-                    <div class="oe_button_box" name="button_box">
-                        <button name="action_open_issue" type="object" class="oe_stat_button" icon="fa-tasks"
-                                invisible="not task_id" groups="project.group_project_user">
-                            <field name="issue_key" widget="statinfo" string="Issue" />
-                        </button>
-                    </div>
                     <widget name="web_ribbon" title="Declined" bg_color="text-bg-danger" invisible="state != 'declined'" />
+                    <field name="can_reopen" invisible="1" />
                     <field name="state" invisible="1" />
-                    <field name="task_id" invisible="1" />
                     <div class="alert alert-info mb-3" role="status" invisible="id">
-                        Tell the development team about a problem, an idea or a question.
-                        They'll review it, and you can follow it in <b>My Reports</b> (the <i class="fa fa-bullhorn" title="Report"/> icon at the top).
+                        Tell the team about a problem, an idea or a question.
+                        They'll review it, and you can follow it in <b>My Tickets</b> (the <i class="fa fa-bullhorn" title="Tickets"/> icon at the top).
                     </div>
                     <div class="alert alert-danger mb-3" role="alert" invisible="state != 'declined'">
                         <b>Declined:</b> <field name="decline_reason" class="d-inline" />
                     </div>
-                    <div class="alert alert-success mb-3" role="status" invisible="state != 'accepted'">
-                        Accepted as <b><field name="issue_key" class="d-inline" /></b>: the team will plan it.
-                    </div>
                     <div class="oe_title">
-                        <label for="name" />
+                        <field name="key" class="text-muted" invisible="not key" />
                         <h1><field name="name" placeholder="e.g. Can't print invoices" readonly="state != 'new'" /></h1>
                     </div>
                     <group>
                         <group>
                             <field name="reporter_id" widget="many2one_avatar_user" />
-                            <field name="allowed_app_ids" invisible="1" />
-                            <field name="app_id" options="{'no_create': True, 'no_open': True}"
-                                   placeholder="e.g. Sales, Inventory..." readonly="state != 'new'" required="state == 'new'" />
+                            <field name="topic" widget="radio" readonly="state != 'new'" />
+                            <field name="app_id" options="{'no_create': True, 'no_open': True}" context="{'dev_ticket_apps': True}"
+                                   placeholder="e.g. Sales, Inventory..." readonly="state != 'new'"
+                                   invisible="topic != 'app'" required="topic == 'app' and state == 'new'" />
+                            <div class="text-muted small" colspan="2" invisible="topic != 'it'">
+                                Computer, printer, internet, email, passwords...
+                            </div>
                             <field name="kind" widget="radio" readonly="state != 'new'" />
                         </group>
                         <group>
                             <field name="urgency" widget="radio" readonly="state != 'new'" />
                             <field name="create_date" string="Sent On" invisible="not id" />
-                            <field name="project_id" invisible="not project_id" groups="project.group_project_user" />
+                            <field name="user_id" widget="many2one_avatar_user" options="{'no_create': True}"
+                                   invisible="not id" groups="project.group_project_user" />
                         </group>
                     </group>
                     <label for="description" />
+                    <div class="alert alert-light border mb-2" role="note" invisible="kind != 'bug' or state != 'new'">
+                        <b>Tell us how to see the problem:</b>
+                        <ol class="mb-0">
+                            <li>Where were you and what did you click? (e.g. Sales → Orders → Print)</li>
+                            <li>What did you expect to happen?</li>
+                            <li>What happened instead? Copy the error message or paste a screenshot.</li>
+                        </ol>
+                    </div>
+                    <div class="text-muted mb-2" invisible="kind == 'bug' or state != 'new'">
+                        Describe what you need.
+                    </div>
                     <field name="description" readonly="state != 'new'"
-                           placeholder="What happened? What did you expect? How can we see it again? You can paste screenshots here." />
+                           placeholder="Type here. You can paste screenshots too." />
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_follower_ids" />
@@ -75,42 +98,33 @@
         </field>
     </record>
 
-    <record id="report_list" model="ir.ui.view">
-        <field name="name">dev.report.list</field>
-        <field name="model">dev.report</field>
-        <field name="arch" type="xml">
-            <tree string="Reports" decoration-muted="state == 'declined'">
-                <field name="create_date" string="Sent On" widget="date" />
-                <field name="name" />
-                <field name="app_id" />
-                <field name="kind" />
-                <field name="urgency" widget="badge" decoration-danger="urgency == 'blocking'" decoration-warning="urgency == 'high'" />
-                <field name="reporter_id" widget="many2one_avatar_user" />
-                <field name="project_id" optional="hide" groups="project.group_project_user" />
-                <field name="issue_key" string="Issue" optional="show" />
-                <field name="progress" widget="badge" decoration-info="progress == 'new'" decoration-success="progress == 'done'"
-                       decoration-warning="progress == 'in_progress'" decoration-danger="progress == 'declined'" />
-                <field name="state" column_invisible="1" />
-            </tree>
-        </field>
-    </record>
-
+    <!-- ================= Tickets board ================= -->
     <record id="report_kanban" model="ir.ui.view">
         <field name="name">dev.report.kanban</field>
         <field name="model">dev.report</field>
         <field name="arch" type="xml">
-            <kanban default_group_by="progress" group_create="0" group_delete="0" group_edit="0" records_draggable="0" quick_create="0">
+            <!-- Most urgent first in each column, then oldest first. -->
+            <kanban default_group_by="state" quick_create="0" group_create="0" group_delete="0" group_edit="0"
+                    default_order="urgency_level desc, create_date, id">
                 <field name="state" />
+                <field name="topic" />
                 <templates>
                     <t t-name="kanban-box">
                         <div class="oe_kanban_global_click">
                             <div class="oe_kanban_details">
+                                <div class="text-muted small"><field name="key" /></div>
                                 <strong><field name="name" /></strong>
-                                <div class="text-muted small"><field name="app_id" /> · <field name="kind" /></div>
-                                <div class="d-flex justify-content-between align-items-center mt-1">
+                                <div class="small mt-1">
+                                    <span t-if="record.topic.raw_value == 'it'" class="badge text-bg-secondary">IT</span>
+                                    <span t-else="" class="text-muted"><field name="app_id" /></span>
+                                    <span class="text-muted"> · <field name="kind" /></span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mt-2">
                                     <field name="urgency" widget="badge" decoration-danger="urgency == 'blocking'" decoration-warning="urgency == 'high'" />
-                                    <span class="text-muted small"><field name="issue_key" /></span>
-                                    <field name="reporter_id" widget="many2one_avatar_user" />
+                                    <div class="d-flex gap-1">
+                                        <field name="reporter_id" widget="many2one_avatar_user" />
+                                        <field name="user_id" widget="many2one_avatar_user" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -120,58 +134,70 @@
         </field>
     </record>
 
+    <record id="report_list" model="ir.ui.view">
+        <field name="name">dev.report.list</field>
+        <field name="model">dev.report</field>
+        <field name="arch" type="xml">
+            <tree string="Tickets" decoration-muted="state in ('done', 'declined')"
+                  default_order="create_date desc, id desc">
+                <field name="state" column_invisible="1" />
+                <field name="key" />
+                <field name="create_date" string="Sent On" widget="date" />
+                <field name="name" />
+                <field name="topic" />
+                <field name="app_id" optional="show" />
+                <field name="kind" optional="show" />
+                <field name="urgency" widget="badge" decoration-danger="urgency == 'blocking'" decoration-warning="urgency == 'high'" />
+                <field name="reporter_id" widget="many2one_avatar_user" />
+                <field name="user_id" widget="many2one_avatar_user" optional="show" groups="project.group_project_user" />
+                <field name="state" widget="badge" groups="project.group_project_user"
+                       decoration-info="state == 'new'" decoration-warning="state == 'in_progress'"
+                       decoration-success="state == 'done'" decoration-danger="state == 'declined'" />
+                <field name="progress" widget="badge" groups="!project.group_project_user"
+                       decoration-info="progress == 'new'" decoration-warning="progress == 'in_progress'"
+                       decoration-success="progress == 'done'" decoration-danger="progress == 'declined'" />
+            </tree>
+        </field>
+    </record>
+
     <record id="report_search" model="ir.ui.view">
         <field name="name">dev.report.search</field>
         <field name="model">dev.report</field>
         <field name="arch" type="xml">
-            <search string="Reports">
-                <field name="name" />
+            <search string="Tickets">
+                <field name="name" filter_domain="['|', ('name', 'ilike', self), ('key', 'ilike', self)]" />
                 <field name="app_id" />
                 <field name="reporter_id" />
-                <field name="project_id" groups="project.group_project_user" />
-                <filter name="to_review" string="To Review" domain="[('state', '=', 'new')]" />
-                <filter name="accepted" string="Accepted" domain="[('state', '=', 'accepted')]" />
+                <field name="user_id" />
+                <filter name="not_declined" string="Hide Declined" domain="[('state', '!=', 'declined')]" />
+                <separator />
+                <filter name="new" string="New" domain="[('state', '=', 'new')]" />
+                <filter name="open" string="Open" domain="[('state', 'in', ('new', 'todo', 'in_progress'))]" />
                 <filter name="declined" string="Declined" domain="[('state', '=', 'declined')]" />
                 <separator />
-                <filter name="mine" string="My Reports" domain="[('reporter_id', '=', uid)]" />
+                <filter name="assigned_to_me" string="Assigned to Me" domain="[('user_id', '=', uid)]" />
+                <filter name="unassigned" string="Unassigned" domain="[('user_id', '=', False)]" />
+                <separator />
+                <filter name="topic_it" string="IT" domain="[('topic', '=', 'it')]" />
+                <filter name="topic_app" string="Apps" domain="[('topic', '=', 'app')]" />
                 <filter name="urgent" string="Urgent" domain="[('urgency', 'in', ('high', 'blocking'))]" />
-                <filter name="bugs" string="Something's broken" domain="[('kind', '=', 'bug')]" />
                 <group expand="0" string="Group By">
+                    <filter name="group_state" string="Stage" context="{'group_by': 'state'}" />
+                    <filter name="group_topic" string="What's it about?" context="{'group_by': 'topic'}" />
                     <filter name="group_app" string="App" context="{'group_by': 'app_id'}" />
-                    <filter name="group_kind" string="What is it?" context="{'group_by': 'kind'}" />
-                    <filter name="group_progress" string="Status" context="{'group_by': 'progress'}" />
+                    <filter name="group_user" string="Assigned to" context="{'group_by': 'user_id'}" />
                     <filter name="group_reporter" string="Reported by" context="{'group_by': 'reporter_id'}" />
-                    <filter name="group_project" string="Project" context="{'group_by': 'project_id'}" groups="project.group_project_user" />
                 </group>
             </search>
         </field>
     </record>
 
-    <!-- ================= Accept / Decline pop-ups ================= -->
-    <record id="report_accept_form" model="ir.ui.view">
-        <field name="name">dev.report.accept.form</field>
-        <field name="model">dev.report.accept</field>
-        <field name="arch" type="xml">
-            <form string="Accept Report">
-                <field name="report_ids" widget="many2many_tags" readonly="1" />
-                <group>
-                    <field name="project_id" options="{'no_create': True}" />
-                </group>
-                <p class="text-muted">It becomes an issue in this project's Backlog, outside any sprint.
-                    The person who sent it is told it was accepted.</p>
-                <footer>
-                    <button name="action_confirm" type="object" string="Accept" class="btn-primary" />
-                    <button special="cancel" string="Cancel" />
-                </footer>
-            </form>
-        </field>
-    </record>
-
+    <!-- ================= Pop-ups ================= -->
     <record id="report_decline_form" model="ir.ui.view">
         <field name="name">dev.report.decline.form</field>
         <field name="model">dev.report.decline</field>
         <field name="arch" type="xml">
-            <form string="Decline Report">
+            <form string="Decline Ticket">
                 <field name="report_ids" widget="many2many_tags" readonly="1" />
                 <group>
                     <field name="reason" placeholder="e.g. This already works: use File > Print. / We won't change this because..." />
@@ -185,41 +211,70 @@
         </field>
     </record>
 
+    <record id="report_reopen_form" model="ir.ui.view">
+        <field name="name">dev.report.reopen.form</field>
+        <field name="model">dev.report.reopen</field>
+        <field name="arch" type="xml">
+            <form string="Still not fixed">
+                <group>
+                    <field name="comment" placeholder="e.g. The printer works again, but only for one page." />
+                </group>
+                <p class="text-muted">The ticket goes back to the team.</p>
+                <footer>
+                    <button name="action_confirm" type="object" string="Send Back" class="btn-primary" />
+                    <button special="cancel" string="Cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
     <!-- ================= Actions ================= -->
-    <!-- Top-bar icon > New Report: the form as a pop-up. -->
+    <!-- Top-bar icon > New Ticket: the form as a pop-up. -->
     <record id="action_report_new" model="ir.actions.act_window">
-        <field name="name">New Report</field>
+        <field name="name">New Ticket</field>
         <field name="res_model">dev.report</field>
         <field name="view_mode">form</field>
         <field name="view_id" ref="report_form" />
         <field name="target">new</field>
     </record>
 
-    <!-- Top-bar icon > My Reports: what I sent and how it's going. -->
+    <!-- Top-bar icon > My Tickets: what I sent and how it's going. -->
     <record id="action_report_mine" model="ir.actions.act_window">
-        <field name="name">My Reports</field>
+        <field name="name">My Tickets</field>
         <field name="res_model">dev.report</field>
-        <field name="view_mode">tree,kanban,form</field>
+        <field name="view_mode">tree,form</field>
         <field name="search_view_id" ref="report_search" />
         <field name="domain">[('reporter_id', '=', uid)]</field>
         <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">You haven't sent any reports yet</p>
-            <p>Found a problem or have an idea? Click the <i class="fa fa-bullhorn" title="Report"/> icon at the top and choose "New Report".</p>
+            <p class="o_view_nocontent_smiling_face">You haven't sent any tickets yet</p>
+            <p>Found a problem or have an idea? Click the <i class="fa fa-bullhorn" title="Tickets"/> icon at the top and choose "New Ticket".</p>
         </field>
     </record>
 
-    <!-- Dev Projects: everything sent in, the ones to review first. -->
-    <record id="action_report_triage" model="ir.actions.act_window">
-        <field name="name">Reports</field>
+    <!-- Dev Projects > Work > Tickets: the team's ticket board. -->
+    <record id="action_tickets" model="ir.actions.act_window">
+        <field name="name">Tickets</field>
         <field name="res_model">dev.report</field>
-        <field name="view_mode">tree,kanban,form</field>
+        <field name="view_mode">kanban,tree,form</field>
         <field name="search_view_id" ref="report_search" />
-        <field name="context">{'search_default_to_review': 1}</field>
+        <field name="context">{'search_default_not_declined': 1}</field>
         <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">No reports to review</p>
-            <p>People outside the dev team send problems and ideas with the <i class="fa fa-bullhorn" title="Report"/> icon at the top.
-               Accept one to turn it into an issue in a project's Backlog, or decline it with a reason.</p>
+            <p class="o_view_nocontent_smiling_face">No tickets</p>
+            <p>People send problems and ideas with the <i class="fa fa-bullhorn" title="Tickets"/> icon at the top.
+               New ones land in the New column: accept them to put them in To Do, or decline them with a reason.</p>
         </field>
+    </record>
+    <record id="action_tickets_view_kanban" model="ir.actions.act_window.view">
+        <field name="sequence">1</field>
+        <field name="view_mode">kanban</field>
+        <field name="view_id" ref="report_kanban" />
+        <field name="act_window_id" ref="action_tickets" />
+    </record>
+    <record id="action_tickets_view_list" model="ir.actions.act_window.view">
+        <field name="sequence">2</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="report_list" />
+        <field name="act_window_id" ref="action_tickets" />
     </record>
 
     <!-- Accept several at once from the list. -->
@@ -227,9 +282,9 @@
         <field name="name">Accept</field>
         <field name="model_id" ref="model_dev_report" />
         <field name="binding_model_id" ref="model_dev_report" />
-        <field name="binding_view_types">list</field>
+        <field name="binding_view_types">list,kanban</field>
         <field name="groups_id" eval="[(4, ref('project.group_project_user'))]" />
         <field name="state">code</field>
-        <field name="code">action = records.action_open_accept()</field>
+        <field name="code">records.filtered(lambda t: t.state == 'new').action_accept()</field>
     </record>
 </odoo>

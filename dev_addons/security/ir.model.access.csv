@@ -10,4 +10,4 @@ access_dev_sprint_recap_line_user,dev.sprint.recap.line user,model_dev_sprint_re
 access_dev_report_employee,dev.report employee,model_dev_report,base.group_user,1,1,1,0
 access_dev_report_user,dev.report user,model_dev_report,project.group_project_user,1,1,1,1
 access_dev_report_decline_user,dev.report.decline user,model_dev_report_decline,project.group_project_user,1,1,1,1
-access_dev_report_accept_user,dev.report.accept user,model_dev_report_accept,project.group_project_user,1,1,1,1
+access_dev_report_reopen_employee,dev.report.reopen employee,model_dev_report_reopen,base.group_user,1,1,1,0

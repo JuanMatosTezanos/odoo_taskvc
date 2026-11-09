@@ -436,17 +436,7 @@ class ProjectTask(models.Model):
             software._dev_assign_keys()
         if {'stage_id', 'project_id', 'dev_sprint_id'} & set(vals):
             software._dev_check_wip_limits()
-        if {'stage_id', 'state'} & set(vals):
-            self._dev_tell_reporters_done()
         return res
-
-    def _dev_tell_reporters_done(self):
-        """Issues that came from a report: tell the reporter once it's done."""
-        done = self.filtered(lambda t: t.dev_status == 'done')
-        if done:
-            self.env['dev.report'].sudo().search([
-                ('task_id', 'in', done.ids), ('done_notified', '=', False),
-            ])._dev_tell_done()
 
     def _dev_sync_stage_and_dates(self, keep=(), clear=True):
         """After a stage or state change: matching column, start/end dates, pause.

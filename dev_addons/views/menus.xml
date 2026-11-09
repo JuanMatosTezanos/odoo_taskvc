@@ -5,7 +5,7 @@
 
          Projects  |  Project ▾       |  Dev Projects ▾
                    |  Projects        |  Planning: Projects, Milestones, Sprints, Components
-                   |  Tasks           |  Work: Board, Backlog, Reports
+                   |  Tasks           |  Work: Board, Backlog, Tickets
                    |  Reporting       |  Team: ...
                    |  Configuration   |  Configuration: ...
 
@@ -50,7 +50,7 @@
 
     <menuitem id="menu_board" name="Board" parent="menu_work" action="action_board" sequence="1" />
     <menuitem id="menu_backlog" name="Backlog" parent="menu_work" action="action_backlog" sequence="2" />
-    <menuitem id="menu_reports_triage" name="Reports" parent="menu_work" action="action_report_triage" sequence="3" />
+    <menuitem id="menu_tickets" name="Tickets" parent="menu_work" action="action_tickets" sequence="3" />
 
     <menuitem id="menu_team" name="Team" parent="menu_root" sequence="30" />
     <menuitem id="menu_my_profile" name="My Developer Profile" parent="menu_team" action="action_my_developer_profile" sequence="1" />

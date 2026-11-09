@@ -102,7 +102,7 @@ class TestScreens(TransactionCase):
     def test_every_dev_menu_opens(self):
         opened = self._open_menus('dev_addons.menu_root')
         for expected in ('Board', 'Backlog', 'Projects', 'Milestones', 'Sprints', 'Components', 'My Developer Profile',
-                         'Developers', 'Technologies', 'Board Columns', 'Reports'):
+                         'Developers', 'Technologies', 'Board Columns', 'Tickets'):
             self.assertIn(expected, opened)
 
     def test_project_app_still_opens(self):

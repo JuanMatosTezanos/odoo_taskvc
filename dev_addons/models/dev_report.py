@@ -1,8 +1,14 @@
 # -*- coding: utf-8 -*-
-from markupsafe import Markup
+from datetime import timedelta
 
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError, ValidationError
+from odoo.osv import expression
+
+TOPICS = [
+    ('app', "An Odoo app"),
+    ('it', "IT Support"),
+]
 
 REPORT_KINDS = [
     ('bug', "Something's broken"),
@@ -16,6 +22,17 @@ URGENCIES = [
     ('high', "Urgent"),
     ('blocking', "I can't work"),
 ]
+URGENCY_LEVEL = {'low': 0, 'normal': 1, 'high': 2, 'blocking': 3}
+
+# The ticket board's columns (Declined is kept off the board).
+STAGES = [
+    ('new', "New"),
+    ('todo', "To Do"),
+    ('in_progress', "In Progress"),
+    ('done', "Done"),
+    ('declined', "Declined"),
+]
+BOARD_STAGES = ['new', 'todo', 'in_progress', 'done']
 
 # What the reporter sees, in order.
 PROGRESS = [
@@ -25,44 +42,45 @@ PROGRESS = [
     ('done', "Done"),
     ('declined', "Declined"),
 ]
+STAGE_TO_PROGRESS = {'new': 'new', 'todo': 'accepted', 'in_progress': 'in_progress',
+                     'done': 'done', 'declined': 'declined'}
 
-# How a report becomes an issue.
-KIND_TO_TYPE = {'bug': 'bug', 'feature': 'story', 'question': 'task'}
-URGENCY_TO_PRIORITY = {'low': '0', 'normal': '0', 'high': '2', 'blocking': '3'}
-URGENCY_TO_SEVERITY = {'low': 'minor', 'normal': 'minor', 'high': 'major', 'blocking': 'blocker'}
+# How long the reporter can say "Still not fixed" after a ticket is done.
+REOPEN_DAYS = 7
 
-# Only the dev team decides what happens to a report.
-TRIAGE_FIELDS = {'state', 'task_id', 'decline_reason', 'project_id'}
+# Only the team (devs and IT) moves and assigns tickets.
+TEAM_FIELDS = {'state', 'decline_reason', 'user_id', 'key', 'done_date'}
 
 
 class DevReport(models.Model):
-    """Something a non-developer sends to the dev team: a problem, a wish or
-    a question. The team accepts it (it becomes an issue in the Backlog) or
-    declines it with a reason. The reporter follows it in "My Reports"."""
+    """A ticket: something a person outside the team sends from the top-bar
+    icon (a problem in an Odoo app, an IT problem, a wish or a question).
+    Tickets live on their own board (Dev Projects > Work > Tickets) and never
+    go into projects, Backlogs or sprints."""
     _name = 'dev.report'
-    _description = 'Report'
+    _description = 'Ticket'
     _inherit = ['mail.thread', 'mail.activity.mixin']
-    _order = 'create_date desc, id desc'
+    _order = 'urgency_level desc, create_date, id'
+    _rec_names_search = ['name', 'key']
 
+    key = fields.Char(string="Ticket", readonly=True, copy=False, index=True,
+                      help="The ticket's number, e.g. TCK-12.")
     name = fields.Char(string="Title", required=True, tracking=True,
                        help="In a few words, e.g. \"Can't print invoices\".")
+    topic = fields.Selection(TOPICS, string="What's it about?", required=True, default='app', tracking=True)
     # An installed application (Sales, Inventory, Dev Projects...) that this
     # person can actually open: no reporting on apps they have no access to.
+    # The dropdown passes 'dev_ticket_apps', and ir.module.module's search keeps
+    # only those apps (see IrModuleModule below).
     app_id = fields.Many2one(
         'ir.module.module', string="App", tracking=True, ondelete='set null', index=True,
-        domain="[('id', 'in', allowed_app_ids)]",
+        domain=[('application', '=', True), ('state', '=', 'installed')],
+        context={'dev_ticket_apps': True},
         help="The Odoo app where it happens, e.g. Sales or Inventory.")
-    allowed_app_ids = fields.Many2many('ir.module.module', compute='_compute_allowed_app_ids')
-    # Chosen by the team when accepting: reporters don't see projects.
-    project_id = fields.Many2one(
-        'project.project', string="Project", readonly=True, tracking=True, index=True,
-        domain="[('dev_is_software', '=', True)]",
-        help="The project whose Backlog received the issue.")
     kind = fields.Selection(REPORT_KINDS, string="What is it?", required=True, default='bug', tracking=True)
     urgency = fields.Selection(URGENCIES, string="How urgent is it?", required=True, default='normal', tracking=True)
-    description = fields.Html(
-        string="Details",
-        help="What happened, what you expected, and the steps to see it again.")
+    urgency_level = fields.Integer(compute='_compute_urgency_level', store=True)
+    description = fields.Html(string="Details")
     reporter_id = fields.Many2one(
         'res.users', string="Reported by", required=True, readonly=True, index=True,
         default=lambda self: self.env.user)
@@ -70,18 +88,48 @@ class DevReport(models.Model):
                                  default=lambda self: self.env.company)
 
     state = fields.Selection(
-        [('new', "New"), ('accepted', "Accepted"), ('declined', "Declined")],
-        string="Decision", default='new', required=True, readonly=True, tracking=True, index=True)
+        STAGES, string="Stage", default='new', required=True, tracking=True, index=True,
+        group_expand='_group_expand_states')
+    user_id = fields.Many2one(
+        'res.users', string="Assigned to", tracking=True, index=True,
+        domain=lambda self: [('groups_id', 'in', self.env.ref('project.group_project_user').id),
+                             ('share', '=', False)],
+        help="Who on the team (devs and IT) is handling it.")
     decline_reason = fields.Text(string="Why it was declined", readonly=True)
-    task_id = fields.Many2one('project.task', string="Issue", readonly=True, copy=False, ondelete='set null')
+    done_date = fields.Datetime(string="Done On", readonly=True, copy=False)
+    progress = fields.Selection(PROGRESS, string="Status", compute='_compute_progress', store=True)
+    can_reopen = fields.Boolean(compute='_compute_can_reopen')
 
-    # Reporters usually can't open issues, so these are read as superuser.
-    issue_key = fields.Char(string="Issue Key", compute='_compute_issue_info', compute_sudo=True)
-    progress = fields.Selection(
-        PROGRESS, string="Status", compute='_compute_progress', store=True, compute_sudo=True)
-    done_notified = fields.Boolean(
-        string="Reporter Told It's Done", readonly=True, copy=False,
-        help="The reporter got the \"it's done\" message (sent only once).")
+    # ------------------------------------------------------------------
+    # Computes
+    # ------------------------------------------------------------------
+
+    @api.depends('urgency')
+    def _compute_urgency_level(self):
+        for ticket in self:
+            ticket.urgency_level = URGENCY_LEVEL.get(ticket.urgency, 1)
+
+    @api.depends('state')
+    def _compute_progress(self):
+        for ticket in self:
+            ticket.progress = STAGE_TO_PROGRESS[ticket.state]
+
+    @api.depends('key', 'name')
+    def _compute_display_name(self):
+        for ticket in self:
+            ticket.display_name = f"{ticket.key} {ticket.name}" if ticket.key else ticket.name
+
+    @api.depends_context('uid')
+    @api.depends('state', 'done_date', 'reporter_id')
+    def _compute_can_reopen(self):
+        limit = fields.Datetime.now() - timedelta(days=REOPEN_DAYS)
+        for ticket in self:
+            ticket.can_reopen = (ticket.state == 'done' and ticket.reporter_id == self.env.user
+                                 and bool(ticket.done_date) and ticket.done_date >= limit)
+
+    @api.model
+    def _group_expand_states(self, states, domain, order):
+        return BOARD_STAGES
 
     @api.model
     def _dev_apps_for_user(self):
@@ -89,7 +137,7 @@ class DevReport(models.Model):
         only for the dev team). An app counts when the user can reach one of
         its menus, or sees a home-screen icon that belongs to it (Sales' menus
         come from the "sale" module, but its icon is the Sales app's)."""
-        apps = self.env['ir.module.module'].sudo().search(
+        apps = self.env['ir.module.module'].sudo().with_context(dev_ticket_apps=False).search(
             [('application', '=', True), ('state', '=', 'installed')])
         visible = self.env['ir.ui.menu']._visible_menu_ids()
         # A menu inside a hidden menu (e.g. inside the Projects app for a
@@ -106,139 +154,132 @@ class DevReport(models.Model):
                   if not menu.parent_id and menu.web_icon}
         return apps.filtered(lambda app: app.name in names).with_env(self.env)
 
-    @api.depends_context('uid')
-    def _compute_allowed_app_ids(self):
-        apps = self._dev_apps_for_user()
-        for report in self:
-            report.allowed_app_ids = apps
-
     @api.constrains('app_id')
     def _check_app_access(self):
         if self.env.su:
             return
         apps = self._dev_apps_for_user()
-        for report in self:
-            if report.app_id and report.app_id not in apps:
+        for ticket in self:
+            if ticket.app_id and ticket.app_id not in apps:
                 raise ValidationError(_("You can only report on apps you have access to."))
-
-    @api.depends('task_id.dev_key')
-    def _compute_issue_info(self):
-        for report in self:
-            report.issue_key = report.task_id.dev_key
-
-    @api.depends('state', 'task_id.dev_status')
-    def _compute_progress(self):
-        for report in self:
-            if report.state != 'accepted':
-                report.progress = report.state
-            elif report.task_id.dev_status == 'done':
-                report.progress = 'done'
-            elif report.task_id.dev_status in ('in_progress', 'review'):
-                report.progress = 'in_progress'
-            else:
-                report.progress = 'accepted'
 
     # ------------------------------------------------------------------
     # Rules
     # ------------------------------------------------------------------
 
-    def _check_dev_team(self):
-        if not self.env.su and not self.env.user.has_group('project.group_project_user'):
-            raise AccessError(_("Only the development team can accept or decline reports."))
+    def _is_team(self):
+        return self.env.su or self.env.user.has_group('project.group_project_user')
+
+    def _check_team(self):
+        if not self._is_team():
+            raise AccessError(_("Only the team (devs and IT) can handle tickets."))
+
+    @api.model
+    def _team_partners(self):
+        group = self.env.ref('project.group_project_user')
+        return group.sudo().users.filtered(lambda u: u.active and not u.share).partner_id
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('topic') == 'it':
+                vals['app_id'] = False
+        tickets = super().create(vals_list)
+        for ticket in tickets.sudo():
+            ticket.key = self.env['ir.sequence'].sudo().next_by_code('dev.ticket')
+            team = self._team_partners() - ticket.reporter_id.partner_id
+            if ticket.urgency in ('high', 'blocking') and team:
+                # Urgent ones shouldn't sit unseen: notify the whole team.
+                ticket.message_notify(
+                    partner_ids=team.ids,
+                    author_id=ticket.reporter_id.partner_id.id,
+                    subject=_("Urgent ticket %s", ticket.key),
+                    body=_("%(who)s sent an urgent ticket: %(title)s (%(urgency)s).",
+                           who=ticket.reporter_id.name, title=ticket.name,
+                           urgency=dict(URGENCIES)[ticket.urgency]))
+        return tickets
 
     def write(self, vals):
-        if TRIAGE_FIELDS & set(vals):
-            self._check_dev_team()
-        elif not self.env.su and not self.env.user.has_group('project.group_project_user') \
-                and any(report.state != 'new' for report in self):
-            raise UserError(_("This report was already reviewed, so it can't be changed. "
+        if TEAM_FIELDS & set(vals):
+            self._check_team()
+        elif not self._is_team() and any(ticket.state != 'new' for ticket in self):
+            raise UserError(_("This ticket was already reviewed, so it can't be changed. "
                               "Add a message below instead."))
-        return super().write(vals)
+        if vals.get('topic') == 'it':
+            vals = dict(vals, app_id=False)
+        old_states = {ticket.id: ticket.state for ticket in self}
+        new_state = vals.get('state')
+        if new_state == 'done':
+            vals = dict(vals, done_date=fields.Datetime.now())
+        res = super().write(vals)
+        if new_state:
+            self._after_stage_change(old_states, new_state)
+        return res
+
+    def _after_stage_change(self, old_states, new_state):
+        for ticket in self:
+            old = old_states[ticket.id]
+            if old == new_state:
+                continue
+            if new_state == 'in_progress' and not ticket.user_id and not self.env.su:
+                ticket.user_id = self.env.user  # whoever starts it takes it
+            if old == 'new' and new_state in ('todo', 'in_progress', 'done'):
+                ticket._dev_tell_reporter(
+                    _("Accepted: %s is on the team's list now. This page shows its progress.", ticket.key))
+            if new_state == 'done':
+                ticket._dev_tell_reporter(
+                    _("Done! %s is finished. Thanks for reporting it. If it's still not fixed, "
+                      "click \"Still not fixed\" within %s days.", ticket.key, REOPEN_DAYS))
 
     def _dev_tell_reporter(self, body):
         """A message the reporter (a follower) is notified of, signed by the
-        developer. As superuser, so a developer without an email address
-        can still accept or decline."""
+        team member. As superuser, so someone without an email address can
+        still handle tickets."""
         self.ensure_one()
         self.sudo().message_post(body=body, author_id=self.env.user.partner_id.id,
                                  message_type='comment', subtype_xmlid='mail.mt_comment')
 
     # ------------------------------------------------------------------
-    # Triage
+    # Buttons
     # ------------------------------------------------------------------
 
     def action_send(self):
         """"Send" in the pop-up: the form saves first, then this thanks the
         reporter and closes the pop-up."""
+        self.ensure_one()
         return {
             'type': 'ir.actions.client',
             'tag': 'display_notification',
             'params': {
                 'type': 'success',
-                'message': _("Thanks! The development team will review it. Follow it in My Reports."),
+                'message': _("Thanks! Your ticket %s was sent. Follow it in My Tickets.", self.key),
                 'next': {'type': 'ir.actions.act_window_close'},
             },
         }
 
-    def _issue_values(self, project):
-        self.ensure_one()
-        description = self.description or Markup()
-        if self.app_id:
-            description = Markup("<p><b>%s</b> %s</p>") % (_("App:"), self.app_id.sudo().shortdesc) + description
-        vals = {
-            'name': self.name,
-            'project_id': project.id,
-            'description': description,
-            'dev_issue_type': KIND_TO_TYPE[self.kind],
-            'dev_priority': URGENCY_TO_PRIORITY[self.urgency],
-            'dev_reporter_id': self.reporter_id.id,
-        }
-        if self.kind == 'bug':
-            vals['dev_severity'] = URGENCY_TO_SEVERITY[self.urgency]
-        return vals
+    def action_accept(self):
+        self._check_team()
+        if any(ticket.state != 'new' for ticket in self):
+            raise UserError(_("Only new tickets can be accepted."))
+        self.write({'state': 'todo'})
 
-    def action_open_accept(self):
-        """Accept: ask which project's Backlog gets the issue."""
-        self._check_dev_team()
-        return {
-            'type': 'ir.actions.act_window',
-            'name': _("Accept Report"),
-            'res_model': 'dev.report.accept',
-            'view_mode': 'form',
-            'target': 'new',
-            'context': {'default_report_ids': self.ids},
-        }
+    def action_start(self):
+        self._check_team()
+        self.write({'state': 'in_progress'})
 
-    def _accept(self, project):
-        """Turn the reports into issues in the project's Backlog."""
-        self._check_dev_team()
-        if not project:
-            raise UserError(_("Pick the project that receives the issue."))
-        for report in self:
-            if report.state != 'new':
-                raise UserError(_("\"%s\" was already reviewed.", report.name))
-            # Plain context: a new issue goes to the Backlog, outside any sprint.
-            task = self.env['project.task'].with_context(
-                {k: v for k, v in self.env.context.items() if not k.startswith(('default_', 'dev_'))}
-            ).create(report._issue_values(project))
-            attachments = self.env['ir.attachment'].search(
-                [('res_model', '=', report._name), ('res_id', '=', report.id)])
-            for attachment in attachments:
-                attachment.copy({'res_model': 'project.task', 'res_id': task.id})
-            report.write({'state': 'accepted', 'task_id': task.id, 'project_id': project.id})
-            task._message_log(body=Markup(_("Created from a report by %s.")) % report.reporter_id.name)
-            report._dev_tell_reporter(
-                _("Accepted as %(key)s. It's in the team's Backlog now; this page shows its progress.",
-                  key=task.dev_key or task.name))
-        if len(self) == 1:
-            return self.action_open_issue()
-        return True
+    def action_done(self):
+        self._check_team()
+        self.write({'state': 'done'})
+
+    def action_assign_to_me(self):
+        self._check_team()
+        self.write({'user_id': self.env.user.id})
 
     def action_open_decline(self):
-        self._check_dev_team()
+        self._check_team()
         return {
             'type': 'ir.actions.act_window',
-            'name': _("Decline Report"),
+            'name': _("Decline Ticket"),
             'res_model': 'dev.report.decline',
             'view_mode': 'form',
             'target': 'new',
@@ -246,79 +287,77 @@ class DevReport(models.Model):
         }
 
     def _decline(self, reason):
-        self._check_dev_team()
-        for report in self:
-            if report.state != 'new':
-                raise UserError(_("\"%s\" was already reviewed.", report.name))
-            report.write({'state': 'declined', 'decline_reason': reason})
-            report._dev_tell_reporter(_("Declined: %s", reason))
+        self._check_team()
+        for ticket in self:
+            if ticket.state != 'new':
+                raise UserError(_("Only new tickets can be declined (\"%s\" was already accepted).", ticket.name))
+            ticket.write({'state': 'declined', 'decline_reason': reason})
+            ticket._dev_tell_reporter(_("Declined: %s", reason))
 
-    def _dev_tell_done(self):
-        """The issue made from this report is finished: tell the reporter (once)."""
-        for report in self:
-            report._dev_tell_reporter(
-                _("Done! %(key)s is finished. Thanks for reporting it.",
-                  key=report.task_id.dev_key or report.task_id.name))
-        self.sudo().write({'done_notified': True})
+    def action_review_again(self):
+        """Put a declined ticket back in New."""
+        self._check_team()
+        self.filtered(lambda t: t.state == 'declined').write({'state': 'new', 'decline_reason': False})
 
-    def action_reopen(self):
-        """Put a declined report back up for review."""
-        self._check_dev_team()
-        self.filtered(lambda r: r.state == 'declined').write({'state': 'new', 'decline_reason': False})
-
-    def action_open_issue(self):
+    def action_open_reopen(self):
         self.ensure_one()
-        if not self.task_id:
-            raise UserError(_("This report has no issue."))
+        if not self.can_reopen:
+            raise UserError(_("Only the person who sent it can reopen it, within %s days of it being done.", REOPEN_DAYS))
         return {
             'type': 'ir.actions.act_window',
-            'res_model': 'project.task',
-            'res_id': self.task_id.id,
+            'name': _("Still not fixed"),
+            'res_model': 'dev.report.reopen',
             'view_mode': 'form',
-            'views': [(False, 'form')],
+            'target': 'new',
+            'context': {'default_report_id': self.id},
         }
 
-
-class DevReportAccept(models.TransientModel):
-    _name = 'dev.report.accept'
-    _description = 'Accept Report'
-
-    report_ids = fields.Many2many('dev.report', string="Reports", required=True)
-    project_id = fields.Many2one(
-        'project.project', string="Project", required=True,
-        domain="[('dev_is_software', '=', True)]",
-        default=lambda self: self._default_project(),
-        help="The issue goes to this project's Backlog.")
-
-    def _default_project(self):
-        """The only software project, or the one that last got a report from the same app."""
-        projects = self.env['project.project'].search([('dev_is_software', '=', True)], limit=2)
-        if len(projects) == 1:
-            return projects
-        reports = self.env['dev.report'].browse(self.env.context.get('default_report_ids') or [])
-        apps = reports.app_id
-        if len(apps) == 1:
-            previous = self.env['dev.report'].search([
-                ('app_id', '=', apps.id), ('project_id', '!=', False)], limit=1)
-            return previous.project_id
-        return self.env['project.project']
-
-    def action_confirm(self):
+    def _reopen(self, comment):
+        """The reporter says it's still not fixed: back to To Do, with their comment."""
         self.ensure_one()
-        result = self.report_ids._accept(self.project_id)
-        if len(self.report_ids) == 1:
-            return result
-        return {'type': 'ir.actions.act_window_close'}
+        if not self.can_reopen:
+            raise UserError(_("Only the person who sent it can reopen it, within %s days of it being done.", REOPEN_DAYS))
+        reporter = self.env.user
+        ticket = self.sudo()
+        super(DevReport, ticket).write({'state': 'todo', 'done_date': False})
+        ticket.message_post(
+            body=_("Still not fixed: %s", comment), author_id=reporter.partner_id.id,
+            message_type='comment', subtype_xmlid='mail.mt_comment',
+            partner_ids=(ticket.user_id.partner_id or self._team_partners()).ids)
+
+
+class IrModuleModule(models.Model):
+    _inherit = 'ir.module.module'
+
+    @api.model
+    def _search(self, domain, *args, **kwargs):
+        # The ticket form's App dropdown: only apps this person can open.
+        if self.env.context.get('dev_ticket_apps'):
+            allowed = self.env['dev.report']._dev_apps_for_user()
+            domain = expression.AND([domain or [], [('id', 'in', allowed.ids)]])
+        return super()._search(domain, *args, **kwargs)
 
 
 class DevReportDecline(models.TransientModel):
     _name = 'dev.report.decline'
-    _description = 'Decline Report'
+    _description = 'Decline Ticket'
 
-    report_ids = fields.Many2many('dev.report', string="Reports", required=True)
+    report_ids = fields.Many2many('dev.report', string="Tickets", required=True)
     reason = fields.Text(string="Reason", required=True,
-                         help="The reporter sees this, so keep it friendly and clear.")
+                         help="The person who sent it sees this, so keep it friendly and clear.")
 
     def action_confirm(self):
         self.report_ids._decline(self.reason)
+        return {'type': 'ir.actions.act_window_close'}
+
+
+class DevReportReopen(models.TransientModel):
+    _name = 'dev.report.reopen'
+    _description = 'Reopen Ticket'
+
+    report_id = fields.Many2one('dev.report', string="Ticket", required=True)
+    comment = fields.Text(string="What's still wrong?", required=True)
+
+    def action_confirm(self):
+        self.report_id._reopen(self.comment)
         return {'type': 'ir.actions.act_window_close'}

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 17.0-20260908\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-09 19:47+0000\n"
-"PO-Revision-Date: 2026-11-09 19:47+0000\n"
+"POT-Creation-Date: 2026-11-09 21:42+0000\n"
+"PO-Revision-Date: 2026-11-09 21:42+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: es\n"
@@ -15,14 +15,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-
-#. module: dev_addons
-#. odoo-python
-#: code:addons/dev_addons/models/dev_report.py:0
-#: code:addons/dev_addons/models/dev_report.py:0
-#, python-format
-msgid "\"%s\" was already reviewed."
-msgstr "\"%s\" ya fue revisado."
 
 #. module: dev_addons
 #. odoo-python
@@ -59,6 +51,13 @@ msgstr ""
 #, python-format
 msgid "%(project)s - %(module)s"
 msgstr "%(project)s - %(module)s"
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/dev_report.py:0
+#, python-format
+msgid "%(who)s sent an urgent ticket: %(title)s (%(urgency)s)."
+msgstr "%(who)s envió un ticket urgente: %(title)s (%(urgency)s)."
 
 #. module: dev_addons
 #. odoo-python
@@ -112,13 +111,13 @@ msgstr "12345678A"
 
 #. module: dev_addons
 #: model_terms:ir.ui.view,arch_db:dev_addons.report_form
-msgid ": the team will plan it."
-msgstr ": el equipo lo planificará."
+msgid "<b>Declined:</b>"
+msgstr "<b>Rechazado:</b>"
 
 #. module: dev_addons
 #: model_terms:ir.ui.view,arch_db:dev_addons.report_form
-msgid "<b>Declined:</b>"
-msgstr "<b>Rechazado:</b>"
+msgid "<b>Tell us how to see the problem:</b>"
+msgstr "<b>Cuéntenos cómo ver el problema:</b>"
 
 #. module: dev_addons
 #: model_terms:ir.ui.view,arch_db:dev_addons.project_kanban
@@ -227,42 +226,22 @@ msgstr "Ya existe un usuario con el nombre de usuario %s."
 
 #. module: dev_addons
 #: model:ir.actions.server,name:dev_addons.action_report_accept_server
-#: model_terms:ir.ui.view,arch_db:dev_addons.report_accept_form
 #: model_terms:ir.ui.view,arch_db:dev_addons.report_form
 msgid "Accept"
 msgstr "Aceptar"
 
 #. module: dev_addons
-#. odoo-python
-#: code:addons/dev_addons/models/dev_report.py:0
-#: model:ir.model,name:dev_addons.model_dev_report_accept
-#: model_terms:ir.ui.view,arch_db:dev_addons.report_accept_form
-#, python-format
-msgid "Accept Report"
-msgstr "Aceptar reporte"
-
-#. module: dev_addons
 #: model:ir.model.fields.selection,name:dev_addons.selection__dev_report__progress__accepted
-#: model:ir.model.fields.selection,name:dev_addons.selection__dev_report__state__accepted
-#: model_terms:ir.ui.view,arch_db:dev_addons.report_search
 msgid "Accepted"
 msgstr "Aceptado"
 
 #. module: dev_addons
-#: model_terms:ir.ui.view,arch_db:dev_addons.report_form
-msgid "Accepted as"
-msgstr "Aceptado como"
-
-#. module: dev_addons
 #. odoo-python
 #: code:addons/dev_addons/models/dev_report.py:0
 #, python-format
-msgid ""
-"Accepted as %(key)s. It's in the team's Backlog now; this page shows its "
-"progress."
+msgid "Accepted: %s is on the team's list now. This page shows its progress."
 msgstr ""
-"Aceptado como %(key)s. Ya está en el backlog del equipo; en esta página verá"
-" su avance."
+"Aceptado: %s ya está en la lista del equipo. En esta página verá su avance."
 
 #. module: dev_addons
 #: model:ir.model.fields,field_description:dev_addons.field_res_partner__dev_access_code
@@ -379,9 +358,9 @@ msgid "Added to the backlog"
 msgstr "Agregada al backlog"
 
 #. module: dev_addons
-#: model:ir.model.fields,field_description:dev_addons.field_dev_report__allowed_app_ids
-msgid "Allowed App"
-msgstr "Aplicaciones permitidas"
+#: model:ir.model.fields.selection,name:dev_addons.selection__dev_report__topic__app
+msgid "An Odoo app"
+msgstr "Una aplicación de Odoo"
 
 #. module: dev_addons
 #: model:ir.model.constraint,message:dev_addons.constraint_project_project_dev_key_unique
@@ -395,11 +374,9 @@ msgid "App"
 msgstr "Aplicación"
 
 #. module: dev_addons
-#. odoo-python
-#: code:addons/dev_addons/models/dev_report.py:0
-#, python-format
-msgid "App:"
-msgstr "Aplicación:"
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_search
+msgid "Apps"
+msgstr "Aplicaciones"
 
 #. module: dev_addons
 #: model:ir.model.fields.selection,name:dev_addons.selection__dev_task_complete__mode__archive
@@ -426,10 +403,18 @@ msgstr ""
 
 #. module: dev_addons
 #: model_terms:ir.ui.view,arch_db:dev_addons.project_task_form_inherit
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_form
 msgid "Assign to Me"
 msgstr "Asignarme"
 
 #. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__user_id
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_search
+msgid "Assigned to"
+msgstr "Asignado a"
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_search
 #: model_terms:ir.ui.view,arch_db:dev_addons.task_search
 msgid "Assigned to Me"
 msgstr "Asignadas a mí"
@@ -508,9 +493,14 @@ msgid "Can Be Assigned"
 msgstr "Se le pueden asignar incidencias"
 
 #. module: dev_addons
-#: model_terms:ir.ui.view,arch_db:dev_addons.report_accept_form
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__can_reopen
+msgid "Can Reopen"
+msgstr "Se puede reabrir"
+
+#. module: dev_addons
 #: model_terms:ir.ui.view,arch_db:dev_addons.report_decline_form
 #: model_terms:ir.ui.view,arch_db:dev_addons.report_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_reopen_form
 #: model_terms:ir.ui.view,arch_db:dev_addons.sprint_complete_form
 #: model_terms:ir.ui.view,arch_db:dev_addons.task_complete_form
 msgid "Cancel"
@@ -646,6 +636,11 @@ msgstr ""
 "               Elija uno en cada incidencia para ver lo que necesita cada parte del producto."
 
 #. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_form
+msgid "Computer, printer, internet, email, passwords..."
+msgstr "Computadora, impresora, internet, correo, contraseñas..."
+
+#. module: dev_addons
 #: model:ir.model,name:dev_addons.model_res_config_settings
 msgid "Config Settings"
 msgstr "Ajustes de configuración"
@@ -690,8 +685,8 @@ msgstr "Cree su primer proyecto"
 #. module: dev_addons
 #: model:ir.model.fields,field_description:dev_addons.field_dev_module__create_uid
 #: model:ir.model.fields,field_description:dev_addons.field_dev_report__create_uid
-#: model:ir.model.fields,field_description:dev_addons.field_dev_report_accept__create_uid
 #: model:ir.model.fields,field_description:dev_addons.field_dev_report_decline__create_uid
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report_reopen__create_uid
 #: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__create_uid
 #: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_complete__create_uid
 #: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_recap_line__create_uid
@@ -701,17 +696,10 @@ msgid "Created by"
 msgstr "Creado por"
 
 #. module: dev_addons
-#. odoo-python
-#: code:addons/dev_addons/models/dev_report.py:0
-#, python-format
-msgid "Created from a report by %s."
-msgstr "Creada a partir de un reporte de %s."
-
-#. module: dev_addons
 #: model:ir.model.fields,field_description:dev_addons.field_dev_module__create_date
 #: model:ir.model.fields,field_description:dev_addons.field_dev_report__create_date
-#: model:ir.model.fields,field_description:dev_addons.field_dev_report_accept__create_date
 #: model:ir.model.fields,field_description:dev_addons.field_dev_report_decline__create_date
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report_reopen__create_date
 #: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__create_date
 #: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_complete__create_date
 #: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_recap_line__create_date
@@ -737,11 +725,6 @@ msgid "Current Work"
 msgstr "Trabajo actual"
 
 #. module: dev_addons
-#: model:ir.model.fields,field_description:dev_addons.field_dev_report__state
-msgid "Decision"
-msgstr "Decisión"
-
-#. module: dev_addons
 #: model_terms:ir.ui.view,arch_db:dev_addons.report_decline_form
 #: model_terms:ir.ui.view,arch_db:dev_addons.report_form
 msgid "Decline"
@@ -753,8 +736,8 @@ msgstr "Rechazar"
 #: model:ir.model,name:dev_addons.model_dev_report_decline
 #: model_terms:ir.ui.view,arch_db:dev_addons.report_decline_form
 #, python-format
-msgid "Decline Report"
-msgstr "Rechazar reporte"
+msgid "Decline Ticket"
+msgstr "Rechazar ticket"
 
 #. module: dev_addons
 #: model:ir.model.fields.selection,name:dev_addons.selection__dev_report__progress__declined
@@ -796,6 +779,11 @@ msgstr "Eliminar definitivamente"
 #: model_terms:ir.ui.view,arch_db:dev_addons.task_complete_form
 msgid "Deleting cannot be undone."
 msgstr "La eliminación no se puede deshacer."
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_form
+msgid "Describe what you need."
+msgstr "Describa lo que necesita."
 
 #. module: dev_addons
 #: model:ir.model.fields,field_description:dev_addons.field_dev_module__description
@@ -874,8 +862,8 @@ msgstr "Desarrollo"
 #. module: dev_addons
 #: model:ir.model.fields,field_description:dev_addons.field_dev_module__display_name
 #: model:ir.model.fields,field_description:dev_addons.field_dev_report__display_name
-#: model:ir.model.fields,field_description:dev_addons.field_dev_report_accept__display_name
 #: model:ir.model.fields,field_description:dev_addons.field_dev_report_decline__display_name
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report_reopen__display_name
 #: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__display_name
 #: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_complete__display_name
 #: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_recap_line__display_name
@@ -886,6 +874,7 @@ msgstr "Nombre para mostrar"
 
 #. module: dev_addons
 #: model:ir.model.fields.selection,name:dev_addons.selection__dev_report__progress__done
+#: model:ir.model.fields.selection,name:dev_addons.selection__dev_report__state__done
 #: model:ir.model.fields.selection,name:dev_addons.selection__project_task__dev_status__done
 #: model:ir.model.fields.selection,name:dev_addons.selection__project_task_type__dev_category__done
 #: model:project.task.type,name:dev_addons.stage_done
@@ -905,6 +894,11 @@ msgid "Done Issues"
 msgstr "Incidencias hechas"
 
 #. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__done_date
+msgid "Done On"
+msgstr "Hecho el"
+
+#. module: dev_addons
 #: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__done_points
 #: model:ir.model.fields,field_description:dev_addons.field_project_milestone__dev_done_points
 msgid "Done Points"
@@ -914,8 +908,12 @@ msgstr "Puntos hechos"
 #. odoo-python
 #: code:addons/dev_addons/models/dev_report.py:0
 #, python-format
-msgid "Done! %(key)s is finished. Thanks for reporting it."
-msgstr "¡Listo! %(key)s está terminada. Gracias por reportarlo."
+msgid ""
+"Done! %s is finished. Thanks for reporting it. If it's still not fixed, "
+"click \"Still not fixed\" within %s days."
+msgstr ""
+"¡Listo! %s está terminado. Gracias por reportarlo. Si sigue sin funcionar, "
+"haga clic en \"Sigue sin funcionar\" dentro de %s días."
 
 #. module: dev_addons
 #: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__duration
@@ -1015,10 +1013,10 @@ msgstr "Icono de Font Awesome, p. ej. fa-tasks"
 #: model_terms:ir.actions.act_window,help:dev_addons.action_report_mine
 msgid ""
 "Found a problem or have an idea? Click the <i class=\"fa fa-bullhorn\" "
-"title=\"Report\"></i> icon at the top and choose \"New Report\"."
+"title=\"Tickets\"></i> icon at the top and choose \"New Ticket\"."
 msgstr ""
 "¿Encontró un problema o tiene una idea? Haga clic en el icono <i class=\"fa "
-"fa-bullhorn\" title=\"Reportar\"></i> de arriba y elija \"Nuevo reporte\"."
+"fa-bullhorn\" title=\"Tickets\"></i> de arriba y elija \"Nuevo ticket\"."
 
 #. module: dev_addons
 #: model:ir.model.fields,field_description:dev_addons.field_project_project__dev_repository_url
@@ -1048,6 +1046,11 @@ msgstr "Agrupar por"
 #: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__has_message
 msgid "Has Message"
 msgstr "Tiene un mensaje"
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_search
+msgid "Hide Declined"
+msgstr "Ocultar rechazados"
 
 #. module: dev_addons
 #: model_terms:ir.ui.view,arch_db:dev_addons.project_search_inherit
@@ -1083,8 +1086,8 @@ msgstr "No puedo trabajar"
 #. module: dev_addons
 #: model:ir.model.fields,field_description:dev_addons.field_dev_module__id
 #: model:ir.model.fields,field_description:dev_addons.field_dev_report__id
-#: model:ir.model.fields,field_description:dev_addons.field_dev_report_accept__id
 #: model:ir.model.fields,field_description:dev_addons.field_dev_report_decline__id
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report_reopen__id
 #: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__id
 #: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_complete__id
 #: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_recap_line__id
@@ -1092,6 +1095,17 @@ msgstr "No puedo trabajar"
 #: model:ir.model.fields,field_description:dev_addons.field_dev_technology__id
 msgid "ID"
 msgstr "ID"
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_kanban
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_search
+msgid "IT"
+msgstr "TI"
+
+#. module: dev_addons
+#: model:ir.model.fields.selection,name:dev_addons.selection__dev_report__topic__it
+msgid "IT Support"
+msgstr "Soporte de TI"
 
 #. module: dev_addons
 #: model:ir.model.fields,field_description:dev_addons.field_dev_report__activity_exception_icon
@@ -1138,6 +1152,7 @@ msgid "Improvements"
 msgstr "Mejoras"
 
 #. module: dev_addons
+#: model:ir.model.fields.selection,name:dev_addons.selection__dev_report__state__in_progress
 #: model:ir.model.fields.selection,name:dev_addons.selection__project_task__dev_status__in_progress
 #: model:ir.model.fields.selection,name:dev_addons.selection__project_task_type__dev_category__in_progress
 #: model:project.task.type,name:dev_addons.stage_in_progress
@@ -1169,23 +1184,11 @@ msgid "Is Follower"
 msgstr "Es seguidor"
 
 #. module: dev_addons
-#: model:ir.model.fields,field_description:dev_addons.field_dev_report__task_id
-#: model_terms:ir.ui.view,arch_db:dev_addons.report_form
-#: model_terms:ir.ui.view,arch_db:dev_addons.report_list
-msgid "Issue"
-msgstr "Incidencia"
-
-#. module: dev_addons
 #: model:ir.model.fields,field_description:dev_addons.field_dev_module__issue_count
 #: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__item_count
 #: model:ir.model.fields,field_description:dev_addons.field_dev_technology__task_count
 msgid "Issue Count"
 msgstr "Número de incidencias"
-
-#. module: dev_addons
-#: model:ir.model.fields,field_description:dev_addons.field_dev_report__issue_key
-msgid "Issue Key"
-msgstr "Clave de la incidencia"
 
 #. module: dev_addons
 #: model:ir.model.constraint,message:dev_addons.constraint_project_task_dev_key_unique
@@ -1244,15 +1247,6 @@ msgid "Issues at the End"
 msgstr "Incidencias al final"
 
 #. module: dev_addons
-#: model_terms:ir.ui.view,arch_db:dev_addons.report_accept_form
-msgid ""
-"It becomes an issue in this project's Backlog, outside any sprint.\n"
-"                    The person who sent it is told it was accepted."
-msgstr ""
-"Se convierte en una incidencia del backlog de este proyecto, fuera de cualquier sprint.\n"
-"                    A quien lo envió se le avisa que fue aceptado."
-
-#. module: dev_addons
 #: model:ir.model.fields.selection,name:dev_addons.selection__dev_report__urgency__low
 msgid "It can wait"
 msgstr "Puede esperar"
@@ -1288,8 +1282,8 @@ msgstr "Último inicio de sesión"
 #. module: dev_addons
 #: model:ir.model.fields,field_description:dev_addons.field_dev_module__write_uid
 #: model:ir.model.fields,field_description:dev_addons.field_dev_report__write_uid
-#: model:ir.model.fields,field_description:dev_addons.field_dev_report_accept__write_uid
 #: model:ir.model.fields,field_description:dev_addons.field_dev_report_decline__write_uid
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report_reopen__write_uid
 #: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__write_uid
 #: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_complete__write_uid
 #: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_recap_line__write_uid
@@ -1301,8 +1295,8 @@ msgstr "Última actualización por"
 #. module: dev_addons
 #: model:ir.model.fields,field_description:dev_addons.field_dev_module__write_date
 #: model:ir.model.fields,field_description:dev_addons.field_dev_report__write_date
-#: model:ir.model.fields,field_description:dev_addons.field_dev_report_accept__write_date
 #: model:ir.model.fields,field_description:dev_addons.field_dev_report_decline__write_date
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report_reopen__write_date
 #: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__write_date
 #: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_complete__write_date
 #: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_recap_line__write_date
@@ -1362,6 +1356,7 @@ msgstr "Marcar como completado"
 
 #. module: dev_addons
 #: model_terms:ir.ui.view,arch_db:dev_addons.project_task_form_inherit
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_form
 msgid "Mark as Done"
 msgstr "Marcar como hecha"
 
@@ -1422,6 +1417,11 @@ msgid "Minor"
 msgstr "Menor"
 
 #. module: dev_addons
+#: model:ir.model,name:dev_addons.model_ir_module_module
+msgid "Module"
+msgstr "Módulo"
+
+#. module: dev_addons
 #: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_complete__destination
 msgid "Move unfinished issues to"
 msgstr "Mover las incidencias sin terminar a"
@@ -1454,10 +1454,9 @@ msgstr "Mi perfil de desarrollador"
 #. odoo-javascript
 #: code:addons/dev_addons/static/src/report_systray/report_systray.xml:0
 #: model:ir.actions.act_window,name:dev_addons.action_report_mine
-#: model_terms:ir.ui.view,arch_db:dev_addons.report_search
 #, python-format
-msgid "My Reports"
-msgstr "Mis reportes"
+msgid "My Tickets"
+msgstr "Mis tickets"
 
 #. module: dev_addons
 #: model:ir.model.fields,field_description:dev_addons.field_dev_module__name
@@ -1477,6 +1476,7 @@ msgstr ""
 
 #. module: dev_addons
 #: model:ir.model.fields.selection,name:dev_addons.selection__dev_report__state__new
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_search
 msgid "New"
 msgstr "Nuevo"
 
@@ -1485,8 +1485,8 @@ msgstr "Nuevo"
 #: code:addons/dev_addons/static/src/report_systray/report_systray.xml:0
 #: model:ir.actions.act_window,name:dev_addons.action_report_new
 #, python-format
-msgid "New Report"
-msgstr "Nuevo reporte"
+msgid "New Ticket"
+msgstr "Nuevo ticket"
 
 #. module: dev_addons
 #: model:ir.model.fields,field_description:dev_addons.field_dev_report__activity_date_deadline
@@ -1541,11 +1541,6 @@ msgid "No issues yet"
 msgstr "Todavía no hay incidencias"
 
 #. module: dev_addons
-#: model_terms:ir.actions.act_window,help:dev_addons.action_report_triage
-msgid "No reports to review"
-msgstr "No hay reportes por revisar"
-
-#. module: dev_addons
 #. odoo-python
 #: code:addons/dev_addons/models/project_task.py:0
 #, python-format
@@ -1566,6 +1561,11 @@ msgid ""
 msgstr ""
 "No hay ningún sprint en curso, así que %s incidencias fueron al backlog. "
 "Inicie un sprint (Sprints > Iniciar) para trabajar en ellas en el tablero."
+
+#. module: dev_addons
+#: model_terms:ir.actions.act_window,help:dev_addons.action_tickets
+msgid "No tickets"
+msgstr "No hay tickets"
 
 #. module: dev_addons
 #: model:ir.model.fields.selection,name:dev_addons.selection__dev_report__urgency__normal
@@ -1631,6 +1631,20 @@ msgstr "Solo se pueden pausar las incidencias en curso."
 
 #. module: dev_addons
 #. odoo-python
+#: code:addons/dev_addons/models/dev_report.py:0
+#, python-format
+msgid "Only new tickets can be accepted."
+msgstr "Solo se pueden aceptar tickets nuevos."
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/dev_report.py:0
+#, python-format
+msgid "Only new tickets can be declined (\"%s\" was already accepted)."
+msgstr "Solo se pueden rechazar tickets nuevos (\"%s\" ya fue aceptado)."
+
+#. module: dev_addons
+#. odoo-python
 #: code:addons/dev_addons/models/dev_sprint.py:0
 #, python-format
 msgid "Only planned sprints can be started."
@@ -1646,15 +1660,26 @@ msgstr "Solo se pueden completar los sprints en curso."
 #. module: dev_addons
 #. odoo-python
 #: code:addons/dev_addons/models/dev_report.py:0
+#: code:addons/dev_addons/models/dev_report.py:0
 #, python-format
-msgid "Only the development team can accept or decline reports."
-msgstr "Solo el equipo de desarrollo puede aceptar o rechazar reportes."
+msgid ""
+"Only the person who sent it can reopen it, within %s days of it being done."
+msgstr ""
+"Solo quien lo envió puede reabrirlo, dentro de %s días después de terminado."
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/dev_report.py:0
+#, python-format
+msgid "Only the team (devs and IT) can handle tickets."
+msgstr "Solo el equipo (desarrolladores y TI) puede gestionar tickets."
 
 #. module: dev_addons
 #: model_terms:ir.ui.view,arch_db:dev_addons.milestone_list
 #: model_terms:ir.ui.view,arch_db:dev_addons.milestone_search
 #: model_terms:ir.ui.view,arch_db:dev_addons.module_list
 #: model_terms:ir.ui.view,arch_db:dev_addons.project_form_inherit
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_search
 #: model_terms:ir.ui.view,arch_db:dev_addons.task_search
 msgid "Open"
 msgstr "Abiertas"
@@ -1706,13 +1731,13 @@ msgid "Paused"
 msgstr "En pausa"
 
 #. module: dev_addons
-#: model_terms:ir.actions.act_window,help:dev_addons.action_report_triage
+#: model_terms:ir.actions.act_window,help:dev_addons.action_tickets
 msgid ""
-"People outside the dev team send problems and ideas with the <i class=\"fa fa-bullhorn\" title=\"Report\"></i> icon at the top.\n"
-"               Accept one to turn it into an issue in a project's Backlog, or decline it with a reason."
+"People send problems and ideas with the <i class=\"fa fa-bullhorn\" title=\"Tickets\"></i> icon at the top.\n"
+"               New ones land in the New column: accept them to put them in To Do, or decline them with a reason."
 msgstr ""
-"Las personas fuera del equipo de desarrollo envían problemas e ideas con el icono <i class=\"fa fa-bullhorn\" title=\"Reportar\"></i> de arriba.\n"
-"               Acepte uno para convertirlo en una incidencia del backlog de un proyecto, o rechácelo indicando el motivo."
+"Las personas envían problemas e ideas con el icono <i class=\"fa fa-bullhorn\" title=\"Tickets\"></i> de arriba.\n"
+"               Los nuevos llegan a la columna Nuevo: acéptelos para pasarlos a Por hacer, o rechácelos indicando el motivo."
 
 #. module: dev_addons
 #: model:ir.model.fields,help:dev_addons.field_dev_sprint__progress
@@ -1732,13 +1757,6 @@ msgstr "Persona"
 #: model:ir.model.fields,field_description:dev_addons.field_dev_technology__photo
 msgid "Photo"
 msgstr "Foto"
-
-#. module: dev_addons
-#. odoo-python
-#: code:addons/dev_addons/models/dev_report.py:0
-#, python-format
-msgid "Pick the project that receives the issue."
-msgstr "Elija el proyecto que recibe la incidencia."
 
 #. module: dev_addons
 #. odoo-python
@@ -1800,14 +1818,11 @@ msgstr "Progreso"
 #. module: dev_addons
 #: model:ir.model,name:dev_addons.model_project_project
 #: model:ir.model.fields,field_description:dev_addons.field_dev_module__project_id
-#: model:ir.model.fields,field_description:dev_addons.field_dev_report__project_id
-#: model:ir.model.fields,field_description:dev_addons.field_dev_report_accept__project_id
 #: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__project_id
 #: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_complete__project_id
 #: model:ir.ui.menu,name:dev_addons.menu_project_section
 #: model_terms:ir.ui.view,arch_db:dev_addons.milestone_search
 #: model_terms:ir.ui.view,arch_db:dev_addons.module_search
-#: model_terms:ir.ui.view,arch_db:dev_addons.report_search
 #: model_terms:ir.ui.view,arch_db:dev_addons.sprint_search
 #: model_terms:ir.ui.view,arch_db:dev_addons.task_search
 msgid "Project"
@@ -1869,6 +1884,11 @@ msgid "Projects"
 msgstr "Proyectos"
 
 #. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_form
+msgid "Put it in To Do on the Tickets board"
+msgstr "Pasarlo a Por hacer en el tablero de tickets"
+
+#. module: dev_addons
 #: model:ir.model.fields.selection,name:dev_addons.selection__dev_report__kind__question
 msgid "Question"
 msgstr "Pregunta"
@@ -1912,18 +1932,9 @@ msgid "Reopen"
 msgstr "Reabrir"
 
 #. module: dev_addons
-#: model:ir.model,name:dev_addons.model_dev_report
-#: model_terms:ir.ui.view,arch_db:dev_addons.report_form
-msgid "Report"
-msgstr "Reportar"
-
-#. module: dev_addons
-#. odoo-javascript
-#: code:addons/dev_addons/static/src/report_systray/report_systray.js:0
-#: code:addons/dev_addons/static/src/report_systray/report_systray.xml:0
-#, python-format
-msgid "Report a problem or an idea"
-msgstr "Reportar un problema o una idea"
+#: model:ir.model,name:dev_addons.model_dev_report_reopen
+msgid "Reopen Ticket"
+msgstr "Reabrir ticket"
 
 #. module: dev_addons
 #: model:ir.model.fields,field_description:dev_addons.field_dev_report__reporter_id
@@ -1936,21 +1947,6 @@ msgstr "Reportado por"
 #: model_terms:ir.ui.view,arch_db:dev_addons.task_search
 msgid "Reported by Me"
 msgstr "Reportadas por mí"
-
-#. module: dev_addons
-#: model:ir.model.fields,field_description:dev_addons.field_dev_report__done_notified
-msgid "Reporter Told It's Done"
-msgstr "Se avisó que está hecho"
-
-#. module: dev_addons
-#: model:ir.actions.act_window,name:dev_addons.action_report_triage
-#: model:ir.model.fields,field_description:dev_addons.field_dev_report_accept__report_ids
-#: model:ir.model.fields,field_description:dev_addons.field_dev_report_decline__report_ids
-#: model:ir.ui.menu,name:dev_addons.menu_reports_triage
-#: model_terms:ir.ui.view,arch_db:dev_addons.report_list
-#: model_terms:ir.ui.view,arch_db:dev_addons.report_search
-msgid "Reports"
-msgstr "Reportes"
 
 #. module: dev_addons
 #: model:ir.model.fields.selection,name:dev_addons.selection__dev_report__kind__feature
@@ -2006,6 +2002,25 @@ msgstr "Guardar"
 #: model_terms:ir.ui.view,arch_db:dev_addons.report_form
 msgid "Send"
 msgstr "Enviar"
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_reopen_form
+msgid "Send Back"
+msgstr "Devolver"
+
+#. module: dev_addons
+#. odoo-javascript
+#: code:addons/dev_addons/static/src/report_systray/report_systray.xml:0
+#, python-format
+msgid "Send a ticket"
+msgstr "Enviar un ticket"
+
+#. module: dev_addons
+#. odoo-javascript
+#: code:addons/dev_addons/static/src/report_systray/report_systray.js:0
+#, python-format
+msgid "Send a ticket: a problem, an idea or a question"
+msgstr "Enviar un ticket: un problema, una idea o una pregunta"
 
 #. module: dev_addons
 #: model_terms:ir.ui.view,arch_db:dev_addons.project_task_form_inherit
@@ -2076,7 +2091,6 @@ msgstr ""
 
 #. module: dev_addons
 #: model:ir.model.fields.selection,name:dev_addons.selection__dev_report__kind__bug
-#: model_terms:ir.ui.view,arch_db:dev_addons.report_search
 msgid "Something's broken"
 msgstr "Algo no funciona"
 
@@ -2164,7 +2178,14 @@ msgid "Sprints"
 msgstr "Sprints"
 
 #. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__state
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_search
+msgid "Stage"
+msgstr "Etapa"
+
+#. module: dev_addons
 #: model_terms:ir.ui.view,arch_db:dev_addons.project_task_form_inherit
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_form
 msgid "Start"
 msgstr "Iniciar"
 
@@ -2187,7 +2208,6 @@ msgstr "Iniciada el"
 #: model:ir.model.fields,field_description:dev_addons.field_dev_report__progress
 #: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__state
 #: model:ir.model.fields,field_description:dev_addons.field_project_task__dev_status
-#: model_terms:ir.ui.view,arch_db:dev_addons.report_search
 #: model_terms:ir.ui.view,arch_db:dev_addons.sprint_search
 msgid "Status"
 msgstr "Estado"
@@ -2209,6 +2229,22 @@ msgstr ""
 "Vencida: la fecha límite ya pasó\n"
 "Hoy: la actividad es hoy\n"
 "Planificada: actividades futuras."
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/dev_report.py:0
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_reopen_form
+#, python-format
+msgid "Still not fixed"
+msgstr "Sigue sin funcionar"
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/dev_report.py:0
+#, python-format
+msgid "Still not fixed: %s"
+msgstr "Sigue sin funcionar: %s"
 
 #. module: dev_addons
 #: model_terms:ir.ui.view,arch_db:dev_addons.task_search
@@ -2322,19 +2358,18 @@ msgstr "Carpeta de logotipos de tecnologías"
 #. module: dev_addons
 #: model_terms:ir.ui.view,arch_db:dev_addons.report_form
 msgid ""
-"Tell the development team about a problem, an idea or a question.\n"
-"                        They'll review it, and you can follow it in <b>My Reports</b> (the <i class=\"fa fa-bullhorn\" title=\"Report\"/> icon at the top)."
+"Tell the team about a problem, an idea or a question.\n"
+"                        They'll review it, and you can follow it in <b>My Tickets</b> (the <i class=\"fa fa-bullhorn\" title=\"Tickets\"/> icon at the top)."
 msgstr ""
-"Cuéntele al equipo de desarrollo un problema, una idea o una pregunta.\n"
-"                        Lo revisarán y podrá seguirlo en <b>Mis reportes</b> (el icono <i class=\"fa fa-bullhorn\" title=\"Reportar\"/> de arriba)."
+"Cuéntele al equipo un problema, una idea o una pregunta.\n"
+"                        Lo revisarán y podrá seguirlo en <b>Mis tickets</b> (el icono <i class=\"fa fa-bullhorn\" title=\"Tickets\"/> de arriba)."
 
 #. module: dev_addons
 #. odoo-python
 #: code:addons/dev_addons/models/dev_report.py:0
 #, python-format
-msgid "Thanks! The development team will review it. Follow it in My Reports."
-msgstr ""
-"¡Gracias! El equipo de desarrollo lo revisará. Sígalo en Mis reportes."
+msgid "Thanks! Your ticket %s was sent. Follow it in My Tickets."
+msgstr "¡Gracias! Su ticket %s fue enviado. Sígalo en Mis tickets."
 
 #. module: dev_addons
 #: model:ir.model.fields,help:dev_addons.field_dev_report__app_id
@@ -2349,11 +2384,6 @@ msgid ""
 msgstr ""
 "La meta hacia la que avanza este sprint. Las incidencias que se agregan al "
 "sprint reciben este hito."
-
-#. module: dev_addons
-#: model:ir.model.fields,help:dev_addons.field_dev_report_accept__project_id
-msgid "The issue goes to this project's Backlog."
-msgstr "La incidencia va al backlog de este proyecto."
 
 #. module: dev_addons
 #: model_terms:ir.ui.view,arch_db:dev_addons.task_complete_form
@@ -2387,28 +2417,14 @@ msgid "The person who knows this part of the software best."
 msgstr "La persona que mejor conoce esta parte del software."
 
 #. module: dev_addons
+#: model:ir.model.fields,help:dev_addons.field_dev_report_decline__reason
+msgid "The person who sent it sees this, so keep it friendly and clear."
+msgstr "Quien lo envió verá esto, así que escríbalo de forma amable y clara."
+
+#. module: dev_addons
 #: model_terms:ir.ui.view,arch_db:dev_addons.report_decline_form
 msgid "The person who sent it will see this reason."
 msgstr "La persona que lo envió verá este motivo."
-
-#. module: dev_addons
-#: model:ir.model.fields,help:dev_addons.field_dev_report__project_id
-msgid "The project whose Backlog received the issue."
-msgstr "El proyecto cuyo backlog recibió la incidencia."
-
-#. module: dev_addons
-#: model:ir.model.fields,help:dev_addons.field_dev_report__done_notified
-msgid "The reporter got the \"it's done\" message (sent only once)."
-msgstr ""
-"La persona que lo reportó recibió el aviso de \"está hecho\" (se envía una "
-"sola vez)."
-
-#. module: dev_addons
-#: model:ir.model.fields,help:dev_addons.field_dev_report_decline__reason
-msgid "The reporter sees this, so keep it friendly and clear."
-msgstr ""
-"La persona que lo reportó verá esto, así que escríbalo de forma amable y "
-"clara."
 
 #. module: dev_addons
 #: model_terms:ir.ui.view,arch_db:dev_addons.task_search
@@ -2416,6 +2432,16 @@ msgid "The running sprint plus issues not planned in any sprint"
 msgstr ""
 "El sprint en curso más las incidencias que no están planificadas en ningún "
 "sprint"
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_reopen_form
+msgid "The ticket goes back to the team."
+msgstr "El ticket vuelve al equipo."
+
+#. module: dev_addons
+#: model:ir.model.fields,help:dev_addons.field_dev_report__key
+msgid "The ticket's number, e.g. TCK-12."
+msgstr "El número del ticket, p. ej. TCK-12."
 
 #. module: dev_addons
 #: model:ir.model.fields,help:dev_addons.field_project_milestone__dev_version
@@ -2441,19 +2467,29 @@ msgstr "Este proyecto ya tiene un componente con ese nombre."
 #. odoo-python
 #: code:addons/dev_addons/models/dev_report.py:0
 #, python-format
-msgid "This report has no issue."
-msgstr "Este reporte no tiene incidencia."
-
-#. module: dev_addons
-#. odoo-python
-#: code:addons/dev_addons/models/dev_report.py:0
-#, python-format
 msgid ""
-"This report was already reviewed, so it can't be changed. Add a message "
+"This ticket was already reviewed, so it can't be changed. Add a message "
 "below instead."
 msgstr ""
-"Este reporte ya fue revisado, así que no se puede cambiar. Escriba un "
-"mensaje abajo."
+"Este ticket ya fue revisado, así que no se puede cambiar. Escriba un mensaje"
+" abajo."
+
+#. module: dev_addons
+#: model:ir.model,name:dev_addons.model_dev_report
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__key
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report_reopen__report_id
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_form
+msgid "Ticket"
+msgstr "Ticket"
+
+#. module: dev_addons
+#: model:ir.actions.act_window,name:dev_addons.action_tickets
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report_decline__report_ids
+#: model:ir.ui.menu,name:dev_addons.menu_tickets
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_list
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_search
+msgid "Tickets"
+msgstr "Tickets"
 
 #. module: dev_addons
 #: model:ir.model.fields,field_description:dev_addons.field_dev_report__name
@@ -2461,16 +2497,12 @@ msgid "Title"
 msgstr "Título"
 
 #. module: dev_addons
+#: model:ir.model.fields.selection,name:dev_addons.selection__dev_report__state__todo
 #: model:ir.model.fields.selection,name:dev_addons.selection__project_task__dev_status__todo
 #: model:ir.model.fields.selection,name:dev_addons.selection__project_task_type__dev_category__todo
 #: model:project.task.type,name:dev_addons.stage_todo
 msgid "To Do"
 msgstr "Por hacer"
-
-#. module: dev_addons
-#: model_terms:ir.ui.view,arch_db:dev_addons.report_search
-msgid "To Review"
-msgstr "Por revisar"
 
 #. module: dev_addons
 #: model_terms:ir.ui.view,arch_db:dev_addons.milestone_form
@@ -2492,11 +2524,6 @@ msgstr ""
 "cambiar."
 
 #. module: dev_addons
-#: model_terms:ir.ui.view,arch_db:dev_addons.report_form
-msgid "Turn it into an issue in a project's Backlog"
-msgstr "Convertirlo en una incidencia del backlog de un proyecto"
-
-#. module: dev_addons
 #: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_recap_line__issue_type
 #: model:ir.model.fields,field_description:dev_addons.field_project_task__dev_issue_type
 #: model:ir.model.fields.selection,name:dev_addons.selection__dev_sprint_recap_line__kind__type
@@ -2507,6 +2534,11 @@ msgid "Type"
 msgstr "Tipo"
 
 #. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_form
+msgid "Type here. You can paste screenshots too."
+msgstr "Escriba aquí. También puede pegar capturas de pantalla."
+
+#. module: dev_addons
 #: model:ir.model.fields,help:dev_addons.field_dev_report__activity_exception_decoration
 msgid "Type of the exception activity on record."
 msgstr "Tipo de actividad de excepción en el registro."
@@ -2514,6 +2546,7 @@ msgstr "Tipo de actividad de excepción en el registro."
 #. module: dev_addons
 #. odoo-python
 #: code:addons/dev_addons/models/dev_sprint.py:0
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_search
 #, python-format
 msgid "Unassigned"
 msgstr "Sin asignar"
@@ -2544,10 +2577,22 @@ msgid "Unsupported search on Overdue."
 msgstr "Búsqueda no admitida en Vencidas."
 
 #. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__urgency_level
+msgid "Urgency Level"
+msgstr "Nivel de urgencia"
+
+#. module: dev_addons
 #: model:ir.model.fields.selection,name:dev_addons.selection__dev_report__urgency__high
 #: model_terms:ir.ui.view,arch_db:dev_addons.report_search
 msgid "Urgent"
 msgstr "Urgente"
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/dev_report.py:0
+#, python-format
+msgid "Urgent ticket %s"
+msgstr "Ticket urgente %s"
 
 #. module: dev_addons
 #: model:ir.model.fields,field_description:dev_addons.field_project_milestone__dev_version
@@ -2595,6 +2640,11 @@ msgid "Website communication history"
 msgstr "Historial de comunicación del sitio web"
 
 #. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_form
+msgid "What did you expect to happen?"
+msgstr "¿Qué esperaba que pasara?"
+
+#. module: dev_addons
 #: model_terms:ir.ui.view,arch_db:dev_addons.milestone_form
 msgid ""
 "What does reaching this milestone mean? E.g. users can sign up, log in and "
@@ -2604,22 +2654,14 @@ msgstr ""
 "iniciar sesión y restablecer su contraseña."
 
 #. module: dev_addons
-#: model:ir.model.fields,help:dev_addons.field_dev_report__description
-msgid "What happened, what you expected, and the steps to see it again."
-msgstr "Qué pasó, qué esperaba y los pasos para volver a verlo."
-
-#. module: dev_addons
 #: model_terms:ir.ui.view,arch_db:dev_addons.report_form
-msgid ""
-"What happened? What did you expect? How can we see it again? You can paste "
-"screenshots here."
+msgid "What happened instead? Copy the error message or paste a screenshot."
 msgstr ""
-"¿Qué pasó? ¿Qué esperaba? ¿Cómo podemos volver a verlo? Puede pegar capturas"
-" de pantalla aquí."
+"¿Qué pasó en cambio? Copie el mensaje de error o pegue una captura de "
+"pantalla."
 
 #. module: dev_addons
 #: model:ir.model.fields,field_description:dev_addons.field_dev_report__kind
-#: model_terms:ir.ui.view,arch_db:dev_addons.report_search
 msgid "What is it?"
 msgstr "¿Qué es?"
 
@@ -2646,6 +2688,28 @@ msgid ""
 msgstr "¿De qué trató este sprint? Qué se terminó, qué salió bien, qué no..."
 
 #. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__topic
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_search
+msgid "What's it about?"
+msgstr "¿De qué se trata?"
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report_reopen__comment
+msgid "What's still wrong?"
+msgstr "¿Qué sigue mal?"
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_form
+msgid "Where were you and what did you click? (e.g. Sales → Orders → Print)"
+msgstr ""
+"¿Dónde estaba y en qué hizo clic? (p. ej. Ventas → Pedidos → Imprimir)"
+
+#. module: dev_addons
+#: model:ir.model.fields,help:dev_addons.field_dev_report__user_id
+msgid "Who on the team (devs and IT) is handling it."
+msgstr "Quién del equipo (desarrolladores y TI) lo está atendiendo."
+
+#. module: dev_addons
 #: model:ir.model.fields,field_description:dev_addons.field_dev_report__decline_reason
 msgid "Why it was declined"
 msgstr "Por qué se rechazó"
@@ -2664,8 +2728,8 @@ msgstr "Solo puede reportar sobre aplicaciones a las que tiene acceso."
 
 #. module: dev_addons
 #: model_terms:ir.actions.act_window,help:dev_addons.action_report_mine
-msgid "You haven't sent any reports yet"
-msgstr "Todavía no ha enviado ningún reporte"
+msgid "You haven't sent any tickets yet"
+msgstr "Todavía no ha enviado ningún ticket"
 
 #. module: dev_addons
 #: model_terms:ir.actions.act_window,help:dev_addons.action_backlog
@@ -2724,6 +2788,11 @@ msgstr "p. ej. Ventas, Inventario..."
 #: model_terms:ir.ui.view,arch_db:dev_addons.sprint_form
 msgid "e.g. Sprint 1"
 msgstr "p. ej. Sprint 1"
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_reopen_form
+msgid "e.g. The printer works again, but only for one page."
+msgstr "p. ej. La impresora funciona otra vez, pero solo imprime una página."
 
 #. module: dev_addons
 #: model_terms:ir.ui.view,arch_db:dev_addons.report_decline_form

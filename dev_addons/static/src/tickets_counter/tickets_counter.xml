@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <!-- "Tickets 3" in the Work menu: new tickets waiting. -->
+    <t t-inherit="web.NavBar.SectionsMenu.Dropdown.MenuSlot" t-inherit-mode="extension">
+        <xpath expr="//DropdownItem[@href='getMenuItemHref(item)']" position="attributes">
+            <attribute name="t-esc"/>
+        </xpath>
+        <xpath expr="//DropdownItem[@href='getMenuItemHref(item)']" position="inside">
+            <t t-esc="item.name"/>
+            <span t-if="item.xmlid === 'dev_addons.menu_tickets' and devTicketCount"
+                  class="badge rounded-pill text-bg-primary ms-2" t-esc="devTicketCount"/>
+        </xpath>
+    </t>
+</templates>

@@ -1,6 +1,6 @@
 /** @odoo-module **/
-// Top-bar icon (next to chat and activities): anyone sends a report to the
-// dev team from any screen, or checks the ones they sent.
+// Top-bar icon (next to chat and activities): anyone sends a ticket to the
+// team (devs and IT) from any screen, or checks the ones they sent.
 import { Component } from "@odoo/owl";
 import { Dropdown } from "@web/core/dropdown/dropdown";
 import { DropdownItem } from "@web/core/dropdown/dropdown_item";
@@ -18,7 +18,7 @@ export class ReportSystray extends Component {
     }
 
     get tooltip() {
-        return _t("Report a problem or an idea");
+        return _t("Send a ticket: a problem, an idea or a question");
     }
 
     newReport() {

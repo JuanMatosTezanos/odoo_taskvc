@@ -3,13 +3,13 @@
     <t t-name="dev_addons.ReportSystray">
         <Dropdown class="'o_dev_report_systray'" position="'bottom-end'" autoOpen="false" tooltip="tooltip">
             <t t-set-slot="toggler">
-                <i class="fa fa-lg fa-bullhorn" role="img" aria-label="Report a problem or an idea"/>
+                <i class="fa fa-lg fa-bullhorn" role="img" aria-label="Send a ticket"/>
             </t>
             <DropdownItem onSelected="() => this.newReport()">
-                <i class="fa fa-plus me-2"/>New Report
+                <i class="fa fa-plus me-2"/>New Ticket
             </DropdownItem>
             <DropdownItem onSelected="() => this.myReports()">
-                <i class="fa fa-list me-2"/>My Reports
+                <i class="fa fa-list me-2"/>My Tickets
             </DropdownItem>
         </Dropdown>
     </t>
