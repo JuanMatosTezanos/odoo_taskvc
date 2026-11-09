@@ -2,7 +2,7 @@
 from markupsafe import Markup
 
 from odoo import _, api, fields, models
-from odoo.exceptions import AccessError, UserError
+from odoo.exceptions import AccessError, UserError, ValidationError
 
 REPORT_KINDS = [
     ('bug', "Something's broken"),
@@ -46,11 +46,13 @@ class DevReport(models.Model):
 
     name = fields.Char(string="Title", required=True, tracking=True,
                        help="In a few words, e.g. \"Can't print invoices\".")
-    app_menu_id = fields.Many2one(
-        'ir.ui.menu', string="App", tracking=True, ondelete='set null',
+    # An installed application (Sales, Inventory, Dev Projects...) that this
+    # person can actually open: no reporting on apps they have no access to.
+    app_id = fields.Many2one(
+        'ir.module.module', string="App", tracking=True, ondelete='set null', index=True,
         domain="[('id', 'in', allowed_app_ids)]",
         help="The Odoo app where it happens, e.g. Sales or Inventory.")
-    allowed_app_ids = fields.Many2many('ir.ui.menu', compute='_compute_allowed_app_ids')
+    allowed_app_ids = fields.Many2many('ir.module.module', compute='_compute_allowed_app_ids')
     # Chosen by the team when accepting: reporters don't see projects.
     project_id = fields.Many2one(
         'project.project', string="Project", readonly=True, tracking=True, index=True,
@@ -81,13 +83,43 @@ class DevReport(models.Model):
         string="Reporter Told It's Done", readonly=True, copy=False,
         help="The reporter got the \"it's done\" message (sent only once).")
 
+    @api.model
+    def _dev_apps_for_user(self):
+        """Installed applications the current user can open (e.g. Dev Projects
+        only for the dev team). An app counts when the user can reach one of
+        its menus, or sees a home-screen icon that belongs to it (Sales' menus
+        come from the "sale" module, but its icon is the Sales app's)."""
+        apps = self.env['ir.module.module'].sudo().search(
+            [('application', '=', True), ('state', '=', 'installed')])
+        visible = self.env['ir.ui.menu']._visible_menu_ids()
+        # A menu inside a hidden menu (e.g. inside the Projects app for a
+        # non-developer) can't be reached: every menu above it must be visible too.
+        menus = self.env['ir.ui.menu'].sudo().browse(visible)
+        reachable = menus.filtered(lambda menu: all(
+            int(pid) in visible for pid in (menu.parent_path or '').split('/') if pid))
+        data = self.env['ir.model.data'].sudo().search_read([
+            ('model', '=', 'ir.ui.menu'), ('module', 'in', apps.mapped('name')),
+            ('res_id', 'in', reachable.ids),
+        ], ['module'])
+        names = {row['module'] for row in data}
+        names |= {menu.web_icon.split(',')[0] for menu in reachable
+                  if not menu.parent_id and menu.web_icon}
+        return apps.filtered(lambda app: app.name in names).with_env(self.env)
+
     @api.depends_context('uid')
     def _compute_allowed_app_ids(self):
-        # The apps on this person's home screen (search() hides menus they can't open;
-        # the Many2one dropdown alone wouldn't).
-        apps = self.env['ir.ui.menu'].search([('parent_id', '=', False)])
+        apps = self._dev_apps_for_user()
         for report in self:
             report.allowed_app_ids = apps
+
+    @api.constrains('app_id')
+    def _check_app_access(self):
+        if self.env.su:
+            return
+        apps = self._dev_apps_for_user()
+        for report in self:
+            if report.app_id and report.app_id not in apps:
+                raise ValidationError(_("You can only report on apps you have access to."))
 
     @api.depends('task_id.dev_key')
     def _compute_issue_info(self):
@@ -151,8 +183,8 @@ class DevReport(models.Model):
     def _issue_values(self, project):
         self.ensure_one()
         description = self.description or Markup()
-        if self.app_menu_id:
-            description = Markup("<p><b>%s</b> %s</p>") % (_("App:"), self.app_menu_id.sudo().name) + description
+        if self.app_id:
+            description = Markup("<p><b>%s</b> %s</p>") % (_("App:"), self.app_id.sudo().shortdesc) + description
         vals = {
             'name': self.name,
             'project_id': project.id,
@@ -264,10 +296,10 @@ class DevReportAccept(models.TransientModel):
         if len(projects) == 1:
             return projects
         reports = self.env['dev.report'].browse(self.env.context.get('default_report_ids') or [])
-        apps = reports.app_menu_id
+        apps = reports.app_id
         if len(apps) == 1:
             previous = self.env['dev.report'].search([
-                ('app_menu_id', '=', apps.id), ('project_id', '!=', False)], limit=1)
+                ('app_id', '=', apps.id), ('project_id', '!=', False)], limit=1)
             return previous.project_id
         return self.env['project.project']
 

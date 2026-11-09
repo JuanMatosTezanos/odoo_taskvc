@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import base64
 
-from odoo.exceptions import AccessError, UserError
+from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tests import Form, TransactionCase, tagged
 
 
@@ -26,14 +26,14 @@ class TestReports(TransactionCase):
         cls.dev = cls.env['res.users'].create({
             'name': 'Dee Dev', 'login': 'dee_reports',
             'groups_id': [(6, 0, [cls.env.ref('project.group_project_user').id])]})
-        cls.discuss = cls.env.ref('mail.menu_root_discuss')
+        cls.discuss = cls.env.ref('base.module_mail')  # the Discuss app
 
     def _send(self, user=None, **vals):
         """Fill the pop-up as the reporter and click Send."""
         form = Form(self.env['dev.report'].with_user(user or self.alice),
                     view='dev_addons.report_form')
         form.name = vals.pop('name', "Can't print invoices")
-        form.app_menu_id = vals.pop('app_menu_id', self.discuss)
+        form.app_id = vals.pop('app_id', self.discuss)
         for field, value in vals.items():
             setattr(form, field, value)
         report = form.save()
@@ -49,7 +49,7 @@ class TestReports(TransactionCase):
         return wizard.save().action_confirm()
 
     def test_send_and_see_only_your_own(self):
-        mine = self._send(kind='bug', urgency='blocking', app_menu_id=self.discuss)
+        mine = self._send(kind='bug', urgency='blocking', app_id=self.discuss)
         self.assertEqual((mine.reporter_id, mine.state, mine.progress), (self.alice, 'new', 'new'))
         self.assertFalse(mine.project_id, "reporters don't pick a project")
         self.assertIn(self.alice.partner_id, mine.message_partner_ids, "the reporter follows it")
@@ -61,21 +61,29 @@ class TestReports(TransactionCase):
             theirs.with_user(self.alice).read(['name'])
 
     def test_reporter_form(self):
-        # "Reported by" shows who it is; no Project field for reporters; Apps
-        # offered are the ones on their home screen.
+        # "Reported by" shows who it is; no Project field for reporters.
         arch = self.env['dev.report'].with_user(self.alice).get_views(
             [(self.env.ref('dev_addons.report_form').id, 'form')])['views']['form']['arch']
         self.assertIn('name="reporter_id"', arch)
-        self.assertIn('name="app_menu_id"', arch)
+        self.assertIn('name="app_id"', arch)
         self.assertNotIn('name="project_id"', arch)
         form = Form(self.env['dev.report'].with_user(self.alice), view='dev_addons.report_form')
         self.assertEqual(form.reporter_id, self.alice)
-        apps = self.env['dev.report'].with_user(self.alice).new({}).allowed_app_ids._origin
-        self.assertIn(self.discuss, apps)
-        self.assertNotIn(self.env.ref('base.menu_administration'), apps, "only apps they can open")
-        self.assertNotIn(self.env.ref('project.menu_main_pm'), apps)
-        self.assertIn(self.env.ref('project.menu_main_pm'),
-                      self.env['dev.report'].with_user(self.dev).new({}).allowed_app_ids._origin)
+        # Apps offered: installed applications this person can open.
+        dev_projects = self.env.ref('base.module_dev_addons')
+        project = self.env.ref('base.module_project')
+        mine = self.env['dev.report'].with_user(self.alice).new({}).allowed_app_ids._origin
+        self.assertIn(self.discuss, mine)
+        self.assertNotIn(dev_projects, mine, "only the dev team (and admins) report on Dev Projects")
+        self.assertNotIn(project, mine)
+        self.assertNotIn(self.env.ref('base.module_web'), mine, "technical modules are not apps")
+        self.assertTrue(all(app.application and app.state == 'installed' for app in mine))
+        devs = self.env['dev.report'].with_user(self.dev).new({}).allowed_app_ids._origin
+        self.assertIn(dev_projects, devs)
+        self.assertIn(project, devs)
+        # Not just hidden: picking an app you can't open is refused.
+        with self.assertRaises(ValidationError):
+            self.env['dev.report'].with_user(self.alice).create({'name': 'Sneaky', 'app_id': dev_projects.id})
 
     def test_app_is_required(self):
         form = Form(self.env['dev.report'].with_user(self.alice), view='dev_addons.report_form')
@@ -96,7 +104,7 @@ class TestReports(TransactionCase):
 
     def test_accept_makes_a_backlog_issue(self):
         report = self._send(kind='bug', urgency='high', description='<p>The button is grey</p>',
-                            app_menu_id=self.discuss)
+                            app_id=self.discuss)
         self.env['ir.attachment'].create({
             'name': 'screen.png', 'datas': base64.b64encode(b'png'),
             'res_model': 'dev.report', 'res_id': report.id})
@@ -109,7 +117,7 @@ class TestReports(TransactionCase):
         self.assertEqual(issue.dev_reporter_id, self.alice, "the reporter is 'Reported by'")
         self.assertFalse(issue.dev_sprint_id, "goes to the Backlog even with a running sprint")
         self.assertIn('grey', str(issue.description))
-        self.assertIn(self.discuss.name, str(issue.description), "the issue says which app")
+        self.assertIn(self.discuss.shortdesc, str(issue.description), "the issue says which app")
         self.assertTrue(issue.dev_key)
         self.assertEqual(self.env['ir.attachment'].search_count(
             [('res_model', '=', 'project.task'), ('res_id', '=', issue.id)]), 1, "screenshots come along")
@@ -135,10 +143,10 @@ class TestReports(TransactionCase):
             report.with_user(self.dev)._accept(self.project)
 
     def test_accept_suggests_the_project(self):
-        first = self._send(app_menu_id=self.discuss)
+        first = self._send(app_id=self.discuss)
         self._accept(first, self.other_project)
         # Next report from the same app: the same project is suggested.
-        second = self._send(name='Again', app_menu_id=self.discuss)
+        second = self._send(name='Again', app_id=self.discuss)
         action = second.with_user(self.dev).action_open_accept()
         wizard = Form(self.env[action['res_model']].with_user(self.dev).with_context(action['context']))
         self.assertEqual(wizard.project_id, self.other_project)

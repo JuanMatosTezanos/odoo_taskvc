@@ -24,7 +24,7 @@ Project app, so you can switch between the two:
     'author': "My Company",
     'website': "https://www.yourcompany.com",
     'category': 'Services/Project',
-    'version': '17.0.1.4.0',
+    'version': '17.0.1.5.0',
     'license': 'LGPL-3',
     'application': True,
     'depends': ['project', 'mail'],
