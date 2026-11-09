@@ -253,6 +253,15 @@ class TestDevProjects(TransactionCase):
             row.project_id = self.project
             self.assertFalse(row.save().dev_sprint_id)
 
+    def test_board_shows_most_important_first(self):
+        normal = self._issue(name='Normal', dev_priority='0')
+        critical = self._issue(name='Critical', dev_priority='3')
+        high = self._issue(name='High', dev_priority='2')
+        arch = self.Task.get_views([(self.env.ref('dev_addons.task_kanban').id, 'kanban')])['views']['kanban']['arch']
+        order = etree.fromstring(arch).get('default_order')
+        found = self.Task.search([('id', 'in', (normal | critical | high).ids)], order=order)
+        self.assertEqual(found.mapped('name'), ['Critical', 'High', 'Normal'])
+
     def test_backlog_rows_can_be_opened(self):
         # Rows edit in place, so each one needs a "View" button to open the full issue.
         arch = self.env.ref('dev_addons.task_backlog_list').arch

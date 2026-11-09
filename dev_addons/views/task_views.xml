@@ -56,7 +56,9 @@
         <field name="model">project.task</field>
         <field name="priority">90</field>
         <field name="arch" type="xml">
+            <!-- Most important first (Critical > High > Important > Normal), then the Backlog order. -->
             <kanban default_group_by="stage_id" class="o_kanban_small_column" quick_create="1"
+                    default_order="dev_priority desc, sequence, id"
                     quick_create_view="dev_addons.task_quick_create_form" sample="1">
                 <field name="color" />
                 <field name="dev_status" />
