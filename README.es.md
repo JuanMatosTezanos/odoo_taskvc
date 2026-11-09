@@ -4,7 +4,7 @@ Gestión de proyectos de software al estilo Jira, construida sobre la app **Proy
 
 > **¿Solo vas a usar la app?** Lee la [Guía de usuario](GUIA_DE_USUARIO.md) en lenguaje sencillo ([User Guide in English](USER_GUIDE.md)). Este README es para quienes la instalan y la mantienen.
 
-Dev Projects añade claves de incidencia (`WEB-1`, `WEB-2`…), tipos de incidencia, subtareas, un **Tablero** con límites WIP, un backlog ordenado, sprints que se inician y se completan a mano (con un resumen de cada uno), hitos con versión, componentes, tecnologías y perfiles de desarrollador. Un menú **Reportar**, junto a Proyectos Dev, permite que cualquier persona de la empresa envíe problemas e ideas al equipo de desarrollo. Trabaja sobre **los mismos proyectos y tareas** que la app Proyecto. Una incidencia es una tarea normal de Odoo con campos extra, así que puedes cambiar entre las dos apps en cualquier momento. Todo el módulo está disponible en **inglés y español**.
+Dev Projects añade claves de incidencia (`WEB-1`, `WEB-2`…), tipos de incidencia, subtareas, un **Tablero** con límites WIP, un backlog ordenado, sprints que se inician y se completan a mano (con un resumen de cada uno), hitos con versión, componentes, tecnologías y perfiles de desarrollador. Un **icono de reportes** (📢) en la barra superior permite que cualquier persona de la empresa envíe problemas e ideas al equipo de desarrollo. Trabaja sobre **los mismos proyectos y tareas** que la app Proyecto. Una incidencia es una tarea normal de Odoo con campos extra, así que puedes cambiar entre las dos apps en cualquier momento. Todo el módulo está disponible en **inglés y español**.
 
 > Este README usa los nombres de la app en español. Si tu Odoo está en inglés, la [tabla de idiomas](#idiomas-inglés--español) muestra cómo se llama cada pantalla.
 
@@ -45,6 +45,7 @@ Dev Projects añade claves de incidencia (`WEB-1`, `WEB-2`…), tipos de inciden
 - Mover una tarjeta a una columna Hecho marca la tarea como hecha también en la app Proyecto, y sacarla de ahí la reabre.
 - **Límite WIP** opcional por columna, contado por proyecto y sprint. Las columnas Hecho nunca tienen límite.
 - Muestra el **trabajo actual**: el sprint en curso más las incidencias que no están en ningún sprint.
+- **Lo más importante primero** en cada columna: errores Críticos/Bloqueantes, luego por prioridad Dev (Crítica → Alta → Importante → Normal), luego el orden del backlog.
 
 **Backlog y sprints**
 - Backlog agrupado por sprint. Arrastra para ordenar las incidencias y elige un sprint para planificarlas.
@@ -94,21 +95,32 @@ Dev Projects añade claves de incidencia (`WEB-1`, `WEB-2`…), tipos de inciden
   - Una etiqueta "Devs", que se añade automáticamente.
   - Un botón **Crear usuario** que da al desarrollador un acceso a Odoo (su email), para poder asignarle incidencias. Vincula el acceso al mismo contacto, así que el perfil se conserva.
 
-**Menú Reportar (para quienes no son del equipo de desarrollo)**
-- Un menú **Reportar** en la app Proyectos, a la derecha de **Proyectos Dev**. Todos los usuarios internos pueden abrir la app Proyectos para usarlo: quienes no tienen permisos de Proyecto solo ven **Reportar** (se abre en *Nuevo reporte*), nunca los menús Proyecto ni Proyectos Dev.
-- **Nuevo reporte** es un formulario sencillo: proyecto, *¿Qué es?* (Algo no funciona / Pedir una función nueva / Pregunta), título, detalles, *¿Qué tan urgente es?* (Puede esperar / Normal / Urgente / No puedo trabajar) y capturas de pantalla con el clip.
+**Reportes (para quienes no son del equipo de desarrollo)**
+- Un icono 📢 en la barra superior, junto al chat y las actividades, en todas las pantallas y para todos los usuarios internos. Quienes no tienen permisos de Proyecto no necesitan (ni ven) la app Proyectos.
+- El menú del icono tiene **Nuevo reporte** y **Mis reportes**.
+- **Nuevo reporte** abre un formulario emergente:
+  - *Reportado por* (ya rellenado)
+  - **Aplicación**: la app de Odoo donde ocurre, p. ej. Ventas. Es obligatoria y solo muestra las apps que esa persona puede abrir.
+  - *¿Qué es?*: Algo no funciona / Pedir una función nueva / Pregunta
+  - Título y detalles (se pueden pegar capturas de pantalla)
+  - *¿Qué tan urgente es?*: Puede esperar / Normal / Urgente / No puedo trabajar
+  - **Enviar** lo guarda y da las gracias.
 - **Mis reportes** lista lo que enviaste y en qué punto está: *Esperando revisión → Aceptado → En curso → Hecho*, o *Rechazado* con el motivo. Cada persona solo ve sus propios reportes.
-- El equipo de desarrollo los revisa en **Proyectos Dev → Trabajo → Reportes** (o con el botón **Reportes nuevos** del proyecto):
-  - **Aceptar** convierte el reporte en una incidencia del backlog del proyecto (fuera de cualquier sprint), con quien lo envió como *Reportado por* y con los detalles y capturas copiados. El tipo, la prioridad Dev y la severidad salen del reporte: *Algo no funciona* → Error, *Pedir una función nueva* → Historia, *Pregunta* → Tarea; *Urgente* → Alta, *No puedo trabajar* → Crítica (y severidad Bloqueante en los errores).
+- El equipo de desarrollo los revisa en **Proyectos Dev → Trabajo → Reportes**:
+  - **Aceptar** pregunta a qué backlog de proyecto va la incidencia. Viene rellenado si solo hay un proyecto de software, o con el proyecto que se usó la última vez para la misma aplicación. La incidencia entra fuera de cualquier sprint, con:
+    - quien lo envió como *Reportado por*
+    - los detalles, las capturas y la aplicación copiados
+    - el tipo según el reporte: *Algo no funciona* → Error, *Pedir una función nueva* → Historia, *Pregunta* → Tarea
+    - la prioridad según la urgencia: *Urgente* → Alta, *No puedo trabajar* → Crítica (y severidad Bloqueante en los errores)
   - **Rechazar** pide un motivo, que ve quien lo envió. **Revisar de nuevo** devuelve un reporte rechazado a la cola.
   - Selecciona varios reportes en la lista y usa **Acciones → Aceptar** para aceptarlos de una vez.
-- Quien envía el reporte lo sigue, así que recibe un aviso cuando se acepta o se rechaza, y el reporte muestra la clave de la incidencia y su estado al día.
+- Quien envía el reporte lo sigue y recibe un aviso cuando se acepta o se rechaza, y una vez cuando su incidencia está hecha. El reporte también muestra la clave de la incidencia y su estado al día.
 
 ---
 
 ## Cómo encaja con la app Proyecto
 
-Tras la instalación, la pantalla de inicio muestra una sola app **Proyectos** con tres menús (**Reportar** es para todos, ver [Funcionalidades](#funcionalidades)):
+Tras la instalación, la pantalla de inicio muestra una sola app **Proyectos** (para el equipo de desarrollo) con dos menús. Los demás usan el icono 📢 de reportes de la barra superior (ver [Funcionalidades](#funcionalidades)).
 
 ```
 Proyectos  |  Proyecto ▾          |  Proyectos Dev ▾
@@ -116,7 +128,6 @@ Proyectos  |  Proyecto ▾          |  Proyectos Dev ▾
            |  Odoo, sin cambios   |  Trabajo:       Tablero, Backlog, Reportes
            |                      |  Equipo:        Mi perfil de desarrollador, Desarrolladores, Tecnologías
            |                      |  Configuración
-           |  Reportar ▾  (todos): Nuevo reporte, Mis reportes
 ```
 
 - Los **proyectos de software** tienen marcada la casilla *Proyecto de software*. Los proyectos creados desde Proyectos Dev la tienen marcada automáticamente. Solo estos aparecen en Proyectos Dev y reciben claves, columnas del tablero y el comportamiento de Dev.
@@ -168,9 +179,11 @@ La app **Proyecto** se instala automáticamente si no la tienes.
 
   ```bash
   docker compose run --rm --no-deps odoo odoo --db_host=db --db_user=odoo --db_password=odoo \
-      -d ProjectsData -u dev_projects --stop-after-init
+      -d ProjectsData -u dev_addons --stop-after-init
   docker restart odoo_dev_web
   ```
+
+> **Nombre del módulo:** la carpeta del módulo es `dev_addons/` misma, así que su nombre técnico es **`dev_addons`** (en Aplicaciones aparece como "Dev Projects"). Docker la monta en `/mnt/extra-addons/dev_addons`. Las bases de datos antiguas que lo instalaron como `dev_projects` necesitan renombrar el módulo antes de actualizar.
 
 ---
 
@@ -211,7 +224,7 @@ En la pestaña **Sprints** del proyecto, o en *Planificación → Sprints*:
 
 ### 4. Haz el trabajo (cada día)
 *Trabajo → **Tablero***
-- Arrastra tarjetas: **Por hacer → En curso → En revisión → Hecho**.
+- Arrastra tarjetas: **Por hacer → En curso → En revisión → Hecho**. Cada columna muestra primero las tarjetas más importantes.
 - Las incidencias nuevas creadas aquí entran directamente en el sprint en curso.
 
 ### 5. Termina el sprint
@@ -254,7 +267,7 @@ Cuando se alcance su objetivo, ábrelo (pestaña **Hitos** del proyecto) y haz c
 
 ## Idiomas (inglés / español)
 
-Todas las pantallas, botones, mensajes y las columnas por defecto están traducidos al español ([`i18n/es.po`](dev_addons/dev_projects/i18n/es.po)). Las pantallas propias de Odoo ya vienen en español. El idioma se elige **por usuario**, así que una persona puede trabajar en inglés y otra en español.
+Todas las pantallas, botones, mensajes y las columnas por defecto están traducidos al español ([`i18n/es.po`](dev_addons/i18n/es.po)). Las pantallas propias de Odoo ya vienen en español. El idioma se elige **por usuario**, así que una persona puede trabajar en inglés y otra en español.
 
 1. **Una vez, como administrador:** *Ajustes → Ajustes generales → Idiomas → Agregar idiomas*, elige un español (p. ej. *Spanish (DO) / Español (DO)* o *Spanish / Español*) y haz clic en **Agregar**. Cualquier variante de español sirve: todas usan el mismo archivo de traducción.
 2. **Cada usuario:** haz clic en tu avatar (arriba a la derecha) → **Preferencias** → **Idioma** → *Español* y guarda. La página se recarga en español.
@@ -272,15 +285,15 @@ Las pantallas principales en cada idioma:
 | Sub-tasks | Subtareas |
 | Reported by | Reportado por |
 | Board Columns | Columnas del tablero |
-| Report (menu) / New Report / My Reports | Reportar / Nuevo reporte / Mis reportes |
+| New Report / My Reports (📢 icon) | Nuevo reporte / Mis reportes |
 | Reports (Dev Projects) | Reportes |
 
 **¿Cambias un texto?** Después de editar una etiqueta o un mensaje en el código, vuelve a exportar la plantilla y añade el texto en español a `es.po`; luego actualiza el módulo:
 
 ```bash
 docker compose run --rm --no-deps odoo odoo --db_host=db --db_user=odoo --db_password=odoo \
-    -d ProjectsData --i18n-export=/mnt/extra-addons/dev_projects/i18n/dev_projects.pot \
-    --modules=dev_projects --stop-after-init
+    -d ProjectsData --i18n-export=/mnt/extra-addons/dev_addons/i18n/dev_addons.pot \
+    --modules=dev_addons --stop-after-init
 ```
 
 Los textos que falten en `es.po` simplemente se ven en inglés.
@@ -293,8 +306,8 @@ Las pruebas se ejecutan en una **base de datos desechable**, así que tus datos 
 
 ```bash
 docker compose run --rm --no-deps odoo odoo --db_host=db --db_user=odoo --db_password=odoo \
-    -d test_dev_projects -i dev_projects --test-enable --stop-after-init \
-    --test-tags /dev_projects,/project,-/project:TestUi,-/project:TestProjectSharingChatterAccess
+    -d test_dev_addons -i dev_addons --test-enable --stop-after-init \
+    --test-tags /dev_addons,/project,-/project:TestUi,-/project:TestProjectSharingChatterAccess
 ```
 
 Esto ejecuta las pruebas de Dev Projects y también las pruebas propias de Proyecto de Odoo, para comprobar que no se ha roto nada en la app Proyecto. Busca esta línea al final:
@@ -308,7 +321,7 @@ Esto ejecuta las pruebas de Dev Projects y también las pruebas propias de Proye
 Después, elimina la base de datos de prueba:
 
 ```bash
-docker exec odoo_dev_database dropdb -U odoo test_dev_projects
+docker exec odoo_dev_database dropdb -U odoo test_dev_addons
 ```
 
 > En Git Bash para Windows, pon `MSYS_NO_PATHCONV=1` delante del comando `docker compose run`. PowerShell no lo necesita.
@@ -323,31 +336,32 @@ odoo_taskvc/
 ├── config_odoo/odoo.conf      Configuración del servidor Odoo
 ├── tech_images/               Logos de tecnologías (montada en /tech_images)
 ├── logs/                      Archivo de log de Odoo (ignorado por git)
-└── dev_addons/                Addons propios (montada en /mnt/extra-addons)
-    └── dev_projects/
-        ├── __manifest__.py
-        ├── hooks.py           Pasos de instalación / desinstalación
-        ├── data/              Columnas del tablero por defecto, ajustes
-        ├── i18n/              Traducciones: dev_projects.pot (plantilla), es.po (español)
-        ├── migrations/        Pasos de actualización (Histories antiguas → Hitos; resúmenes de sprints antiguos)
-        ├── models/
-        │   ├── project_task.py        Incidencias: tipos, claves, sincronización tablero/Hecho, subtareas, asistente Completar
-        │   ├── project_project.py     Proyectos de software, claves, acciones de pantallas
-        │   ├── project_task_type.py   Columnas del tablero: categoría de estado, límite WIP
-        │   ├── dev_sprint.py          Sprints, el asistente Completar sprint y el resumen del sprint
-        │   ├── project_milestone.py   Hitos: versión, progreso, sprints, Completar
-        │   ├── dev_module.py          Componentes (partes del software que clasifican incidencias)
-        │   ├── dev_report.py          Reportes del menú Reportar: aceptar (→ incidencia) o rechazar
-        │   ├── dev_technology.py      Tecnologías y carga de logos
-        │   ├── res_partner.py         Perfiles de desarrollador y códigos de acceso
-        │   └── res_config_settings.py Ajustes
-        ├── views/             Tablero, backlog, reportes, hitos, sprints, componentes, formularios, menús, ajustes
-        ├── security/          Permisos de acceso (todos pueden enviar reportes y solo ven los suyos)
-        ├── static/description/ Icono de la app
-        └── tests/
-            ├── test_dev_projects.py   Pruebas de comportamiento
-            ├── test_reports.py        El menú Reportar: enviar, aceptar, rechazar, quién ve qué
-            └── test_screens.py        Todas las pantallas abren; la app Proyecto sigue funcionando
+└── dev_addons/                El módulo en sí, nombre técnico "dev_addons" (montada en /mnt/extra-addons/dev_addons)
+    ├── __manifest__.py
+    ├── hooks.py               Pasos de instalación / desinstalación
+    ├── data/                  Columnas del tablero por defecto, ajustes
+    ├── i18n/                  Traducciones: dev_addons.pot (plantilla), es.po (español)
+    ├── migrations/            Pasos de actualización (Histories antiguas → Hitos; resúmenes de sprints antiguos)
+    ├── models/
+    │   ├── project_task.py        Incidencias: tipos, claves, sincronización tablero/Hecho, subtareas, asistente Completar
+    │   ├── project_project.py     Proyectos de software, claves, acciones de pantallas
+    │   ├── project_task_type.py   Columnas del tablero: categoría de estado, límite WIP
+    │   ├── dev_sprint.py          Sprints, el asistente Completar sprint y el resumen del sprint
+    │   ├── project_milestone.py   Hitos: versión, progreso, sprints, Completar
+    │   ├── dev_module.py          Componentes (partes del software que clasifican incidencias)
+    │   ├── dev_report.py          Reportes: enviar, aceptar (→ incidencia, se elige el proyecto ahí) o rechazar
+    │   ├── dev_technology.py      Tecnologías y carga de logos
+    │   ├── res_partner.py         Perfiles de desarrollador y códigos de acceso
+    │   └── res_config_settings.py Ajustes
+    ├── views/                 Tablero, backlog, reportes, hitos, sprints, componentes, formularios, menús, ajustes
+    ├── security/              Permisos de acceso (todos pueden enviar reportes y solo ven los suyos)
+    ├── static/
+    │   ├── description/       Icono de la app
+    │   └── src/report_systray/ El icono 📢 de reportes en la barra superior
+    └── tests/
+        ├── test_dev_projects.py   Pruebas de comportamiento
+        ├── test_reports.py        Reportes: enviar, aceptar, rechazar, quién ve qué
+        └── test_screens.py        Todas las pantallas abren; la app Proyecto sigue funcionando
 ```
 
 `data_generator.py` y `csv/` pertenecen al antiguo módulo `manage`, que se ha eliminado. Dev Projects no los usa.

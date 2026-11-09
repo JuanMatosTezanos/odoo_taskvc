@@ -6,7 +6,7 @@ Jira-style software project management built on top of Odoo's own **Project** ap
 
 > **Just using the app?** Read the plain-language [User Guide](USER_GUIDE.md) ([Guía de usuario en español](GUIA_DE_USUARIO.md)). This README is for the people who install and maintain it.
 
-Dev Projects adds issue keys (`WEB-1`, `WEB-2`…), issue types, sub-tasks, a **Board** with WIP limits, a ranked backlog, sprints you start and complete by hand (with a recap of each one), milestones with versions, components, technologies and developer profiles. A **Report** menu, next to Dev Projects, lets anyone in the company send problems and ideas to the dev team. It works on the **same projects and tasks** as the Project app. An issue is a normal Odoo task with extra fields, so you can switch between the two apps at any time. The whole module is available in **English and Spanish**.
+Dev Projects adds issue keys (`WEB-1`, `WEB-2`…), issue types, sub-tasks, a **Board** with WIP limits, a ranked backlog, sprints you start and complete by hand (with a recap of each one), milestones with versions, components, technologies and developer profiles. A **report icon** (📢) in the top bar lets anyone in the company send problems and ideas to the dev team. It works on the **same projects and tasks** as the Project app. An issue is a normal Odoo task with extra fields, so you can switch between the two apps at any time. The whole module is available in **English and Spanish**.
 
 ---
 
@@ -45,6 +45,7 @@ Dev Projects adds issue keys (`WEB-1`, `WEB-2`…), issue types, sub-tasks, a **
 - Moving a card to a Done column marks the task done in the Project app too, and moving it out reopens it.
 - Optional **WIP limit** per column, counted per project and sprint. Done columns are never limited.
 - Shows **current work**: the running sprint plus issues not in any sprint.
+- **Most important first** in each column: Critical/Blocker bugs, then by Dev Priority (Critical → High → Important → Normal), then the Backlog order.
 
 **Backlog and sprints**
 - Backlog grouped by sprint. Drag to rank issues, and pick a sprint to plan them.
@@ -94,21 +95,32 @@ Dev Projects adds issue keys (`WEB-1`, `WEB-2`…), issue types, sub-tasks, a **
   - A "Devs" tag, added automatically.
   - A **Create User** button that gives the developer an Odoo login (their email), so issues can be assigned to them. It links the login to the same contact, so the profile stays.
 
-**Report menu (for people outside the dev team)**
-- A **Report** menu in the Projects app, right of **Dev Projects**. Every internal user can open the Projects app for it: people without Project rights see only **Report** there (opening on *New Report*), never the Project or Dev Projects menus.
-- **New Report** is a simple form: project, *What is it?* (Something's broken / Request a feature / Question), title, details, *How urgent is it?* (It can wait / Normal / Urgent / I can't work), and screenshots via the paperclip.
+**Reports (for people outside the dev team)**
+- A 📢 icon in the top bar, next to chat and activities, on every screen and for every internal user. People without Project rights don't need (or see) the Projects app.
+- The icon's menu has **New Report** and **My Reports**.
+- **New Report** opens a pop-up form:
+  - *Reported by* (filled in)
+  - **App**: the Odoo app where it happens, e.g. Sales. Required, and it only lists the apps that person can open.
+  - *What is it?*: Something's broken / Request a feature / Question
+  - Title and details (screenshots can be pasted in)
+  - *How urgent is it?*: It can wait / Normal / Urgent / I can't work
+  - **Send** saves it and says thanks.
 - **My Reports** lists what you sent and where it stands: *Waiting for review → Accepted → Being worked on → Done*, or *Declined* with the reason. Reporters only see their own reports.
-- The dev team reviews them in **Dev Projects → Work → Reports** (or the project's **New Reports** button):
-  - **Accept** turns the report into an issue in the project's Backlog (outside any sprint), with the reporter as *Reported by*, the details and screenshots copied over. Type, Dev Priority and Severity come from the report: *Something's broken* → Bug, *Request a feature* → Story, *Question* → Task; *Urgent* → High, *I can't work* → Critical (and Blocker severity for bugs).
+- The dev team reviews them in **Dev Projects → Work → Reports**:
+  - **Accept** asks which project's Backlog gets the issue. It's pre-filled when there's only one software project, or with the project last used for the same app. The issue goes in outside any sprint, with:
+    - the reporter as *Reported by*
+    - the details, screenshots and app copied over
+    - type from the report: *Something's broken* → Bug, *Request a feature* → Story, *Question* → Task
+    - priority from urgency: *Urgent* → High, *I can't work* → Critical (and Blocker severity for bugs)
   - **Decline** asks for a reason, which the reporter sees. **Review Again** puts a declined report back in the queue.
   - Select several reports in the list and use **Actions → Accept** to accept them at once.
-- The reporter follows the report, so they're notified when it's accepted or declined, and the report shows the issue key and live status.
+- The reporter follows the report and is notified when it's accepted or declined, and once when its issue is done. The report also shows the issue key and live status.
 
 ---
 
 ## How it fits with the Project app
 
-After installing, the home screen shows one **Projects** app with three menus (**Report** is for everyone, see [Features](#features)):
+After installing, the home screen shows one **Projects** app (for the dev team) with two menus. Everyone else uses the 📢 report icon in the top bar (see [Features](#features)).
 
 ```
 Projects  |  Project ▾          |  Dev Projects ▾
@@ -116,7 +128,6 @@ Projects  |  Project ▾          |  Dev Projects ▾
           |  unchanged          |  Work:     Board, Backlog, Reports
           |                     |  Team:     My Developer Profile, Developers, Technologies
           |                     |  Configuration
-          |  Report ▾  (everyone): New Report, My Reports
 ```
 
 - **Software projects** have the *Software Project* box ticked. Projects created from Dev Projects get it automatically. Only these appear in Dev Projects and get keys, board columns and the Dev behaviour.
@@ -168,9 +179,11 @@ The **Project** app is installed automatically if you don't have it.
 
   ```bash
   docker compose run --rm --no-deps odoo odoo --db_host=db --db_user=odoo --db_password=odoo \
-      -d ProjectsData -u dev_projects --stop-after-init
+      -d ProjectsData -u dev_addons --stop-after-init
   docker restart odoo_dev_web
   ```
+
+> **Module name:** the module's folder is `dev_addons/` itself, so its technical name is **`dev_addons`** (shown as "Dev Projects" in Apps). Docker mounts it at `/mnt/extra-addons/dev_addons`. Older databases that installed it as `dev_projects` need the module renamed before upgrading.
 
 ---
 
@@ -211,7 +224,7 @@ In the project's **Sprints** tab, or *Planning → Sprints*:
 
 ### 4. Do the work (every day)
 *Work → **Board***
-- Drag cards: **To Do → In Progress → In Review → Done**.
+- Drag cards: **To Do → In Progress → In Review → Done**. Each column shows the most important cards first.
 - New issues created here go straight into the running sprint.
 
 ### 5. Finish the sprint
@@ -254,7 +267,7 @@ When its goal is reached, open it (project **Milestones** tab) and click **Mark 
 
 ## Languages (English / Spanish)
 
-Every screen, button, message and the default columns are translated into Spanish ([`i18n/es.po`](dev_addons/dev_projects/i18n/es.po)). Odoo's own screens already come in Spanish. The language is chosen **per user**, so one person can work in English and another in Spanish.
+Every screen, button, message and the default columns are translated into Spanish ([`i18n/es.po`](dev_addons/i18n/es.po)). Odoo's own screens already come in Spanish. The language is chosen **per user**, so one person can work in English and another in Spanish.
 
 1. **Once, as an administrator:** *Settings → General Settings → Languages → Add Languages*, pick a Spanish (e.g. *Spanish (DO) / Español (DO)* or *Spanish / Español*) and click **Add**. Any Spanish variant works: they all use the same translation file.
 2. **Each user:** click your avatar (top right) → **Preferences** → **Language** → *Español*, then save. The page reloads in Spanish.
@@ -272,15 +285,15 @@ Main screens in each language:
 | Sub-tasks | Subtareas |
 | Reported by | Reportado por |
 | Board Columns | Columnas del tablero |
-| Report (menu) / New Report / My Reports | Reportar / Nuevo reporte / Mis reportes |
+| New Report / My Reports (📢 icon) | Nuevo reporte / Mis reportes |
 | Reports (Dev Projects) | Reportes |
 
 **Changing a text?** After editing a label or message in the code, export the template again and add the Spanish text to `es.po`, then upgrade the module:
 
 ```bash
 docker compose run --rm --no-deps odoo odoo --db_host=db --db_user=odoo --db_password=odoo \
-    -d ProjectsData --i18n-export=/mnt/extra-addons/dev_projects/i18n/dev_projects.pot \
-    --modules=dev_projects --stop-after-init
+    -d ProjectsData --i18n-export=/mnt/extra-addons/dev_addons/i18n/dev_addons.pot \
+    --modules=dev_addons --stop-after-init
 ```
 
 Texts missing from `es.po` simply show in English.
@@ -293,8 +306,8 @@ Tests run on a **throwaway database**, so your real data is never touched:
 
 ```bash
 docker compose run --rm --no-deps odoo odoo --db_host=db --db_user=odoo --db_password=odoo \
-    -d test_dev_projects -i dev_projects --test-enable --stop-after-init \
-    --test-tags /dev_projects,/project,-/project:TestUi,-/project:TestProjectSharingChatterAccess
+    -d test_dev_addons -i dev_addons --test-enable --stop-after-init \
+    --test-tags /dev_addons,/project,-/project:TestUi,-/project:TestProjectSharingChatterAccess
 ```
 
 This runs the Dev Projects tests plus Odoo's own Project tests, to check that nothing in the Project app broke. Look for this line at the end:
@@ -308,7 +321,7 @@ This runs the Dev Projects tests plus Odoo's own Project tests, to check that no
 Afterwards, delete the test database:
 
 ```bash
-docker exec odoo_dev_database dropdb -U odoo test_dev_projects
+docker exec odoo_dev_database dropdb -U odoo test_dev_addons
 ```
 
 > On Windows Git Bash, put `MSYS_NO_PATHCONV=1` in front of the `docker compose run` command. PowerShell doesn't need it.
@@ -323,31 +336,32 @@ odoo_taskvc/
 ├── config_odoo/odoo.conf      Odoo server configuration
 ├── tech_images/               Technology logos (mounted at /tech_images)
 ├── logs/                      Odoo log file (git-ignored)
-└── dev_addons/                Custom addons (mounted at /mnt/extra-addons)
-    └── dev_projects/
-        ├── __manifest__.py
-        ├── hooks.py           Install / uninstall steps
-        ├── data/              Default board columns, settings
-        ├── i18n/              Translations: dev_projects.pot (template), es.po (Spanish)
-        ├── migrations/        Upgrade steps (old Histories → Milestones; recaps for old sprints)
-        ├── models/
-        │   ├── project_task.py        Issues: types, keys, board/Done sync, sub-tasks, Complete wizard
-        │   ├── project_project.py     Software projects, keys, screen actions
-        │   ├── project_task_type.py   Board columns: status category, WIP limit
-        │   ├── dev_sprint.py          Sprints, the Complete Sprint wizard and the sprint recap
-        │   ├── project_milestone.py   Milestones: version, progress, sprints, Complete
-        │   ├── dev_module.py          Components (parts of the software that classify issues)
-        │   ├── dev_report.py          Reports from the Report menu: accept (→ issue) or decline
-        │   ├── dev_technology.py      Technologies and logo loading
-        │   ├── res_partner.py         Developer profiles and access codes
-        │   └── res_config_settings.py Settings
-        ├── views/             Board, backlog, reports, milestones, sprints, components, forms, menus, settings
-        ├── security/          Access rights (everyone can send reports and sees only their own)
-        ├── static/description/ App icon
-        └── tests/
-            ├── test_dev_projects.py   Behaviour tests
-            ├── test_reports.py        The Report menu: sending, accepting, declining, who sees what
-            └── test_screens.py        Every screen opens; Project app still works
+└── dev_addons/                The module itself, technical name "dev_addons" (mounted at /mnt/extra-addons/dev_addons)
+    ├── __manifest__.py
+    ├── hooks.py               Install / uninstall steps
+    ├── data/                  Default board columns, settings
+    ├── i18n/                  Translations: dev_addons.pot (template), es.po (Spanish)
+    ├── migrations/            Upgrade steps (old Histories → Milestones; recaps for old sprints)
+    ├── models/
+    │   ├── project_task.py        Issues: types, keys, board/Done sync, sub-tasks, Complete wizard
+    │   ├── project_project.py     Software projects, keys, screen actions
+    │   ├── project_task_type.py   Board columns: status category, WIP limit
+    │   ├── dev_sprint.py          Sprints, the Complete Sprint wizard and the sprint recap
+    │   ├── project_milestone.py   Milestones: version, progress, sprints, Complete
+    │   ├── dev_module.py          Components (parts of the software that classify issues)
+    │   ├── dev_report.py          Reports: send, accept (→ issue, project picked then) or decline
+    │   ├── dev_technology.py      Technologies and logo loading
+    │   ├── res_partner.py         Developer profiles and access codes
+    │   └── res_config_settings.py Settings
+    ├── views/                 Board, backlog, reports, milestones, sprints, components, forms, menus, settings
+    ├── security/              Access rights (everyone can send reports and sees only their own)
+    ├── static/
+    │   ├── description/       App icon
+    │   └── src/report_systray/ The 📢 report icon in the top bar
+    └── tests/
+        ├── test_dev_projects.py   Behaviour tests
+        ├── test_reports.py        Reports: sending, accepting, declining, who sees what
+        └── test_screens.py        Every screen opens; Project app still works
 ```
 
 `data_generator.py` and `csv/` belong to the earlier `manage` module, which has been removed. Dev Projects doesn't use them.
