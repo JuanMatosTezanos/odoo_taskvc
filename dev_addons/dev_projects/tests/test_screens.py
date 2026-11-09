@@ -101,8 +101,8 @@ class TestScreens(TransactionCase):
 
     def test_every_dev_menu_opens(self):
         opened = self._open_menus('dev_projects.menu_root')
-        for expected in ('Board', 'Backlog', 'Projects', 'Milestones', 'Sprints', 'Modules', 'My Developer Profile',
-                         'Developers', 'Technologies', 'Board Columns'):
+        for expected in ('Board', 'Backlog', 'Projects', 'Milestones', 'Sprints', 'Components', 'My Developer Profile',
+                         'Developers', 'Technologies', 'Board Columns', 'Reports'):
             self.assertIn(expected, opened)
 
     def test_project_app_still_opens(self):
@@ -207,7 +207,7 @@ class TestScreens(TransactionCase):
         self.assertEqual(self.env.ref('dev_projects.menu_root').child_id.mapped('name'),
                          ['Planning', 'Work', 'Team', 'Configuration'])
         self.assertEqual(self.env.ref('dev_projects.menu_planning').child_id.mapped('name'),
-                         ['Projects', 'Milestones', 'Sprints', 'Modules'])
+                         ['Projects', 'Milestones', 'Sprints', 'Components'])
         self.assertEqual(self.env['ir.ui.menu'].search_count([('name', '=', 'Dev Projects'), ('parent_id', '=', False)]), 0,
                          "no separate Dev Projects app")
         # Dev Projects > Configuration has Project's settings and configuration too.
@@ -227,3 +227,14 @@ class TestScreens(TransactionCase):
         self.assertEqual(self.env['ir.config_parameter'].get_param('dev_projects.tech_image_dir'), '/somewhere')
         # The settings page (with our section) opens.
         self.env['res.config.settings'].get_views([(False, 'form')])
+
+    def test_report_icon_screens_open_for_everyone(self):
+        # What the top-bar icon opens works for someone without Project rights.
+        employee = self.env['res.users'].create({
+            'name': 'Screens Employee', 'login': 'screens_employee',
+            'groups_id': [(6, 0, [self.env.ref('base.group_user').id])]})
+        self.env['dev.report'].with_user(employee).create({'name': 'Screens report'})
+        self.env = self.env(user=employee)
+        for xmlid in ('dev_projects.action_report_new', 'dev_projects.action_report_mine'):
+            with self.subTest(action=xmlid):
+                self._open_action(self._action_data(self.env.ref(xmlid)))

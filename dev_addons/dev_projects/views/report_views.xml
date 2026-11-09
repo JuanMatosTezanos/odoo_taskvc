@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ================= Report form ================= -->
+    <!-- Used by everyone: a pop-up from the top-bar icon to send a report
+         (with "Send" / "Cancel"), and the full page in My Reports and in
+         Dev Projects > Work > Reports. -->
+    <record id="report_form" model="ir.ui.view">
+        <field name="name">dev.report.form</field>
+        <field name="model">dev.report</field>
+        <field name="arch" type="xml">
+            <form string="Report">
+                <header>
+                    <button name="action_open_accept" type="object" string="Accept" class="btn-primary"
+                            invisible="state != 'new' or not id" groups="project.group_project_user"
+                            help="Turn it into an issue in a project's Backlog" />
+                    <button name="action_open_decline" type="object" string="Decline"
+                            invisible="state != 'new' or not id" groups="project.group_project_user" />
+                    <button name="action_reopen" type="object" string="Review Again"
+                            invisible="state != 'declined'" groups="project.group_project_user" />
+                    <field name="progress" widget="statusbar" statusbar_visible="new,accepted,in_progress,done" invisible="not id" />
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_issue" type="object" class="oe_stat_button" icon="fa-tasks"
+                                invisible="not task_id" groups="project.group_project_user">
+                            <field name="issue_key" widget="statinfo" string="Issue" />
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Declined" bg_color="text-bg-danger" invisible="state != 'declined'" />
+                    <field name="state" invisible="1" />
+                    <field name="task_id" invisible="1" />
+                    <field name="allowed_app_ids" invisible="1" />
+                    <div class="alert alert-info mb-3" role="status" invisible="id">
+                        Tell the development team about a problem, an idea or a question.
+                        They'll review it, and you can follow it in <b>My Reports</b> (the <i class="fa fa-bullhorn" title="Report"/> icon at the top).
+                    </div>
+                    <div class="alert alert-danger mb-3" role="alert" invisible="state != 'declined'">
+                        <b>Declined:</b> <field name="decline_reason" class="d-inline" />
+                    </div>
+                    <div class="alert alert-success mb-3" role="status" invisible="state != 'accepted'">
+                        Accepted as <b><field name="issue_key" class="d-inline" /></b>: the team will plan it.
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" />
+                        <h1><field name="name" placeholder="e.g. Can't print invoices" readonly="state != 'new'" /></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="reporter_id" widget="many2one_avatar_user" />
+                            <field name="app_menu_id" options="{'no_create': True, 'no_open': True}"
+                                   placeholder="e.g. Sales, Inventory..." readonly="state != 'new'" />
+                            <field name="kind" widget="radio" readonly="state != 'new'" />
+                        </group>
+                        <group>
+                            <field name="urgency" widget="radio" readonly="state != 'new'" />
+                            <field name="create_date" string="Sent On" invisible="not id" />
+                            <field name="project_id" invisible="not project_id" groups="project.group_project_user" />
+                        </group>
+                    </group>
+                    <label for="description" />
+                    <field name="description" readonly="state != 'new'"
+                           placeholder="What happened? What did you expect? How can we see it again? You can paste screenshots here." />
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" />
+                    <field name="activity_ids" />
+                    <field name="message_ids" />
+                </div>
+                <!-- Only shown in the pop-up. -->
+                <footer>
+                    <button name="action_send" type="object" string="Send" class="btn-primary" data-hotkey="q" />
+                    <button special="cancel" string="Cancel" data-hotkey="x" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="report_list" model="ir.ui.view">
+        <field name="name">dev.report.list</field>
+        <field name="model">dev.report</field>
+        <field name="arch" type="xml">
+            <tree string="Reports" decoration-muted="state == 'declined'">
+                <field name="create_date" string="Sent On" widget="date" />
+                <field name="name" />
+                <field name="app_menu_id" />
+                <field name="kind" />
+                <field name="urgency" widget="badge" decoration-danger="urgency == 'blocking'" decoration-warning="urgency == 'high'" />
+                <field name="reporter_id" widget="many2one_avatar_user" />
+                <field name="project_id" optional="hide" groups="project.group_project_user" />
+                <field name="issue_key" string="Issue" optional="show" />
+                <field name="progress" widget="badge" decoration-info="progress == 'new'" decoration-success="progress == 'done'"
+                       decoration-warning="progress == 'in_progress'" decoration-danger="progress == 'declined'" />
+                <field name="state" column_invisible="1" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="report_kanban" model="ir.ui.view">
+        <field name="name">dev.report.kanban</field>
+        <field name="model">dev.report</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="progress" group_create="0" group_delete="0" group_edit="0" records_draggable="0" quick_create="0">
+                <field name="state" />
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <div class="oe_kanban_details">
+                                <strong><field name="name" /></strong>
+                                <div class="text-muted small"><field name="app_menu_id" /> · <field name="kind" /></div>
+                                <div class="d-flex justify-content-between align-items-center mt-1">
+                                    <field name="urgency" widget="badge" decoration-danger="urgency == 'blocking'" decoration-warning="urgency == 'high'" />
+                                    <span class="text-muted small"><field name="issue_key" /></span>
+                                    <field name="reporter_id" widget="many2one_avatar_user" />
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="report_search" model="ir.ui.view">
+        <field name="name">dev.report.search</field>
+        <field name="model">dev.report</field>
+        <field name="arch" type="xml">
+            <search string="Reports">
+                <field name="name" />
+                <field name="app_menu_id" />
+                <field name="reporter_id" />
+                <field name="project_id" groups="project.group_project_user" />
+                <filter name="to_review" string="To Review" domain="[('state', '=', 'new')]" />
+                <filter name="accepted" string="Accepted" domain="[('state', '=', 'accepted')]" />
+                <filter name="declined" string="Declined" domain="[('state', '=', 'declined')]" />
+                <separator />
+                <filter name="mine" string="My Reports" domain="[('reporter_id', '=', uid)]" />
+                <filter name="urgent" string="Urgent" domain="[('urgency', 'in', ('high', 'blocking'))]" />
+                <filter name="bugs" string="Something's broken" domain="[('kind', '=', 'bug')]" />
+                <group expand="0" string="Group By">
+                    <filter name="group_app" string="App" context="{'group_by': 'app_menu_id'}" />
+                    <filter name="group_kind" string="What is it?" context="{'group_by': 'kind'}" />
+                    <filter name="group_progress" string="Status" context="{'group_by': 'progress'}" />
+                    <filter name="group_reporter" string="Reported by" context="{'group_by': 'reporter_id'}" />
+                    <filter name="group_project" string="Project" context="{'group_by': 'project_id'}" groups="project.group_project_user" />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ================= Accept / Decline pop-ups ================= -->
+    <record id="report_accept_form" model="ir.ui.view">
+        <field name="name">dev.report.accept.form</field>
+        <field name="model">dev.report.accept</field>
+        <field name="arch" type="xml">
+            <form string="Accept Report">
+                <field name="report_ids" widget="many2many_tags" readonly="1" />
+                <group>
+                    <field name="project_id" options="{'no_create': True}" />
+                </group>
+                <p class="text-muted">It becomes an issue in this project's Backlog, outside any sprint.
+                    The person who sent it is told it was accepted.</p>
+                <footer>
+                    <button name="action_confirm" type="object" string="Accept" class="btn-primary" />
+                    <button special="cancel" string="Cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="report_decline_form" model="ir.ui.view">
+        <field name="name">dev.report.decline.form</field>
+        <field name="model">dev.report.decline</field>
+        <field name="arch" type="xml">
+            <form string="Decline Report">
+                <field name="report_ids" widget="many2many_tags" readonly="1" />
+                <group>
+                    <field name="reason" placeholder="e.g. This already works: use File > Print. / We won't change this because..." />
+                </group>
+                <p class="text-muted">The person who sent it will see this reason.</p>
+                <footer>
+                    <button name="action_confirm" type="object" string="Decline" class="btn-primary" />
+                    <button special="cancel" string="Cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- ================= Actions ================= -->
+    <!-- Top-bar icon > New Report: the form as a pop-up. -->
+    <record id="action_report_new" model="ir.actions.act_window">
+        <field name="name">New Report</field>
+        <field name="res_model">dev.report</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="report_form" />
+        <field name="target">new</field>
+    </record>
+
+    <!-- Top-bar icon > My Reports: what I sent and how it's going. -->
+    <record id="action_report_mine" model="ir.actions.act_window">
+        <field name="name">My Reports</field>
+        <field name="res_model">dev.report</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="search_view_id" ref="report_search" />
+        <field name="domain">[('reporter_id', '=', uid)]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">You haven't sent any reports yet</p>
+            <p>Found a problem or have an idea? Click the <i class="fa fa-bullhorn" title="Report"/> icon at the top and choose "New Report".</p>
+        </field>
+    </record>
+
+    <!-- Dev Projects: everything sent in, the ones to review first. -->
+    <record id="action_report_triage" model="ir.actions.act_window">
+        <field name="name">Reports</field>
+        <field name="res_model">dev.report</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="search_view_id" ref="report_search" />
+        <field name="context">{'search_default_to_review': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No reports to review</p>
+            <p>People outside the dev team send problems and ideas with the <i class="fa fa-bullhorn" title="Report"/> icon at the top.
+               Accept one to turn it into an issue in a project's Backlog, or decline it with a reason.</p>
+        </field>
+    </record>
+
+    <!-- Accept several at once from the list. -->
+    <record id="action_report_accept_server" model="ir.actions.server">
+        <field name="name">Accept</field>
+        <field name="model_id" ref="model_dev_report" />
+        <field name="binding_model_id" ref="model_dev_report" />
+        <field name="binding_view_types">list</field>
+        <field name="groups_id" eval="[(4, ref('project.group_project_user'))]" />
+        <field name="state">code</field>
+        <field name="code">action = records.action_open_accept()</field>
+    </record>
+</odoo>

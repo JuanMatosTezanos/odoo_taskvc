@@ -4,17 +4,23 @@
          under "Project" and ours under "Dev Projects":
 
          Projects  |  Project ▾       |  Dev Projects ▾
-                   |  Projects        |  Planning: Projects, Milestones, Sprints, Modules
-                   |  Tasks           |  Work: Board, Backlog
+                   |  Projects        |  Planning: Projects, Milestones, Sprints, Components
+                   |  Tasks           |  Work: Board, Backlog, Reports
                    |  Reporting       |  Team: ...
                    |  Configuration   |  Configuration: ...
+
+         Reports are sent from the top-bar icon (static/src/report_systray), so the
+         app stays for the dev team (Project users) only.
     -->
     <record id="project.menu_main_pm" model="ir.ui.menu">
         <field name="name">Projects</field>
+        <!-- Briefly opened to every employee for a Report menu (now the top-bar icon). -->
+        <field name="groups_id" eval="[(3, ref('base.group_user'))]" />
     </record>
 
     <!-- ============ Project: Odoo's own menus, unchanged, one level down ============ -->
-    <menuitem id="menu_project_section" name="Project" parent="project.menu_main_pm" sequence="1" />
+    <menuitem id="menu_project_section" name="Project" parent="project.menu_main_pm" sequence="1"
+              groups="project.group_project_user" />
     <record id="project.menu_projects" model="ir.ui.menu">
         <field name="parent_id" ref="menu_project_section" />
     </record>
@@ -32,18 +38,19 @@
     </record>
 
     <!-- ============ Dev Projects: our features ============ -->
-    <menuitem id="menu_root" name="Dev Projects" parent="project.menu_main_pm" sequence="2" />
+    <menuitem id="menu_root" name="Dev Projects" parent="project.menu_main_pm" sequence="2" groups="project.group_project_user" />
 
     <menuitem id="menu_planning" name="Planning" parent="menu_root" sequence="10" />
     <menuitem id="menu_projects" name="Projects" parent="menu_planning" action="action_project" sequence="1" />
     <menuitem id="menu_milestones" name="Milestones" parent="menu_planning" action="action_milestone" sequence="2" />
     <menuitem id="menu_sprints" name="Sprints" parent="menu_planning" action="action_sprint" sequence="3" />
-    <menuitem id="menu_modules" name="Modules" parent="menu_planning" action="action_module" sequence="4" />
+    <menuitem id="menu_modules" name="Components" parent="menu_planning" action="action_module" sequence="4" />
 
     <menuitem id="menu_work" name="Work" parent="menu_root" sequence="20" />
 
     <menuitem id="menu_board" name="Board" parent="menu_work" action="action_board" sequence="1" />
     <menuitem id="menu_backlog" name="Backlog" parent="menu_work" action="action_backlog" sequence="2" />
+    <menuitem id="menu_reports_triage" name="Reports" parent="menu_work" action="action_report_triage" sequence="3" />
 
     <menuitem id="menu_team" name="Team" parent="menu_root" sequence="30" />
     <menuitem id="menu_my_profile" name="My Developer Profile" parent="menu_team" action="action_my_developer_profile" sequence="1" />
@@ -58,4 +65,6 @@
     <menuitem id="menu_config_tags" name="Tags" parent="menu_config" action="project.project_tags_action" sequence="20" />
     <menuitem id="menu_config_activity_types" name="Activity Types" parent="menu_config" action="project.mail_activity_type_action_config_project_types" sequence="30" />
     <menuitem id="menu_config_activity_plans" name="Activity Plans" parent="menu_config" action="project.mail_activity_plan_action_config_project_task_plan" sequence="31" />
+
+
 </odoo>

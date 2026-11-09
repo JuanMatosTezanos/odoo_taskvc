@@ -2,8 +2,10 @@
 from collections import Counter
 from datetime import timedelta
 
-from odoo import _, api, fields, models
+from odoo import Command, _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
+
+from .project_task import ISSUE_TYPES
 
 SPRINT_STATES = [
     ('planned', 'Planned'),
@@ -38,12 +40,43 @@ class DevSprint(models.Model):
     # start + duration, but set to the real end when completed early.
     end_date = fields.Datetime(compute='_compute_end_date', store=True, readonly=False, tracking=True)
 
-    task_ids = fields.One2many('project.task', 'dev_sprint_id', string="Issues")
+    # Sub-tasks follow their parent and count inside it, not on their own.
+    task_ids = fields.One2many('project.task', 'dev_sprint_id', string="Issues",
+                               domain=[('display_in_project', '=', True)])
     item_count = fields.Integer(string="Issue Count", compute='_compute_counts')
     done_count = fields.Integer(string="Done Issues", compute='_compute_counts')
     planned_points = fields.Integer(string="Planned Points", compute='_compute_counts')
     done_points = fields.Integer(string="Done Points", compute='_compute_counts')
     progress = fields.Float(compute='_compute_counts', help="Percentage of finished issues")
+
+    # Recap: a snapshot taken when the sprint is completed (what was in it, what
+    # got finished, what moved on), plus the team's own summary of the sprint.
+    # A snapshot, because unfinished issues leave the sprint when it completes.
+    recap_notes = fields.Html(string="Sprint Summary")
+    recap_issue_count = fields.Integer(string="Issues at the End", readonly=True, copy=False)
+    recap_done_count = fields.Integer(string="Issues Finished", readonly=True, copy=False)
+    recap_planned_points = fields.Integer(string="Points at the End", readonly=True, copy=False)
+    recap_done_points = fields.Integer(string="Points Finished", readonly=True, copy=False)
+    recap_moved_count = fields.Integer(string="Unfinished Issues Moved", readonly=True, copy=False)
+    recap_moved_sprint_id = fields.Many2one('dev.sprint', string="Moved To Sprint", readonly=True,
+                                            copy=False, ondelete='set null')
+    recap_moved_to = fields.Char(string="Moved To", compute='_compute_recap')
+    recap_progress = fields.Float(string="Finished", compute='_compute_recap')
+    # active_test off: finished issues are often archived (Complete > Archive).
+    recap_done_task_ids = fields.Many2many(
+        'project.task', 'dev_sprint_recap_done_rel', 'sprint_id', 'task_id',
+        string="Finished Issues", readonly=True, copy=False, context={'active_test': False})
+    recap_moved_task_ids = fields.Many2many(
+        'project.task', 'dev_sprint_recap_moved_rel', 'sprint_id', 'task_id',
+        string="Unfinished Issues", readonly=True, copy=False, context={'active_test': False})
+    recap_line_ids = fields.One2many('dev.sprint.recap.line', 'sprint_id', readonly=True, copy=False)
+    recap_type_line_ids = fields.One2many('dev.sprint.recap.line', 'sprint_id', string="Finished by Type",
+                                          domain=[('kind', '=', 'type')], readonly=True)
+    recap_component_line_ids = fields.One2many('dev.sprint.recap.line', 'sprint_id',
+                                               string="Finished by Component",
+                                               domain=[('kind', '=', 'component')], readonly=True)
+    recap_person_line_ids = fields.One2many('dev.sprint.recap.line', 'sprint_id', string="Finished by Person",
+                                            domain=[('kind', '=', 'person')], readonly=True)
 
     def _default_duration(self):
         # Settings > Project > Dev Projects > Default Sprint Length.
@@ -72,6 +105,16 @@ class DevSprint(models.Model):
             sprint.progress = (len(done) / len(issues) * 100.0) if issues else 0.0
             sprint.planned_points = sum(issues.mapped('dev_story_points'))
             sprint.done_points = sum(done.mapped('dev_story_points'))
+
+    @api.depends('recap_done_count', 'recap_issue_count', 'recap_moved_count', 'recap_moved_sprint_id')
+    def _compute_recap(self):
+        for sprint in self:
+            sprint.recap_progress = (sprint.recap_done_count / sprint.recap_issue_count * 100.0) \
+                if sprint.recap_issue_count else 0.0
+            if not sprint.recap_moved_count:
+                sprint.recap_moved_to = False
+            else:
+                sprint.recap_moved_to = sprint.recap_moved_sprint_id.name or _("Backlog")
 
     @api.constrains('duration')
     def _check_duration(self):
@@ -178,6 +221,8 @@ class DevSprint(models.Model):
         self.ensure_one()
         all_issues = self.with_context(active_test=False).task_ids
         open_issues = all_issues.filtered(lambda i: i.dev_status != 'done')
+        # Snapshot first: the unfinished issues are about to leave the sprint.
+        self._dev_take_recap(all_issues, open_issues, target_sprint)
         open_issues.write({'dev_sprint_id': target_sprint.id if target_sprint else False})
         self.write({'state': 'closed', 'end_date': fields.Datetime.now()})
         where = target_sprint.name if target_sprint else _("the backlog")
@@ -186,11 +231,61 @@ class DevSprint(models.Model):
             "Sprint completed: %(done)s issue(s) done, %(open)s moved to %(where)s.",
             done=len(all_issues) - len(open_issues), open=len(open_issues), where=where))
 
+    def _dev_take_recap(self, issues, open_issues, target_sprint=None):
+        """Store what the sprint achieved: totals, finished and unfinished issues,
+        and what was finished per type, component and person."""
+        self.ensure_one()
+        done = issues - open_issues
+        lines = []
+        for issue_type, _label in ISSUE_TYPES:
+            group = done.filtered(lambda i: i.dev_issue_type == issue_type)
+            if group:
+                lines.append({'kind': 'type', 'issue_type': issue_type, 'issue_count': len(group),
+                              'points': sum(group.mapped('dev_story_points'))})
+        for kind, fname in (('component', 'dev_module_id'), ('person', 'dev_assignee_id')):
+            # Each component / person, then the issues without one.
+            for record in list(done.mapped(fname)) + [self.env[done._fields[fname].comodel_name]]:
+                group = done.filtered(lambda i: i[fname] == record)
+                if not group:
+                    continue
+                lines.append({'kind': kind, 'module_id' if kind == 'component' else 'user_id': record.id,
+                              'label': record.display_name if record else False,
+                              'issue_count': len(group), 'points': sum(group.mapped('dev_story_points'))})
+        self.recap_line_ids.unlink()
+        self.write({
+            'recap_issue_count': len(issues),
+            'recap_done_count': len(done),
+            'recap_planned_points': sum(issues.mapped('dev_story_points')),
+            'recap_done_points': sum(done.mapped('dev_story_points')),
+            'recap_moved_count': len(open_issues),
+            'recap_moved_sprint_id': target_sprint.id if target_sprint and open_issues else False,
+            'recap_done_task_ids': [Command.set(done.ids)],
+            'recap_moved_task_ids': [Command.set(open_issues.ids)],
+            'recap_line_ids': [Command.create(vals) for vals in lines],
+        })
+
+    def action_dev_open_recap(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _("%s Recap", self.name),
+            'res_model': 'dev.sprint',
+            'res_id': self.id,
+            'view_mode': 'form',
+            'views': [(self.env.ref('dev_projects.sprint_recap_form').id, 'form')],
+            'target': 'new',
+            'context': {'dev_reload_project': self.env.context.get('dev_reload_project', False)},
+        }
+
+    def action_dev_recap_done(self):
+        # The summary is saved before this runs (Odoo saves the record first).
+        return self._dev_reload_project_form() or {'type': 'ir.actions.act_window_close'}
+
     def action_view_issues(self):
         self.ensure_one()
         action = self.env['ir.actions.act_window']._for_xml_id('dev_projects.action_board')
         action.update({
-            'domain': [('dev_sprint_id', '=', self.id)],
+            'domain': [('dev_sprint_id', '=', self.id), ('display_in_project', '=', True)],
             'context': {'default_project_id': self.project_id.id,
                         'default_dev_sprint_id': self.id, 'dev_board': True},
             'display_name': self.name,
@@ -226,7 +321,7 @@ class DevSprintComplete(models.TransientModel):
     @api.depends('sprint_id')
     def _compute_counts(self):
         for wizard in self:
-            issues = wizard.sprint_id.task_ids
+            issues = wizard.sprint_id.with_context(active_test=False).task_ids
             wizard.open_count = len(issues.filtered(lambda i: i.dev_status != 'done'))
             wizard.done_count = len(issues) - wizard.open_count
 
@@ -236,4 +331,35 @@ class DevSprintComplete(models.TransientModel):
             raise UserError(_("Pick the sprint that receives the unfinished issues."))
         target = self.target_sprint_id if self.destination == 'sprint' else None
         self.sprint_id._complete(target)
-        return self.sprint_id._dev_reload_project_form() or {'type': 'ir.actions.act_window_close'}
+        # Show the recap right away; "Save" there reloads the screen behind it.
+        return self.sprint_id.action_dev_open_recap()
+
+
+class DevSprintRecapLine(models.Model):
+    """One row of a sprint recap: what was finished for one issue type,
+    component or person."""
+    _name = 'dev.sprint.recap.line'
+    _description = 'Sprint Recap Line'
+    _order = 'kind, issue_count desc, id'
+
+    sprint_id = fields.Many2one('dev.sprint', required=True, index=True, ondelete='cascade')
+    kind = fields.Selection([('type', 'Type'), ('component', 'Component'), ('person', 'Person')],
+                            required=True)
+    issue_type = fields.Selection(ISSUE_TYPES, string="Type")
+    module_id = fields.Many2one('dev.module', string="Component", ondelete='set null')
+    user_id = fields.Many2one('res.users', string="Person", ondelete='set null')
+    label = fields.Char(help="Name at the time of the recap, kept if the component or user is deleted.")
+    name = fields.Char(compute='_compute_name')
+    issue_count = fields.Integer(string="Issues Finished")
+    points = fields.Integer(string="Points Finished")
+
+    @api.depends('kind', 'issue_type', 'module_id', 'user_id', 'label')
+    def _compute_name(self):
+        types = dict(self._fields['issue_type']._description_selection(self.env))
+        for line in self:
+            if line.kind == 'type':
+                line.name = types.get(line.issue_type, '')
+            elif line.kind == 'component':
+                line.name = line.module_id.name or line.label or _("No component")
+            else:
+                line.name = line.user_id.name or line.label or _("Unassigned")

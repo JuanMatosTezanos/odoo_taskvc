@@ -13,7 +13,7 @@
                 <field name="dev_priority" widget="priority" nolabel="1" />
                 <field name="dev_issue_type" />
                 <field name="dev_key" />
-                <field name="name" />
+                <field name="name" widget="name_with_subtask_count" />
                 <field name="project_id" optional="show" />
                 <field name="milestone_id" optional="show" />
                 <field name="dev_module_id" optional="show" />
@@ -67,6 +67,8 @@
                 <field name="milestone_id" />
                 <field name="dev_module_id" />
                 <field name="active" />
+                <field name="subtask_count" />
+                <field name="closed_subtask_count" />
                 <progressbar field="dev_status" colors='{"done": "success", "in_progress": "info", "review": "warning", "todo": "muted"}' />
                 <templates>
                     <t t-name="kanban-box">
@@ -92,7 +94,7 @@
                                 <strong class="o_kanban_record_title"><field name="name" /></strong>
                                 <div class="text-muted small">
                                     <field name="project_id" /> <t t-if="record.milestone_id.raw_value">/ <i class="fa fa-flag-o" title="Milestone" /> <field name="milestone_id" /></t>
-                                    <t t-if="record.dev_module_id.raw_value">/ <i class="fa fa-cube" title="Module" /> <field name="dev_module_id" /></t>
+                                    <t t-if="record.dev_module_id.raw_value">/ <i class="fa fa-cube" title="Component" /> <field name="dev_module_id" /></t>
                                 </div>
                                 <div class="mt-1"><field name="dev_technology_ids" widget="many2many_tags" options="{'color_field': 'color'}" /></div>
                                 <div class="o_kanban_record_bottom mt-2">
@@ -106,6 +108,9 @@
                                         </span>
                                         <span t-if="record.dev_story_points.raw_value" class="badge rounded-pill text-bg-light ms-1" title="Story points">
                                             <t t-esc="record.dev_story_points.value" />
+                                        </span>
+                                        <span t-if="record.subtask_count.raw_value" class="text-muted small ms-1" title="Sub-tasks done">
+                                            <i class="fa fa-check-square-o me-1" /><t t-esc="record.closed_subtask_count.raw_value" />/<t t-esc="record.subtask_count.raw_value" />
                                         </span>
                                     </div>
                                     <div class="oe_kanban_bottom_right">
@@ -145,7 +150,7 @@
                 <filter name="dev_active_sprint" string="Active Sprint" domain="[('dev_sprint_id.state', '=', 'running')]" />
                 <filter name="dev_backlog" string="Not in a Sprint" domain="[('dev_sprint_id', '=', False)]" />
                 <filter name="dev_no_milestone" string="No Milestone" domain="[('milestone_id', '=', False)]" />
-                <filter name="dev_no_module" string="No Module" domain="[('dev_module_id', '=', False)]" />
+                <filter name="dev_no_module" string="No Component" domain="[('dev_module_id', '=', False)]" />
                 <separator />
                 <filter name="dev_my_issues" string="Assigned to Me" domain="[('dev_assignee_id', '=', uid)]" />
                 <filter name="dev_reported" string="Reported by Me" domain="[('dev_reporter_id', '=', uid)]" />
@@ -172,7 +177,7 @@
                     <filter name="dev_group_type" string="Type" context="{'group_by': 'dev_issue_type'}" />
                     <filter name="dev_group_assignee" string="Assignee" context="{'group_by': 'dev_assignee_id'}" />
                     <filter name="dev_group_sprint" string="Sprint" context="{'group_by': 'dev_sprint_id'}" />
-                    <filter name="dev_group_module" string="Module" context="{'group_by': 'dev_module_id'}" />
+                    <filter name="dev_group_module" string="Component" context="{'group_by': 'dev_module_id'}" />
                     <filter name="dev_group_project" string="Project" context="{'group_by': 'project_id'}" />
                 </group>
             </xpath>
@@ -185,16 +190,18 @@
         <field name="model">project.task</field>
         <field name="priority">95</field>
         <field name="arch" type="xml">
-            <tree editable="bottom" multi_edit="1" decoration-warning="dev_is_overdue">
+            <!-- Rows edit in place; "View" at the end of a row opens the full issue. -->
+            <tree editable="bottom" multi_edit="1" open_form_view="1" decoration-warning="dev_is_overdue">
                 <field name="sequence" widget="handle" />
                 <field name="dev_issue_type" />
                 <field name="dev_key" readonly="1" />
-                <field name="name" />
+                <field name="name" widget="name_with_subtask_count" />
                 <field name="project_id" optional="show" options="{'no_create': True}" required="1" domain="[('dev_is_software', '=', True)]" />
                 <field name="milestone_id" optional="show" options="{'no_create': True}" />
                 <field name="dev_module_id" optional="show" options="{'no_create': True}" />
                 <field name="dev_assignee_id" widget="many2one_avatar_user" optional="show" options="{'no_create': True}" />
                 <field name="dev_priority" widget="priority" optional="show" />
+                <field name="dev_severity" optional="show" invisible="dev_issue_type != 'bug'" required="dev_issue_type == 'bug'" />
                 <field name="dev_story_points" sum="Total" />
                 <field name="dev_sprint_id" options="{'no_create': True}" />
                 <field name="stage_id" optional="show" options="{'no_create': True}" domain="[('project_ids', '=', project_id)]" />
@@ -232,7 +239,7 @@
     </record>
 
     <!-- ================= Actions ================= -->
-    <!-- The one board: opens on current work (running sprint + issues not in a
+    <!-- Board, the one board: opens on current work (running sprint + issues not in a
          sprint); removing that filter shows every issue. -->
     <record id="action_board" model="ir.actions.act_window">
         <field name="name">Board</field>
@@ -242,7 +249,7 @@
         <field name="domain">[('project_id.dev_is_software', '=', True), ('display_in_project', '=', True)]</field>
         <field name="context">{'dev_board': True, 'search_default_dev_current_work': 1}</field>
         <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">Nothing on the board yet</p>
+            <p class="o_view_nocontent_smiling_face">No issues yet</p>
             <p>Create an issue here. Remove the "Current Work" filter to see every issue,
                or use "Archived" to find completed ones you archived.</p>
         </field>
@@ -310,7 +317,7 @@
         <field name="model">dev.task.complete</field>
         <field name="arch" type="xml">
             <form>
-                <p>The issue(s) below will be marked as done and taken off the board.</p>
+                <p>The issue(s) below will be marked as done and taken off the Board.</p>
                 <field name="task_ids" widget="many2many_tags" readonly="1" />
                 <group>
                     <field name="mode" widget="radio" />

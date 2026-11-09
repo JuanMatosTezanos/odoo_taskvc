@@ -4,9 +4,9 @@ from odoo import _, api, fields, models
 
 class DevModule(models.Model):
     """A part of the software (e.g. Login, Payments, Camera) used to classify
-    issues, like a component in Jira. Each project has its own modules."""
+    issues, like a component in Jira. Each project has its own components."""
     _name = 'dev.module'
-    _description = 'Module'
+    _description = 'Component'
     _inherit = ['mail.thread']
     _order = 'project_id, sequence, name'
 
@@ -23,16 +23,18 @@ class DevModule(models.Model):
     color = fields.Integer()
     active = fields.Boolean(default=True)
 
-    task_ids = fields.One2many('project.task', 'dev_module_id', string="Issues")
+    # Sub-tasks count inside their parent, not on their own.
+    task_ids = fields.One2many('project.task', 'dev_module_id', string="Issues",
+                               domain=[('display_in_project', '=', True)])
     issue_count = fields.Integer(string="Issue Count", compute='_compute_counts')
     open_count = fields.Integer(string="Open Issues", compute='_compute_counts')
     bug_count = fields.Integer(string="Open Bugs", compute='_compute_counts')
     technology_ids = fields.Many2many(
         'dev.technology', string="Technologies", compute='_compute_counts',
-        help="Technologies used by the issues of this module.")
+        help="Technologies used by the issues of this component.")
 
     _sql_constraints = [
-        ('name_project_unique', 'unique(project_id, name)', "This project already has a module with that name."),
+        ('name_project_unique', 'unique(project_id, name)', "This project already has a component with that name."),
     ]
 
     @api.depends('task_ids.dev_status', 'task_ids.dev_issue_type', 'task_ids.dev_technology_ids')
@@ -49,7 +51,7 @@ class DevModule(models.Model):
         self.ensure_one()
         action = self.env['ir.actions.act_window']._for_xml_id('dev_projects.action_board')
         action.update({
-            'domain': [('dev_module_id', '=', self.id)],
+            'domain': [('dev_module_id', '=', self.id), ('display_in_project', '=', True)],
             'context': {'default_project_id': self.project_id.id, 'default_dev_module_id': self.id,
                         'dev_board': True},
             'display_name': _("%(project)s - %(module)s", project=self.project_id.name, module=self.name),

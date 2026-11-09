@@ -184,14 +184,20 @@ class TestDevProjects(TransactionCase):
         action = from_menu.action_open_complete_wizard()
         wizard = Form(self.env['dev.sprint.complete'].with_context(**action['context'])).save()
         wizard.destination = 'backlog'
-        self.assertEqual(wizard.action_confirm()['type'], 'ir.actions.act_window_close')
+        recap = wizard.action_confirm()
+        self.assertEqual((recap['res_model'], recap['res_id'], recap['target']), ('dev.sprint', from_menu.id, 'new'))
+        self.assertEqual(from_menu.with_context(**recap['context']).action_dev_recap_done()['type'],
+                         'ir.actions.act_window_close')
         from_tab = self.sprint.with_context(dev_reload_project=True)
         self.assertEqual(from_tab.action_start()['tag'], 'soft_reload')
         self.assertEqual(self.project.dev_running_sprint_id, self.sprint)
         action = from_tab.action_open_complete_wizard()
         wizard = Form(self.env['dev.sprint.complete'].with_context(**action['context'])).save()
         wizard.destination = 'backlog'
-        self.assertEqual(wizard.action_confirm()['tag'], 'soft_reload')
+        recap = wizard.action_confirm()
+        self.assertEqual(recap['res_id'], self.sprint.id)
+        self.assertEqual(self.sprint.with_context(**recap['context']).action_dev_recap_done()['tag'], 'soft_reload',
+                         "Save in the recap reloads the project")
         self.assertFalse(self.project.dev_running_sprint_id)
 
     def test_board(self):
@@ -246,6 +252,26 @@ class TestDevProjects(TransactionCase):
             row.name = 'Backlog row'
             row.project_id = self.project
             self.assertFalse(row.save().dev_sprint_id)
+
+    def test_backlog_rows_can_be_opened(self):
+        # Rows edit in place, so each one needs a "View" button to open the full issue.
+        arch = self.env.ref('dev_projects.task_backlog_list').arch
+        self.assertIn('open_form_view="1"', arch)
+        views = self.env.ref('dev_projects.action_backlog').view_ids.mapped('view_mode')
+        self.assertIn('form', views)
+
+    def test_severity_is_editable(self):
+        # Both the issue form and a Backlog row let you pick a bug's severity.
+        bug = self._issue(dev_issue_type='bug')
+        with Form(bug) as form:
+            form.dev_severity = 'critical'
+        self.assertEqual(bug.dev_severity, 'critical')
+        row = Form(self.Task.with_context(dev_backlog=True), view='dev_projects.task_backlog_list')
+        row.name = 'Bug from the backlog'
+        row.project_id = self.project
+        row.dev_issue_type = 'bug'
+        row.dev_severity = 'blocker'
+        self.assertEqual(row.save().dev_severity, 'blocker')
 
     def test_board_form_without_running_sprint_notifies(self):
         sent = []
@@ -390,7 +416,158 @@ class TestDevProjects(TransactionCase):
                 line.name = 'From the project tab'
         self.assertIn('From the project tab', self.project.milestone_ids.mapped('name'))
 
-    # Modules --------------------------------------------------------------
+    def test_milestone_version(self):
+        for version in ('1.0', '1.2.0', 'v2.0.1', 'V3', '2.1.0-beta', '10.4.2.1'):
+            self.milestone.dev_version = version
+            self.assertEqual(self.milestone.dev_version, version)
+        self.milestone.dev_version = '  1.3.0 '
+        self.assertEqual(self.milestone.dev_version, '1.3.0', "spaces are trimmed")
+        for bad in ('beta', 'version 1', '1..2', '1.2.', 'v', '1.2.3.4.5', '1,2'):
+            with self.assertRaises(ValidationError, msg=bad):
+                self.milestone.dev_version = bad
+        self.milestone.dev_version = False
+        with Form(self.env['project.milestone'].with_context(default_project_id=self.project.id),
+                  view='dev_projects.milestone_form') as form:
+            form.name = 'Release'
+            form.dev_version = '2.0.0'
+        self.assertEqual(form.record.dev_version, '2.0.0')
+
+    # Sub-tasks --------------------------------------------------------------
+
+    def test_subtasks_live_inside_their_parent(self):
+        login = self.env['dev.module'].create({'name': 'Login', 'project_id': self.project.id})
+        parent = self._issue(dev_sprint_id=self.sprint.id, dev_module_id=login.id, dev_story_points=5)
+        # Added in the parent's Sub-tasks tab.
+        with Form(parent, view='project.view_task_form2') as form:
+            with form.child_ids.new() as line:
+                line.name = 'Write the API'
+        sub = parent.child_ids
+        self.assertEqual(len(sub), 1)
+        self.assertFalse(sub.display_in_project, "shown inside the parent, not on the board")
+        self.assertTrue(sub.dev_key.startswith('WS-'), "sub-tasks get their own key")
+        self.assertEqual((sub.dev_sprint_id, sub.dev_module_id), (self.sprint, login))
+        # Created from code, even from the board: still the parent's sprint.
+        sub2 = self.Task.with_context(dev_board=True).create({'name': 'Tests', 'parent_id': parent.id})
+        self.assertEqual((sub2.project_id, sub2.dev_sprint_id), (self.project, self.sprint))
+        self.assertFalse(sub2.display_in_project)
+        # They don't count on their own: their parent does.
+        self.assertEqual(self.sprint.item_count, 1)
+        self.assertEqual(self.sprint.planned_points, 5)
+        self.assertEqual(login.issue_count, 1)
+        self.assertEqual(self.project.dev_open_issue_count, 1)
+        self.assertNotIn(sub, self.Task.search(self.project.action_dev_board()['domain']))
+        self.assertNotIn(sub, self.Task.search(safe_eval(self.env.ref('dev_projects.action_board').domain)))
+        self.assertIn(parent, self.Task.search(self.project.action_dev_backlog()['domain']))
+        self.assertNotIn(sub, self.Task.search(self.project.action_dev_backlog()['domain']))
+        self.assertEqual((parent.subtask_count, parent.closed_subtask_count), (2, 0))
+        sub.action_dev_done()
+        parent.invalidate_recordset(['closed_subtask_count'])
+        self.assertEqual(parent.closed_subtask_count, 1)
+        # The parent moves to another sprint: its sub-tasks follow.
+        nxt = self.env['dev.sprint'].create({'project_id': self.project.id})
+        parent.dev_sprint_id = nxt
+        self.assertEqual((sub | sub2).dev_sprint_id, nxt)
+        # Its component changes: sub-tasks with the same (or none) follow, others keep theirs.
+        camera = self.env['dev.module'].create({'name': 'Camera', 'project_id': self.project.id})
+        other = self.env['dev.module'].create({'name': 'Other', 'project_id': self.project.id})
+        sub2.dev_module_id = other
+        parent.dev_module_id = camera
+        self.assertEqual((sub.dev_module_id, sub2.dev_module_id), (camera, other))
+        # A task made a sub-task later joins its parent's sprint.
+        loose = self._issue()
+        loose.write({'parent_id': parent.id, 'display_in_project': False})
+        self.assertEqual(loose.dev_sprint_id, nxt)
+
+    def test_subtasks_and_wip_limit(self):
+        """Sub-tasks are not cards on the board, so they don't fill a column's WIP limit."""
+        self.stage_progress.dev_wip_limit = 1
+        parent = self._issue(dev_sprint_id=self.sprint.id, stage_id=self.stage_progress.id)
+        sub = self.Task.create({'name': 'Sub', 'parent_id': parent.id})
+        sub.stage_id = self.stage_progress
+        self.assertEqual(sub.dev_status, 'in_progress')
+
+    def test_subtasks_move_with_parent_when_sprint_completes(self):
+        parent = self._issue(dev_sprint_id=self.sprint.id)
+        sub = self.Task.create({'name': 'Sub', 'parent_id': parent.id})
+        nxt = self.env['dev.sprint'].create({'project_id': self.project.id})
+        self.sprint.action_start()
+        wizard = Form(self.env['dev.sprint.complete'].with_context(default_sprint_id=self.sprint.id)).save()
+        self.assertEqual((wizard.done_count, wizard.open_count), (0, 1))
+        wizard.action_confirm()
+        self.assertEqual((parent.dev_sprint_id, sub.dev_sprint_id), (nxt, nxt))
+
+    def test_issue_form_for_subtasks(self):
+        arch = self.Task.get_views([(self.env.ref('project.view_task_form2').id, 'form')])['views']['form']['arch']
+        doc = etree.fromstring(arch)
+        sprint = doc.find(".//field[@name='dev_sprint_id']")
+        self.assertIn('parent_id and not display_in_project', sprint.get('readonly'), "sprint follows the parent")
+        points = doc.find(".//field[@name='dev_story_points']")
+        self.assertIn('parent_id and not display_in_project', points.get('invisible'))
+        self.assertIsNotNone(doc.find(".//field[@name='child_ids']/tree/field[@name='dev_key']"))
+        # One Assignee on software issues: Odoo's Assignees field is hidden there.
+        self.assertEqual(doc.find(".//field[@name='user_ids']").get('invisible'), 'dev_project_is_software')
+
+    # Sprint recap -----------------------------------------------------------
+
+    def test_sprint_recap(self):
+        login = self.env['dev.module'].create({'name': 'Login', 'project_id': self.project.id})
+        story = self._issue(dev_sprint_id=self.sprint.id, dev_issue_type='story', dev_story_points=5,
+                            dev_module_id=login.id, dev_assignee_id=self.user.id)
+        bug = self._issue(dev_sprint_id=self.sprint.id, dev_issue_type='bug', dev_story_points=2,
+                          dev_assignee_id=self.user2.id)
+        bug2 = self._issue(dev_sprint_id=self.sprint.id, dev_issue_type='bug', dev_story_points=1,
+                           dev_module_id=login.id, dev_assignee_id=self.user.id)
+        unfinished = self._issue(dev_sprint_id=self.sprint.id, dev_story_points=8)
+        sub = self.Task.create({'name': 'Sub', 'parent_id': story.id})
+        (story | bug | bug2 | sub).action_dev_done()
+        # A finished issue completed and archived still shows in the recap.
+        action = bug2.action_dev_open_complete_wizard()
+        Form(self.env[action['res_model']].with_context(**action['context'])).save().action_confirm()
+        nxt = self.env['dev.sprint'].create({'project_id': self.project.id})
+        self.sprint.action_start()
+        recap = Form(self.env['dev.sprint.complete'].with_context(default_sprint_id=self.sprint.id)).save().action_confirm()
+        self.assertEqual((recap['res_model'], recap['res_id'], recap['target']), ('dev.sprint', self.sprint.id, 'new'))
+        self.assertEqual(recap['views'][0][0], self.env.ref('dev_projects.sprint_recap_form').id)
+
+        s = self.sprint
+        self.assertEqual((s.recap_issue_count, s.recap_done_count, s.recap_progress), (4, 3, 75.0),
+                         "sub-tasks count inside their parent")
+        self.assertEqual((s.recap_planned_points, s.recap_done_points), (16, 8))
+        self.assertEqual((s.recap_moved_count, s.recap_moved_sprint_id, s.recap_moved_to), (1, nxt, nxt.name))
+        self.assertEqual(s.recap_done_task_ids, story | bug | bug2)
+        self.assertEqual(s.recap_moved_task_ids, unfinished)
+        by_type = {line.name: (line.issue_count, line.points) for line in s.recap_type_line_ids}
+        self.assertEqual(by_type, {'Story': (1, 5), 'Bug': (2, 3)})
+        by_component = {line.name: (line.issue_count, line.points) for line in s.recap_component_line_ids}
+        self.assertEqual(by_component, {'Login': (2, 6), 'No component': (1, 2)})
+        by_person = {line.name: (line.issue_count, line.points) for line in s.recap_person_line_ids}
+        self.assertEqual(by_person, {'Dev One': (2, 6), 'Dev Two': (1, 2)})
+        # The recap stays as it was, even after its issues change.
+        unfinished.action_dev_done()
+        self.assertEqual(s.recap_done_count, 3)
+        # The team writes its summary in the pop-up, and Save closes it.
+        with Form(s, view='dev_projects.sprint_recap_form') as form:
+            form.recap_notes = '<p>Login is done.</p>'
+        self.assertIn('Login is done.', s.recap_notes)
+        self.assertEqual(s.action_dev_recap_done()['type'], 'ir.actions.act_window_close')
+        # The sprint form opens on a Recap tab once the sprint is closed.
+        arch = self.env['dev.sprint'].get_views([(False, 'form')])['views']['form']['arch']
+        first_page = etree.fromstring(arch).find('.//notebook/page')
+        self.assertEqual((first_page.get('name'), first_page.get('invisible')), ('recap', "state != 'closed'"))
+        Form(s)  # opens
+
+    def test_sprint_recap_everything_to_backlog(self):
+        issue = self._issue(dev_sprint_id=self.sprint.id)
+        self.sprint.action_start()
+        wizard = Form(self.env['dev.sprint.complete'].with_context(default_sprint_id=self.sprint.id)).save()
+        wizard.destination = 'backlog'
+        wizard.action_confirm()
+        s = self.sprint
+        self.assertEqual((s.recap_done_count, s.recap_moved_count, s.recap_moved_to), (0, 1, 'Backlog'))
+        self.assertFalse(issue.dev_sprint_id)
+        self.assertFalse(s.recap_line_ids)
+
+    # Components (technical name: dev.module) --------------------------------
 
     def test_modules(self):
         Module = self.env['dev.module']
@@ -634,3 +811,30 @@ class TestDevProjects(TransactionCase):
             ctx = safe_eval(self.env.ref(xmlid).context, {'uid': self.env.uid})
             self.assertEqual(ctx.get('search_default_dev_hide_software'), 1, xmlid)
         self.assertIn(self.project, Project.search([]), "managers can still see everything")
+
+    # Spanish ----------------------------------------------------------------
+
+    def test_spanish_translation(self):
+        """With Spanish installed (any variant, e.g. Dominican Republic), each
+        user who picks it in their Preferences sees Dev Projects in Spanish."""
+        self.env['res.lang']._activate_lang('es_DO')
+        self.env['ir.module.module']._load_module_terms(['dev_projects'], ['es_DO'])
+        env = self.env(context=dict(self.env.context, lang='es_DO'))
+        self.assertEqual(env.ref('dev_projects.menu_modules').name, 'Componentes')
+        self.assertEqual(env.ref('dev_projects.menu_board').name, 'Tablero')
+        self.assertEqual(env.ref('dev_projects.action_report_new').name, 'Nuevo reporte')
+        self.assertEqual(env.ref('dev_projects.action_report_mine').name, 'Mis reportes')
+        kinds = dict(env['dev.report'].fields_get(['kind'])['kind']['selection'])
+        self.assertEqual(kinds['bug'], 'Algo no funciona')
+        self.assertEqual(env.ref('dev_projects.menu_planning').name, 'Planificación')
+        fields_es = env['project.task'].fields_get(['dev_reporter_id', 'dev_issue_type', 'dev_module_id'])
+        self.assertEqual(fields_es['dev_reporter_id']['string'], 'Reportado por')
+        self.assertEqual(fields_es['dev_module_id']['string'], 'Componente')
+        self.assertEqual(dict(fields_es['dev_issue_type']['selection'])['bug'], 'Error')
+        self.assertEqual(env['project.milestone'].fields_get(['dev_version'])['dev_version']['string'], 'Versión')
+        self.assertEqual(env.ref('dev_projects.stage_todo').name, 'Por hacer')
+        recap = env['dev.sprint'].get_views([(env.ref('dev_projects.sprint_recap_form').id, 'form')])
+        self.assertIn('Terminadas por tipo', recap['views']['form']['arch'])
+        with self.assertRaises(UserError) as error:
+            self.sprint.with_env(env).action_open_complete_wizard()
+        self.assertEqual(str(error.exception), 'Solo se pueden completar los sprints en curso.')

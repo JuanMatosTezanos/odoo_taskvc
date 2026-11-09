@@ -10,6 +10,7 @@
         <field name="arch" type="xml">
             <tree decoration-muted="is_reached" decoration-danger="is_deadline_exceeded" sample="1">
                 <field name="name" />
+                <field name="dev_version" optional="show" />
                 <field name="project_id" optional="show" />
                 <field name="deadline" widget="remaining_days" invisible="is_reached" />
                 <field name="reached_date" string="Completed On" optional="hide" />
@@ -59,6 +60,7 @@
                     <group>
                         <group string="Planning">
                             <field name="project_id" options="{'no_create': True}" domain="[('dev_is_software', '=', True)]" readonly="id" />
+                            <field name="dev_version" placeholder="e.g. 1.2.0" />
                             <field name="deadline" />
                             <field name="reached_date" string="Completed On" invisible="not is_reached" />
                         </group>
@@ -78,11 +80,11 @@
                     </group>
                     <notebook>
                         <page name="issues" string="Issues">
-                            <field name="task_ids" context="{'default_project_id': project_id, 'default_milestone_id': id, 'form_view_ref': 'project.view_task_form2'}">
+                            <field name="dev_issue_ids" context="{'default_project_id': project_id, 'default_milestone_id': id, 'form_view_ref': 'project.view_task_form2'}">
                                 <tree>
                                     <field name="dev_issue_type" />
                                     <field name="dev_key" />
-                                    <field name="name" />
+                                    <field name="name" widget="name_with_subtask_count" />
                                     <field name="dev_sprint_id" optional="show" />
                                     <field name="dev_assignee_id" widget="many2one_avatar_user" />
                                     <field name="dev_priority" widget="priority" />
@@ -99,7 +101,7 @@
                                    domain="[('project_id', '=', project_id), ('state', '!=', 'closed')]"
                                    context="{'default_project_id': project_id, 'default_milestone_id': id}">
                                 <tree decoration-info="state == 'running'" decoration-muted="state == 'closed'">
-                                    <field name="name" />
+                                    <field name="name" widget="name_with_subtask_count" />
                                     <field name="goal" optional="show" />
                                     <field name="start_date" />
                                     <field name="end_date" />
@@ -128,6 +130,7 @@
         <field name="arch" type="xml">
             <search>
                 <field name="name" />
+                <field name="dev_version" />
                 <field name="project_id" />
                 <filter name="dev_open" string="Open" domain="[('is_reached', '=', False)]" />
                 <filter name="dev_complete" string="Complete" domain="[('is_reached', '=', True)]" />

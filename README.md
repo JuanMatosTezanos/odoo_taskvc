@@ -6,7 +6,7 @@ Jira-style software project management built on top of Odoo's own **Project** ap
 
 > **Just using the app?** Read the plain-language [User Guide](USER_GUIDE.md) ([Guía de usuario en español](GUIA_DE_USUARIO.md)). This README is for the people who install and maintain it.
 
-Dev Projects adds issue keys (`WEB-1`, `WEB-2`…), issue types, a board with WIP limits, a ranked backlog, sprints you start and complete by hand, milestones, modules, technologies and developer profiles. It works on the **same projects and tasks** as the Project app. An issue is a normal Odoo task with extra fields, so you can switch between the two apps at any time.
+Dev Projects adds issue keys (`WEB-1`, `WEB-2`…), issue types, sub-tasks, a **Board** with WIP limits, a ranked backlog, sprints you start and complete by hand (with a recap of each one), milestones with versions, components, technologies and developer profiles. A **Report** menu, next to Dev Projects, lets anyone in the company send problems and ideas to the dev team. It works on the **same projects and tasks** as the Project app. An issue is a normal Odoo task with extra fields, so you can switch between the two apps at any time. The whole module is available in **English and Spanish**.
 
 ---
 
@@ -17,6 +17,7 @@ Dev Projects adds issue keys (`WEB-1`, `WEB-2`…), issue types, a board with WI
 - [Getting started](#getting-started)
 - [Day-to-day workflow](#day-to-day-workflow)
 - [Configuration](#configuration)
+- [Languages (English / Spanish)](#languages-english--spanish)
 - [Running the tests](#running-the-tests)
 - [Project structure](#project-structure)
 - [Uninstalling](#uninstalling)
@@ -29,9 +30,15 @@ Dev Projects adds issue keys (`WEB-1`, `WEB-2`…), issue types, a board with WI
 - Types: Story, Task, Bug, Improvement.
 - A key per project, e.g. `AG-1`, `AG-2`. It's suggested from the project name ("AI glasses" → `AG`), and you can search by it.
 - Story points, a 4-level priority (Normal, Important, High, Critical) and a severity for bugs.
-- One **assignee** (also added to the task's assignees in Odoo) and a **reporter**.
+- One **assignee** (also added to the task's assignees in Odoo) and a **Reported by** (who created it).
 - Start/finish dates filled in automatically as the issue moves across the board.
 - Pause/resume, overdue warnings, and **Complete**: mark it done, then archive or delete it.
+
+**Sub-tasks**
+- Split an issue into smaller steps in its **Sub-tasks** tab. They're listed right under the parent issue.
+- Each sub-task gets its own key (e.g. `AG-7`), and follows its parent's sprint. It also takes the parent's component if it has none, and follows the parent when that component changes (unless it was given another one on purpose).
+- Sub-tasks don't get their own card on the **Board** or a row in the Backlog. The parent's card shows a counter instead, e.g. **☑ 2/5** (sub-tasks done / total), and lists show "(2/5 sub-tasks)" next to the name.
+- They don't count on their own in sprint, milestone, component and project numbers, and they don't use a WIP slot: the parent counts. So they have no story points either.
 
 **Board**
 - Columns are Odoo project stages, each with a status category: To Do, In Progress, In Review or Done.
@@ -45,28 +52,39 @@ Dev Projects adds issue keys (`WEB-1`, `WEB-2`…), issue types, a board with WI
 - When you complete a sprint, unfinished issues move to the next sprint or back to the backlog.
 - Sprint progress, planned points and done points.
 
+**Sprint recap**
+- Completing a sprint opens its **recap**:
+  - issues and story points finished, out of what was in the sprint at the end;
+  - what was finished per type (stories, bugs fixed…), per component and per person;
+  - the finished issues, and the unfinished ones with where they went (next sprint or backlog);
+  - a **Sprint Summary** box where the team writes what the sprint was about.
+- The recap is saved on the sprint. A closed sprint opens on its **Recap** tab, so you can read it or edit the summary later.
+- It's a snapshot taken at completion, so it doesn't change when the issues change afterwards.
+
 **Milestones**
 - A milestone is a goal with a deadline, e.g. *"Login complete — Nov 20"*. It groups **sprints** and **issues**:
   ```
   Project: AI glasses
-  └─ Milestone: Login complete (due Nov 20)   ███░░ 60%
+  └─ Milestone: Login complete (v1.2.0, due Nov 20)   ███░░ 60%
      ├─ Sprint 1 → AG-1 Story: login form, AG-2 Bug: wrong password message
      └─ Sprint 2 → AG-3 Improvement: Google login
   ```
+- An optional **Version** per milestone, e.g. `1.2.0`. It only accepts version numbers: `1.0`, `1.2.0`, `v2.0.1`, or with a tag like `2.1.0-beta`.
 - Link a sprint to a milestone, and every issue in that sprint joins the milestone automatically. An issue can also be given a milestone directly.
 - Each milestone shows its progress (issues and story points done), bugs and technologies used. It turns red with a **Late** ribbon after its deadline, and has a **Mark as Complete** button.
 - These are Odoo's own milestones, so the Project app shows the same ones.
 
 **Projects**
 - A **GitHub Repository** link on each software project.
-- The project form has the tabs **Development | Milestones | Sprints | Modules | Description | Settings**. Milestones, Sprints and Modules only appear on software projects.
-- Software projects call their tasks **Issues**, and hide Odoo's "Name of the Tasks" and Tags fields. Odoo's **Tasks** button is replaced by **Open Issues**.
+- The project form has the tabs **Development | Milestones | Sprints | Components | Description | Settings**. Milestones, Sprints and Components only appear on software projects.
+- Software projects call their tasks **Issues**, and hide Odoo's "Name of the Tasks" and Tags fields. Odoo's **Tasks** button is replaced by **Open Issues**, and the **Board** button opens the board.
 
-**Modules**
-- Modules are the parts of your software, e.g. *Login*, *Payments*, *Camera*. Each project has its own list.
-- Pick one in the **Module** field of an issue (under Dev Priority). Typing a new name offers to create it on the spot.
-- Each module has an optional **Lead** and shows its issues, open issues, open bugs and technologies used. The Board cards, issue lists and Backlog show the module, and you can filter or group by it.
-- Duplicating a project copies its modules too.
+**Components**
+- Components are the parts of your software, e.g. *Login*, *Payments*, *Camera*. Each project has its own list.
+- Pick one in the **Component** field of an issue (under Dev Priority). Typing a new name offers to create it on the spot.
+- Each component has an optional **Lead** and shows its issues, open issues, open bugs and technologies used. The cards on the Board, issue lists and Backlog show the component, and you can filter or group by it.
+- Duplicating a project copies its components too.
+- In the code, components are still called modules (model `dev.module`, field `dev_module_id`), because they were named that first. Only the labels changed, so no data had to move.
 
 **Technologies and developers**
 - Technologies get their logo automatically from an image folder (`Docker` → `Docker.png`).
@@ -76,18 +94,29 @@ Dev Projects adds issue keys (`WEB-1`, `WEB-2`…), issue types, a board with WI
   - A "Devs" tag, added automatically.
   - A **Create User** button that gives the developer an Odoo login (their email), so issues can be assigned to them. It links the login to the same contact, so the profile stays.
 
+**Report menu (for people outside the dev team)**
+- A **Report** menu in the Projects app, right of **Dev Projects**. Every internal user can open the Projects app for it: people without Project rights see only **Report** there (opening on *New Report*), never the Project or Dev Projects menus.
+- **New Report** is a simple form: project, *What is it?* (Something's broken / Request a feature / Question), title, details, *How urgent is it?* (It can wait / Normal / Urgent / I can't work), and screenshots via the paperclip.
+- **My Reports** lists what you sent and where it stands: *Waiting for review → Accepted → Being worked on → Done*, or *Declined* with the reason. Reporters only see their own reports.
+- The dev team reviews them in **Dev Projects → Work → Reports** (or the project's **New Reports** button):
+  - **Accept** turns the report into an issue in the project's Backlog (outside any sprint), with the reporter as *Reported by*, the details and screenshots copied over. Type, Dev Priority and Severity come from the report: *Something's broken* → Bug, *Request a feature* → Story, *Question* → Task; *Urgent* → High, *I can't work* → Critical (and Blocker severity for bugs).
+  - **Decline** asks for a reason, which the reporter sees. **Review Again** puts a declined report back in the queue.
+  - Select several reports in the list and use **Actions → Accept** to accept them at once.
+- The reporter follows the report, so they're notified when it's accepted or declined, and the report shows the issue key and live status.
+
 ---
 
 ## How it fits with the Project app
 
-After installing, the home screen shows one **Projects** app with two menus:
+After installing, the home screen shows one **Projects** app with three menus (**Report** is for everyone, see [Features](#features)):
 
 ```
 Projects  |  Project ▾          |  Dev Projects ▾
-          |  Odoo's own menus,  |  Planning: Projects, Milestones, Sprints, Modules
-          |  unchanged          |  Work:     Board, Backlog
+          |  Odoo's own menus,  |  Planning: Projects, Milestones, Sprints, Components
+          |  unchanged          |  Work:     Board, Backlog, Reports
           |                     |  Team:     My Developer Profile, Developers, Technologies
           |                     |  Configuration
+          |  Report ▾  (everyone): New Report, My Reports
 ```
 
 - **Software projects** have the *Software Project* box ticked. Projects created from Dev Projects get it automatically. Only these appear in Dev Projects and get keys, board columns and the Dev behaviour.
@@ -135,7 +164,7 @@ The **Project** app is installed automatically if you don't have it.
 ### After changing the code
 
 - **Python changes:** restart the web container with `docker restart odoo_dev_web`.
-- **View/XML or field changes:** upgrade the module, either from *Apps → Dev Projects → Upgrade* or from the command line:
+- **View/XML, field or translation changes:** upgrade the module, either from *Apps → Dev Projects → Upgrade* or from the command line:
 
   ```bash
   docker compose run --rm --no-deps odoo odoo --db_host=db --db_user=odoo --db_password=odoo \
@@ -147,35 +176,37 @@ The **Project** app is installed automatically if you don't have it.
 
 ## Day-to-day workflow
 
-**In one line:** set up Modules and Milestones → write issues in the **Backlog** → plan and **Start** a sprint → drag cards on the **Board** → **Complete Sprint** → repeat → **Mark the milestone as Complete**.
+**In one line:** set up Components and Milestones → write issues in the **Backlog** → plan and **Start** a sprint → drag cards on the **Board** → **Complete Sprint** and read the recap → repeat → **Mark the milestone as Complete**.
 
 How the pieces fit:
 
 ```
 Project: AI glasses
-├─ Milestones  → WHY / what goal?     "Login complete", "Beta launch"
+├─ Milestones  → WHY / what goal?     "Login complete" (v1.2.0), "Beta launch"
 ├─ Sprints     → WHEN do we do it?    "Sprint 1", "Sprint 2"
-└─ Modules     → WHAT part is it?     "Login", "Camera", "UI"
+└─ Components  → WHAT part is it?     "Login", "Camera", "UI"
 ```
 
-One issue can have all three, e.g. **AG-4 Bug: Wrong password message**, with Milestone *Login complete*, Sprint *Sprint 1* and Module *Login*.
+One issue can have all three, e.g. **AG-4 Bug: Wrong password message**, with Milestone *Login complete*, Sprint *Sprint 1* and Component *Login*. Big issues can be split into sub-tasks.
 
 ### 1. Set up the project (once)
 *Dev Projects → Planning → Projects → New*. Type the name and save; it gets a key (e.g. `AG`) and board columns. Then fill in the tabs:
 - **Development:** check the key and paste the **GitHub Repository** link.
-- **Modules:** add the parts of your app with **Add a line**, e.g. *Login, Camera, UI*.
-- **Milestones:** add your big goals with a deadline, e.g. *"Beta launch — Dec 1"*.
+- **Components:** add the parts of your app with **Add a line**, e.g. *Login, Camera, UI*.
+- **Milestones:** add your big goals with a deadline and, if you like, the version they ship as, e.g. *"Beta launch — Dec 1 — 1.0.0"*.
 
 ### 2. Write down the work (any time)
 *Work → **Backlog***
 - **Add a line** for each thing to do and pick its type: Story, Task, Bug or Improvement.
-- Set its **Module**.
+- Set its **Component**.
 - Drag lines so the most important ones are at the top.
+- For a big issue, open it (**View** at the end of the line) and add steps in its **Sub-tasks** tab.
+- Check *Work → **Reports*** for what people outside the team sent: **Accept** puts it in the Backlog, **Decline** tells them why not.
 
 ### 3. Plan a sprint (every 1–2 weeks)
 In the project's **Sprints** tab, or *Planning → Sprints*:
 1. Create a sprint and pick the **Milestone** it works towards.
-2. In the **Backlog**, set the **Sprint** column on the issues you'll do. They join the sprint's milestone automatically.
+2. In the **Backlog**, set the **Sprint** column on the issues you'll do. They join the sprint's milestone automatically, and their sub-tasks come along.
 3. Open the sprint and click **Start Sprint**.
 
 ### 4. Do the work (every day)
@@ -184,7 +215,7 @@ In the project's **Sprints** tab, or *Planning → Sprints*:
 - New issues created here go straight into the running sprint.
 
 ### 5. Finish the sprint
-Open the sprint and click **Complete Sprint**. Unfinished issues go to the next sprint or back to the backlog. Then repeat from step 3.
+Open the sprint and click **Complete Sprint**. Unfinished issues go to the next sprint or back to the backlog. The **recap** opens: check the numbers, write a short summary and click **Save**. Then repeat from step 3.
 
 ### 6. Finish the milestone
 When its goal is reached, open it (project **Milestones** tab) and click **Mark as Complete**.
@@ -192,7 +223,7 @@ When its goal is reached, open it (project **Milestones** tab) and click **Mark 
 **Buttons you can ignore at first**
 - **Start / Send to Review / Mark as Done** on an issue do the same as dragging its card.
 - **Pause / Resume** and **Assign to Me** are small shortcuts.
-- **Complete** on an issue marks it done *and* takes the card off the board (archive or delete). Use it only when you want the card gone.
+- **Complete** on an issue marks it done *and* takes the card off the Board (archive or delete). Use it only when you want the card gone.
 - **Reopen** is only for something marked done by mistake.
 - The **Project** menu is Odoo's normal app for non-software projects. You can work entirely in **Dev Projects**.
 
@@ -200,6 +231,8 @@ When its goal is reached, open it (project **Milestones** tab) and click **Mark 
 > The Board shows the *running* sprint plus issues not in any sprint. Issues in a sprint that hasn't been started stay hidden until you click **Start Sprint**. To see them earlier, use the sprint's **Issues** button or remove the "Current Work" filter.
 >
 > If you create an issue on the Board while no sprint is running, it goes to the backlog and a short notification tells you so.
+>
+> Sub-tasks never get their own card: open the parent issue to see them.
 
 ---
 
@@ -216,6 +249,41 @@ When its goal is reached, open it (project **Milestones** tab) and click **Mark 
 **Dev Projects → Configuration → Board Columns**: rename, reorder or add columns, set each column's *Status Category* and *WIP Limit* (0 = no limit).
 
 **Technology logos**: put PNG files in [`tech_images/`](tech_images/). The file name must match the technology name, ignoring upper/lower case. The folder is mounted read-only into the container at `/tech_images`.
+
+---
+
+## Languages (English / Spanish)
+
+Every screen, button, message and the default columns are translated into Spanish ([`i18n/es.po`](dev_addons/dev_projects/i18n/es.po)). Odoo's own screens already come in Spanish. The language is chosen **per user**, so one person can work in English and another in Spanish.
+
+1. **Once, as an administrator:** *Settings → General Settings → Languages → Add Languages*, pick a Spanish (e.g. *Spanish (DO) / Español (DO)* or *Spanish / Español*) and click **Add**. Any Spanish variant works: they all use the same translation file.
+2. **Each user:** click your avatar (top right) → **Preferences** → **Language** → *Español*, then save. The page reloads in Spanish.
+
+Main screens in each language:
+
+| English | Español |
+|---------|---------|
+| Board | Tablero |
+| Backlog | Backlog |
+| Issues | Incidencias |
+| Milestones / Version | Hitos / Versión |
+| Sprints / Recap | Sprints / Resumen |
+| Components | Componentes |
+| Sub-tasks | Subtareas |
+| Reported by | Reportado por |
+| Board Columns | Columnas del tablero |
+| Report (menu) / New Report / My Reports | Reportar / Nuevo reporte / Mis reportes |
+| Reports (Dev Projects) | Reportes |
+
+**Changing a text?** After editing a label or message in the code, export the template again and add the Spanish text to `es.po`, then upgrade the module:
+
+```bash
+docker compose run --rm --no-deps odoo odoo --db_host=db --db_user=odoo --db_password=odoo \
+    -d ProjectsData --i18n-export=/mnt/extra-addons/dev_projects/i18n/dev_projects.pot \
+    --modules=dev_projects --stop-after-init
+```
+
+Texts missing from `es.po` simply show in English.
 
 ---
 
@@ -260,21 +328,25 @@ odoo_taskvc/
         ├── __manifest__.py
         ├── hooks.py           Install / uninstall steps
         ├── data/              Default board columns, settings
-        ├── migrations/        Upgrade steps (e.g. turning old Histories into Milestones)
+        ├── i18n/              Translations: dev_projects.pot (template), es.po (Spanish)
+        ├── migrations/        Upgrade steps (old Histories → Milestones; recaps for old sprints)
         ├── models/
-        │   ├── project_task.py        Issues: types, keys, board/Done sync, Complete wizard
+        │   ├── project_task.py        Issues: types, keys, board/Done sync, sub-tasks, Complete wizard
         │   ├── project_project.py     Software projects, keys, screen actions
         │   ├── project_task_type.py   Board columns: status category, WIP limit
-        │   ├── dev_sprint.py          Sprints and the Complete Sprint wizard
-        │   ├── project_milestone.py   Milestones: progress, sprints, Complete
-        │   ├── dev_module.py          Modules: parts of the software that classify issues
+        │   ├── dev_sprint.py          Sprints, the Complete Sprint wizard and the sprint recap
+        │   ├── project_milestone.py   Milestones: version, progress, sprints, Complete
+        │   ├── dev_module.py          Components (parts of the software that classify issues)
+        │   ├── dev_report.py          Reports from the Report menu: accept (→ issue) or decline
         │   ├── dev_technology.py      Technologies and logo loading
         │   ├── res_partner.py         Developer profiles and access codes
         │   └── res_config_settings.py Settings
-        ├── views/             Board, backlog, milestones, sprints, modules, forms, menus, settings
-        ├── security/          Access rights
+        ├── views/             Board, backlog, reports, milestones, sprints, components, forms, menus, settings
+        ├── security/          Access rights (everyone can send reports and sees only their own)
+        ├── static/description/ App icon
         └── tests/
             ├── test_dev_projects.py   Behaviour tests
+            ├── test_reports.py        The Report menu: sending, accepting, declining, who sees what
             └── test_screens.py        Every screen opens; Project app still works
 ```
 
@@ -284,7 +356,7 @@ odoo_taskvc/
 
 ## Uninstalling
 
-Uninstalling Dev Projects from *Apps* puts the Project app back the way Odoo ships it: original menus, no default filter. Your projects and tasks stay. Only the Dev fields, sprints, modules and technologies are removed. Milestones stay, because they belong to Odoo's Project app.
+Uninstalling Dev Projects from *Apps* puts the Project app back the way Odoo ships it: original menus, no default filter. Your projects and tasks stay, sub-tasks included (they're Odoo's own). Only the Dev fields, sprints and their recaps, components and technologies are removed. Milestones stay, because they belong to Odoo's Project app.
 
 ---
 

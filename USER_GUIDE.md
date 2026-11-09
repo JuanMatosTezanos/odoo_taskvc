@@ -15,13 +15,17 @@ You don't need any technical knowledge to use it. This guide walks you through e
 3. [How it all fits together](#3-how-it-all-fits-together)
 4. [Setting up a project (once)](#4-setting-up-a-project-once)
 5. [Adding work](#5-adding-work)
-6. [Planning a sprint](#6-planning-a-sprint)
-7. [Doing the work: the Board](#7-doing-the-work-the-board)
-8. [Finishing a sprint](#8-finishing-a-sprint)
-9. [Finishing a milestone](#9-finishing-a-milestone)
-10. [Finding things](#10-finding-things)
-11. [Adding a new team member](#11-adding-a-new-team-member)
-12. [Common questions](#12-common-questions)
+6. [Splitting work into sub-tasks](#6-splitting-work-into-sub-tasks)
+7. [Planning a sprint](#7-planning-a-sprint)
+8. [Doing the work: the Board](#8-doing-the-work-the-board)
+9. [Finishing a sprint and reading its recap](#9-finishing-a-sprint-and-reading-its-recap)
+10. [Finishing a milestone](#10-finishing-a-milestone)
+11. [Finding things](#11-finding-things)
+12. [Using Dev Projects in Spanish](#12-using-dev-projects-in-spanish)
+13. [Reporting a problem or an idea (for everyone)](#13-reporting-a-problem-or-an-idea-for-everyone)
+14. [Reviewing reports](#14-reviewing-reports)
+15. [Adding a new team member](#15-adding-a-new-team-member)
+16. [Common questions](#16-common-questions)
 
 ---
 
@@ -31,12 +35,14 @@ You don't need any technical knowledge to use it. This guide walks you through e
 2. Click the **Projects** app on the home screen.
 3. At the top you'll see two menus: **Project** and **Dev Projects**. Use **Dev Projects** for software work.
 
+> **Not on the dev team?** Open the **Projects** app too: you'll only see a **Report** menu, where you send a problem or an idea (see section 13).
+
 The **Dev Projects** menu has four parts:
 
 | Menu | What's inside |
 |---|---|
-| **Planning** | Projects, Milestones, Sprints, Modules: the big picture |
-| **Work** | Board and Backlog: the day-to-day work |
+| **Planning** | Projects, Milestones, Sprints, Components: the big picture |
+| **Work** | Board, Backlog and Reports: the day-to-day work |
 | **Team** | Your developer profile, the developers, and the technologies you use |
 | **Configuration** | Settings (managers only) |
 
@@ -53,14 +59,18 @@ The **Dev Projects** menu has four parts:
 | **Task** | A general job to get done | *"Update the logo"* |
 | **Bug** | Something that's broken | *"App crashes when taking a photo"* |
 | **Improvement** | Making something that works even better | *"Make the camera faster"* |
+| **Sub-task** | A smaller step inside an issue | *"Design the button"*, *"Write the code"* |
 | **Backlog** | The waiting list of all work not started yet | |
 | **Sprint** | A short work period, usually 1–2 weeks | *Sprint 1* |
+| **Recap** | The summary of a finished sprint | *"12 of 15 issues finished"* |
 | **Board** | The screen with columns where you move work forward | |
+| **Report** | A problem or idea sent by someone outside the dev team | *"Can't print invoices"* |
 | **Milestone** | A big goal with a deadline | *"Beta launch by Dec 1"* |
-| **Module** | A part of the app | *Login, Camera, Settings* |
+| **Version** | The version number a milestone comes out as | *1.0.0* |
+| **Component** | A part of the app | *Login, Camera, Settings* |
 | **Story points** | A rough size of the work (bigger number = more effort) | *1, 3, 5, 8* |
 | **Assignee** | The person doing the work | |
-| **Reporter** | The person who created the issue | |
+| **Reported by** | The person who created the issue | |
 
 ---
 
@@ -68,19 +78,21 @@ The **Dev Projects** menu has four parts:
 
 ```
 Project: AI glasses
-├─ Milestones → What goal are we working towards?   "Beta launch"
+├─ Milestones → What goal are we working towards?   "Beta launch" (version 1.0.0)
 ├─ Sprints    → When are we doing it?               "Sprint 1"
-└─ Modules    → Which part of the app is it?        "Camera"
+└─ Components → Which part of the app is it?        "Camera"
 ```
 
 Every piece of work (an **issue**) can be labelled with all three. For example:
 
 > **AG-4 Bug: Wrong password message**
-> Milestone: *Beta launch* · Sprint: *Sprint 1* · Module: *Login*
+> Milestone: *Beta launch* · Sprint: *Sprint 1* · Component: *Login*
+
+Big issues can be split into smaller **sub-tasks** (see section 6).
 
 **The usual cycle:**
 
-**Backlog** (write it down) → **Sprint** (choose what to do next) → **Board** (do it) → **Finish the sprint** → repeat
+**Backlog** (write it down) → **Sprint** (choose what to do next) → **Board** (do it) → **Finish the sprint** (read the recap) → repeat
 
 ---
 
@@ -89,11 +101,13 @@ Every piece of work (an **issue**) can be labelled with all three. For example:
 Usually a manager does this.
 
 1. Go to **Dev Projects → Planning → Projects** and click **New**.
-2. Type the project name and save. The project automatically gets a short **key** (e.g. "AI glasses" gets **AG**) and a board.
+2. Type the project name and save. The project automatically gets a short **key** (e.g. "AI glasses" gets **AG**) and its columns on the **Board**.
 3. Fill in the tabs at the bottom of the project:
    - **Development:** paste the link to the project's code (GitHub), if you have one.
-   - **Modules:** click **Add a line** and add the parts of your app, e.g. *Login*, *Camera*, *Settings*.
+   - **Components:** click **Add a line** and add the parts of your app, e.g. *Login*, *Camera*, *Settings*.
    - **Milestones:** click **Add a line** and add your big goals with a deadline, e.g. *"Beta launch"*, due *Dec 1*.
+
+**Giving a milestone a version:** open the milestone and type its **Version**, e.g. *1.0.0*. Only version numbers are accepted, like *1.0*, *1.2.0* or *v2.0.1*. Words like "beta" alone aren't, but *2.1.0-beta* is fine.
 
 ---
 
@@ -104,16 +118,33 @@ Go to **Dev Projects → Work → Backlog**.
 1. Click **Add a line**.
 2. Type a short title, e.g. *"Photo button doesn't respond"*.
 3. Pick the **type**: Story, Task, Bug or Improvement.
-4. Pick the **Module**: which part of the app it's about.
+4. Pick the **Component**: which part of the app it's about.
 5. Optionally pick who will do it (**Assignee**) and how big it is (**Story Points**).
 
 **Order matters:** drag lines up and down so the most important work is at the top.
 
-To add more detail (a description, screenshots, a deadline), click the issue to open it.
+**Opening an issue:** clicking a line only lets you edit it right there. To see the whole issue (description, screenshots, deadline, sub-tasks), click **View** at the right end of the line. **Reported by** shows who created it; it's filled in for you.
 
 ---
 
-## 6. Planning a sprint
+## 6. Splitting work into sub-tasks
+
+When an issue is big, split it into smaller steps.
+
+1. Open the issue.
+2. Go to its **Sub-tasks** tab.
+3. Click **Add a line** for each step, e.g. *"Design the button"*, *"Write the code"*, *"Test it"*.
+
+Good to know:
+
+- Each sub-task gets its own key (e.g. **AG-7**), and you can open it like any issue.
+- Sub-tasks always belong to the same sprint as their issue. When the issue moves to another sprint, its sub-tasks move with it.
+- Sub-tasks don't get their own card on the **Board**. The issue's card shows how many are done instead, e.g. **☑ 2/5**.
+- Sub-tasks have no story points: the issue they belong to counts.
+
+---
+
+## 7. Planning a sprint
 
 A sprint is a short period, usually 1–2 weeks, where the team commits to a set of work.
 
@@ -126,11 +157,11 @@ Only one sprint per project can be running at a time.
 
 ---
 
-## 7. Doing the work: the Board
+## 8. Doing the work: the Board
 
 Go to **Dev Projects → Work → Board**. This is where you'll spend most of your time.
 
-The Board has four columns:
+The **Board** has four columns:
 
 **To Do → In Progress → In Review → Done**
 
@@ -138,25 +169,32 @@ The Board has four columns:
 - Moving a card to **In Progress** records when you started; moving it to **Done** records when you finished.
 - Click a card to open it, write comments, or attach files.
 - To take an issue yourself, open it and click **Assign to Me**.
-- New issues created on the Board go straight into the running sprint.
+- New issues created on the **Board** go straight into the running sprint.
 
 **What the Board shows:** the work in the **running sprint**, plus work not planned in any sprint yet.
 
 ---
 
-## 8. Finishing a sprint
+## 9. Finishing a sprint and reading its recap
 
 At the end of the sprint:
 
 1. Open the sprint (**Planning → Sprints**).
 2. Click **Complete Sprint**.
 3. Choose where unfinished work should go: the **next sprint** or back to the **Backlog**.
+4. The sprint's **recap** opens. It shows:
+   - how many issues and story points were finished, out of everything in the sprint;
+   - what was finished by type (e.g. how many bugs were fixed), by component and by person;
+   - the list of finished issues, and the unfinished ones with where they went.
+5. Write a few lines in the **Sprint Summary** box about what the sprint was about, then click **Save**.
 
-Then plan the next sprint (see section 6).
+You can read the recap again any time: open the finished sprint and it shows its **Recap** tab first. You can also edit the summary there.
+
+Then plan the next sprint (see section 7).
 
 ---
 
-## 9. Finishing a milestone
+## 10. Finishing a milestone
 
 When the goal is reached:
 
@@ -167,25 +205,84 @@ Each milestone shows a **progress bar** so you can see how close you are. If the
 
 ---
 
-## 10. Finding things
+## 11. Finding things
 
-At the top of the Board and Backlog there's a **search bar**. Click the small arrow next to it for ready-made filters:
+At the top of the **Board** and the **Backlog** there's a **search bar**. Click the small arrow next to it for ready-made filters:
 
 | Filter | Shows |
 |---|---|
 | **Assigned to Me** | Your own work |
+| **Reported by Me** | Work you created |
 | **Bugs** | Only bugs |
 | **Open** | Everything not finished |
 | **Overdue** | Work past its deadline |
 | **High Priority** | Important work |
-| **No Module** / **No Milestone** | Work that still needs labelling |
+| **No Component** / **No Milestone** | Work that still needs labelling |
 | **Archived** | Work that was completed and removed from the Board |
 
 You can also type an issue's key, e.g. **AG-12**, to find it straight away.
 
 ---
 
-## 11. Adding a new team member
+## 12. Using Dev Projects in Spanish
+
+Everyone can choose their own language: you can work in English while a teammate works in Spanish.
+
+**To switch to Spanish:**
+
+1. Click your picture or initials at the top right.
+2. Click **Preferences**.
+3. Change **Language** to **Español** and save.
+
+The page reloads in Spanish. To go back, choose **English** the same way.
+
+If you don't see **Español** in the list, ask a manager to add it once in **Settings → General Settings → Languages → Add Languages**.
+
+Some names change in Spanish: **Issues** become **Incidencias**, **Milestones** become **Hitos**, **Components** become **Componentes**, **Sub-tasks** become **Subtareas**, the **Recap** is the **Resumen**, the **Board** is the **Tablero** and the **Report** menu is **Reportar**. **Backlog** and **Sprints** keep their names.
+
+---
+
+## 13. Reporting a problem or an idea (for everyone)
+
+You don't need to be a developer for this. Anyone in the company can tell the dev team about something.
+
+1. On the home screen, open the **Projects** app and click **Report** at the top (right of Dev Projects).
+2. Click **New Report**.
+3. Fill in:
+   - **Title**: a few words, e.g. *"Can't print invoices"*.
+   - **Project**: the app or system it's about.
+   - **What is it?**: *Something's broken*, *Request a feature* or *Question*.
+   - **How urgent is it?**: from *It can wait* to *I can't work*.
+   - **Details**: what happened, what you expected, and how to see it again.
+4. Add screenshots with the **paperclip** at the bottom, then click **Save**.
+
+**Following it:** go to **Report → My Reports**. Each report shows where it stands:
+
+**Waiting for review → Accepted → Being worked on → Done**
+
+If the team decides not to do it, it shows **Declined** with the reason. You'll also get a notification when it's accepted or declined, and you can write to the team at the bottom of the report.
+
+You only see your own reports. Once the team has reviewed a report it can't be edited, but you can still add a message.
+
+---
+
+## 14. Reviewing reports
+
+*For the dev team.*
+
+Go to **Dev Projects → Work → Reports**. It opens on the reports **To Review**. A project also shows a **New Reports** button with how many are waiting.
+
+Open a report and choose:
+
+- **Accept**: it becomes an issue in the project's **Backlog**, with the person who sent it as **Reported by** and their details and screenshots copied over. The type comes from the report (*Something's broken* = Bug, *Request a feature* = Story, *Question* = Task), and so does the priority. From there, plan it like any other issue.
+- **Decline**: write a short, friendly reason. The person who sent it will see it.
+
+To accept several at once, tick them in the list and use **Actions → Accept**. Declined by mistake? Open it and click **Review Again**.
+
+---
+
+
+## 15. Adding a new team member
 
 *For managers.*
 
@@ -200,22 +297,28 @@ Each developer also has an **access code**: 8 numbers followed by letters, e.g. 
 
 ---
 
-## 12. Common questions
+## 16. Common questions
 
 **I created an issue but can't see it on the Board.**
-It's probably in a sprint that hasn't started yet. The Board only shows the *running* sprint. Ask your manager to click **Start Sprint**, or find the issue in the **Backlog**.
+It's probably in a sprint that hasn't started yet. The **Board** only shows the *running* sprint. Ask your manager to click **Start Sprint**, or find the issue in the **Backlog**.
+
+**I added a sub-task but it's not on the Board.**
+That's normal: sub-tasks live inside their issue. Open the issue and look at its **Sub-tasks** tab.
 
 **A message said my issue "went to the backlog".**
 No sprint was running, so the issue was saved in the Backlog. Nothing is lost.
 
 **My card disappeared after I clicked "Complete".**
-**Complete** marks the work as done and removes it from the Board. To see it again, use the **Archived** filter.
+**Complete** marks the work as done and removes it from the **Board**. To see it again, use the **Archived** filter.
 
 **I can't move a card into a column.**
 That column has a limit on how many cards it can hold at once. Finish something in that column first, or ask a manager to raise the limit.
 
+**The milestone won't accept my version.**
+The **Version** box only takes version numbers, like *1.0*, *1.2.0* or *v2.0.1*.
+
 **I can't pick someone as the Assignee.**
-They don't have a login yet. A manager can create one (see section 11).
+They don't have a login yet. A manager can create one (see section 15).
 
 **What's the "Project" menu next to "Dev Projects"?**
 It's for the company's other, non-software projects. For software work, use **Dev Projects**.

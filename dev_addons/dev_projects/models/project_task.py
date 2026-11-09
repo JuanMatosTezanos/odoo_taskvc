@@ -56,7 +56,7 @@ class ProjectTask(models.Model):
         'dev.sprint', string="Sprint", index=True, tracking=True, ondelete='set null',
         domain="[('project_id', '=', project_id), ('state', '!=', 'closed')]")
     dev_module_id = fields.Many2one(
-        'dev.module', string="Module", index=True, tracking=True, ondelete='set null',
+        'dev.module', string="Component", index=True, tracking=True, ondelete='set null',
         domain="[('project_id', '=', project_id)]",
         help="The part of the software this issue is about, e.g. Login or Payments.")
     dev_assignee_id = fields.Many2one(
@@ -64,7 +64,7 @@ class ProjectTask(models.Model):
         domain="[('share', '=', False), ('active', '=', True)]",
         help="The one person responsible. Also added to the task's assignees.")
     dev_reporter_id = fields.Many2one(
-        'res.users', string="Reporter", default=lambda self: self.env.user, tracking=True)
+        'res.users', string="Reported by", default=lambda self: self.env.user, tracking=True)
     dev_technology_ids = fields.Many2many(
         'dev.technology', relation='dev_task_technology_rel', column1='task_id',
         column2='technology_id', string="Technologies")
@@ -139,7 +139,14 @@ class ProjectTask(models.Model):
     @api.model
     def default_get(self, fields_list):
         res = super().default_get(fields_list)
-        if 'dev_sprint_id' in fields_list and not res.get('dev_sprint_id') \
+        parent = self.browse(res.get('parent_id') or [])
+        if parent and res.get('display_in_project') is False:
+            # New sub-task (parent's Sub-tasks tab): same sprint and component as its parent.
+            if 'dev_sprint_id' in fields_list:
+                res['dev_sprint_id'] = parent.dev_sprint_id.id or False
+            if 'dev_module_id' in fields_list and not res.get('dev_module_id'):
+                res['dev_module_id'] = parent.dev_module_id.id or False
+        elif 'dev_sprint_id' in fields_list and not res.get('dev_sprint_id') \
                 and res.get('project_id') and self._dev_on_board():
             # New issue on the board: the running sprint, shown in the form.
             running = self.env['project.project'].browse(res['project_id'])._dev_running_sprint()
@@ -157,7 +164,8 @@ class ProjectTask(models.Model):
                 task.dev_sprint_id = False
             if task.dev_module_id.project_id != task.project_id:
                 task.dev_module_id = False
-            if not task._origin and not task.dev_sprint_id and task.project_id and self._dev_on_board():
+            if not task._origin and not task.dev_sprint_id and task.project_id and self._dev_on_board() \
+                    and task.display_in_project:  # sub-tasks take their parent's sprint
                 # Project picked in a new board issue: its running sprint.
                 task.dev_sprint_id = task.project_id._dev_running_sprint()
 
@@ -174,7 +182,7 @@ class ProjectTask(models.Model):
     @api.constrains('project_id', 'milestone_id', 'dev_sprint_id', 'dev_module_id')
     def _check_dev_project_consistency(self):
         for task in self:
-            records = [(task.dev_sprint_id, _("sprint")), (task.dev_module_id, _("module"))]
+            records = [(task.dev_sprint_id, _("sprint")), (task.dev_module_id, _("component"))]
             if task.project_id.dev_is_software:
                 # Regular projects keep Odoo's own (looser) milestone rules.
                 records.append((task.milestone_id, _("milestone")))
@@ -198,13 +206,14 @@ class ProjectTask(models.Model):
 
     def _dev_check_wip_limits(self):
         """Refuse to put more issues in a column than its WIP limit allows (per project and sprint).
-        Done columns have no limit: finished work is not work in progress."""
+        Done columns have no limit: finished work is not work in progress.
+        Sub-tasks are not cards on the board (they live in their parent), so they don't count."""
         groups = {(t.stage_id, t.project_id, t.dev_sprint_id) for t in self
-                  if t.stage_id.dev_wip_limit and t.stage_id.dev_category != 'done'}
+                  if t.display_in_project and t.stage_id.dev_wip_limit and t.stage_id.dev_category != 'done'}
         for stage, project, sprint in groups:
             count = self.search_count([
                 ('stage_id', '=', stage.id), ('project_id', '=', project.id),
-                ('dev_sprint_id', '=', sprint.id),
+                ('dev_sprint_id', '=', sprint.id), ('display_in_project', '=', True),
             ])
             if count > stage.dev_wip_limit:
                 raise UserError(_(
@@ -248,13 +257,16 @@ class ProjectTask(models.Model):
         on_board = self._dev_on_board()
         to_backlog = []  # board issues that found no running sprint
         for vals in vals_list:
-            if dev_context and not vals.get('project_id') and not self.env.context.get('default_project_id'):
+            # Sub-tasks get their sprint from their parent (see _dev_follow_parent).
+            subtask = vals.get('parent_id') and (not vals.get('project_id') or vals.get('display_in_project') is False)
+            if dev_context and not subtask and not vals.get('project_id') \
+                    and not self.env.context.get('default_project_id'):
                 # Dev Projects and only one software project: use it.
                 projects = Project.search([('dev_is_software', '=', True)], limit=2)
                 if len(projects) == 1:
                     vals['project_id'] = projects.id
             project = Project.browse(vals.get('project_id') or self.env.context.get('default_project_id') or [])
-            if on_board and project.dev_is_software and not vals.get('dev_sprint_id') \
+            if on_board and not subtask and project.dev_is_software and not vals.get('dev_sprint_id') \
                     and not self.env.context.get('default_dev_sprint_id'):
                 # Created on the board: put it in the running sprint. The form
                 # already shows it as the default (see default_get); this covers
@@ -266,6 +278,7 @@ class ProjectTask(models.Model):
                     to_backlog.append(vals.get('name') or '')
             self._dev_prepare_vals(vals)
         tasks = super().create(vals_list)
+        tasks._dev_follow_parent()
         tasks._dev_fill_milestone_from_sprint()
         software = tasks._dev_software()
         for task in software:
@@ -285,10 +298,10 @@ class ProjectTask(models.Model):
         looks like it vanished): no sprint is running, so it went to the backlog."""
         if len(names) == 1:
             message = _("No sprint is running, so \"%s\" went to the backlog. "
-                        "Start a sprint (Sprints > Start) to work on it from the board.", names[0])
+                        "Start a sprint (Sprints > Start) to work on it on the Board.", names[0])
         else:
             message = _("No sprint is running, so %s issues went to the backlog. "
-                        "Start a sprint (Sprints > Start) to work on them from the board.", len(names))
+                        "Start a sprint (Sprints > Start) to work on them on the Board.", len(names))
         self.env['bus.bus']._sendone(self.env.user.partner_id, 'simple_notification', {
             'title': _("Added to the backlog"),
             'message': message,
@@ -301,6 +314,47 @@ class ProjectTask(models.Model):
         milestone too (unless they already have one)."""
         for task in self.filtered(lambda t: not t.milestone_id and t.dev_sprint_id.milestone_id):
             super(ProjectTask, task.sudo()).write({'milestone_id': task.dev_sprint_id.milestone_id.id})
+
+    # ------------------------------------------------------------------
+    # Sub-tasks: listed inside their parent (Sub-tasks tab), not on the board
+    # ------------------------------------------------------------------
+
+    def _dev_subtasks(self):
+        """Sub-tasks shown only inside their parent (Odoo's default for the
+        Sub-tasks tab). They are not counted on their own in sprints, milestones
+        and components: their parent is."""
+        return self.with_context(active_test=False).child_ids.filtered(
+            lambda t: not t.display_in_project and t.project_id == t.parent_id.project_id)
+
+    def _dev_follow_parent(self):
+        """Sub-tasks are in their parent's sprint, and take its component if they have none."""
+        for task in self.filtered(lambda t: t.parent_id and not t.display_in_project
+                                  and t.project_id == t.parent_id.project_id):
+            parent = task.parent_id
+            vals = {}
+            if task.dev_sprint_id != parent.dev_sprint_id:
+                vals['dev_sprint_id'] = parent.dev_sprint_id.id
+            if not task.dev_module_id and parent.dev_module_id:
+                vals['dev_module_id'] = parent.dev_module_id.id
+            if vals:
+                task.sudo().write(vals)
+
+    def _dev_update_subtasks(self, vals, old_modules):
+        """The parent's sprint or component changed: its sub-tasks follow. Sub-tasks
+        given another component on purpose keep it."""
+        for task in self:
+            subtasks = task._dev_subtasks()
+            if 'dev_sprint_id' in vals:
+                moving = subtasks.filtered(lambda s: s.dev_sprint_id != task.dev_sprint_id)
+                if moving:
+                    moving.sudo().write({'dev_sprint_id': task.dev_sprint_id.id})
+            if 'dev_module_id' in vals:
+                old = old_modules.get(task.id)
+                following = subtasks.filtered(
+                    lambda s: s.dev_module_id != task.dev_module_id
+                    and (not s.dev_module_id or s.dev_module_id == old))
+                if following:
+                    following.sudo().write({'dev_module_id': task.dev_module_id.id})
 
     def _dev_drop_other_project_links(self, vals):
         """Issues moving to another project leave their sprint and module behind
@@ -345,7 +399,12 @@ class ProjectTask(models.Model):
                 # Project app's rule: a closed task stays closed when it changes stage.
                 reopen = self._dev_software().filtered(
                     lambda t: t.state == '1_done' and t.stage_id.dev_category == 'done')
+        old_modules = {t.id: t.dev_module_id for t in self} if 'dev_module_id' in vals else {}
         res = super().write(vals)
+        if 'dev_sprint_id' in vals or 'dev_module_id' in vals:
+            self._dev_update_subtasks(vals, old_modules)
+        if {'parent_id', 'display_in_project'} & set(vals):
+            self._dev_follow_parent()
         if vals.get('dev_sprint_id') and 'milestone_id' not in vals:
             self._dev_fill_milestone_from_sprint()
         software = self._dev_software()

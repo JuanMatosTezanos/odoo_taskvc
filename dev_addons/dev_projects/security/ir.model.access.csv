@@ -6,3 +6,8 @@ access_dev_sprint_complete_user,dev.sprint.complete user,model_dev_sprint_comple
 access_dev_task_complete_user,dev.task.complete user,model_dev_task_complete,project.group_project_user,1,1,1,1
 access_dev_module_user,dev.module user,model_dev_module,project.group_project_user,1,1,1,1
 access_dev_module_employee,dev.module employee,model_dev_module,base.group_user,1,0,0,0
+access_dev_sprint_recap_line_user,dev.sprint.recap.line user,model_dev_sprint_recap_line,project.group_project_user,1,1,1,1
+access_dev_report_employee,dev.report employee,model_dev_report,base.group_user,1,1,1,0
+access_dev_report_user,dev.report user,model_dev_report,project.group_project_user,1,1,1,1
+access_dev_report_decline_user,dev.report.decline user,model_dev_report_decline,project.group_project_user,1,1,1,1
+access_dev_report_accept_user,dev.report.accept user,model_dev_report_accept,project.group_project_user,1,1,1,1

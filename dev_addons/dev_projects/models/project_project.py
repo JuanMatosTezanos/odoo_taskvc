@@ -26,7 +26,7 @@ class ProjectProject(models.Model):
         help="Link to the project's code, e.g. https://github.com/company/project")
 
     dev_sprint_ids = fields.One2many('dev.sprint', 'project_id', string="Sprints")
-    dev_module_ids = fields.One2many('dev.module', 'project_id', string="Modules")
+    dev_module_ids = fields.One2many('dev.module', 'project_id', string="Components")
     dev_running_sprint_id = fields.Many2one(
         'dev.sprint', string="Running Sprint", compute='_compute_dev_running_sprint')
     dev_open_issue_count = fields.Integer(string="Open Issues", compute='_compute_dev_counts')
@@ -39,7 +39,8 @@ class ProjectProject(models.Model):
 
     def _compute_dev_counts(self):
         Task = self.env['project.task']
-        open_domain = [('project_id', 'in', self.ids), ('dev_status', '!=', 'done')]
+        open_domain = [('project_id', 'in', self.ids), ('display_in_project', '=', True),
+                       ('dev_status', '!=', 'done')]
         open_counts = dict(Task._read_group(open_domain, ['project_id'], ['__count']))
         bug_counts = dict(Task._read_group(open_domain + [('dev_issue_type', '=', 'bug')],
                                            ['project_id'], ['__count']))
@@ -183,6 +184,9 @@ class ProjectProject(models.Model):
         self.ensure_one()
         action = self.env['ir.actions.act_window']._for_xml_id(xmlid)
         action['domain'] = [('project_id', '=', self.id)] + (extra_domain or [])
+        if action['res_model'] == 'project.task':
+            # Sub-tasks are shown inside their parent, not as cards of their own.
+            action['domain'].append(('display_in_project', '=', True))
         context = {'default_project_id': self.id, 'dev_board': True}
         context.update(extra_context or {})
         action['context'] = context
@@ -203,7 +207,7 @@ class ProjectProject(models.Model):
 
     def action_dev_backlog(self):
         action = self._dev_action('dev_projects.action_backlog')
-        action['domain'] = [('project_id', '=', self.id), ('dev_status', '!=', 'done'),
+        action['domain'] = [('project_id', '=', self.id), ('display_in_project', '=', True), ('dev_status', '!=', 'done'),
                             '|', ('dev_sprint_id', '=', False), ('dev_sprint_id.state', '!=', 'closed')]
         action['context'].update(group_by='dev_sprint_id', dev_backlog=True)
         return action
@@ -216,3 +220,4 @@ class ProjectProject(models.Model):
 
     def action_dev_modules(self):
         return self._dev_action('dev_projects.action_module')
+

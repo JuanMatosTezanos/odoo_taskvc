@@ -51,7 +51,7 @@
                                 <tree>
                                     <field name="dev_issue_type" />
                                     <field name="dev_key" />
-                                    <field name="name" />
+                                    <field name="name" widget="name_with_subtask_count" />
                                     <field name="dev_sprint_id" optional="show" />
                                     <field name="milestone_id" optional="show" />
                                     <field name="dev_assignee_id" widget="many2one_avatar_user" />
@@ -94,14 +94,14 @@
     </record>
 
     <record id="action_module" model="ir.actions.act_window">
-        <field name="name">Modules</field>
+        <field name="name">Components</field>
         <field name="res_model">dev.module</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[('project_id.dev_is_software', '=', True)]</field>
         <field name="context">{'search_default_group_project': 1}</field>
         <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">Add your first module</p>
-            <p>Modules are the parts of your software, e.g. Login, Payments or Camera.
+            <p class="o_view_nocontent_smiling_face">Add your first component</p>
+            <p>Components are the parts of your software, e.g. Login, Payments or Camera.
                Pick one on each issue to see what every part of the product needs.</p>
         </field>
     </record>

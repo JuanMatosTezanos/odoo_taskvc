@@ -8,3 +8,4 @@ from . import project_milestone
 from . import dev_module
 from . import project_task
 from . import res_config_settings
+from . import dev_report

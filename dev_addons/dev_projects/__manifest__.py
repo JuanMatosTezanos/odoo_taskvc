@@ -8,31 +8,36 @@ Project app, so you can switch between the two:
 
 * Issues are project tasks with a type (Story, Task, Bug, Improvement),
   story points, bug severity, and a key per project (WEB-1, WEB-2...).
-* Backlog ranked by drag and drop; sprints you start and complete by hand,
+* Backlog ranked by drag and drop; sprints you start and complete by hand
+  (with a recap of each completed sprint),
   moving unfinished work to the next sprint or back to the backlog.
 * Board columns are project stages with a status category and a WIP limit.
-* One assignee (kept in the task's assignees) and a reporter per issue.
-* Milestones (goals with a deadline) that group sprints and issues.
-* Modules (parts of the software, e.g. Login) to classify issues.
+* One assignee (kept in the task's assignees) and a "Reported by" per issue.
+* Milestones (goals with a deadline and a version) that group sprints and issues.
+* Components (parts of the software, e.g. Login) to classify issues, and sub-tasks.
 * A GitHub repository link per project.
 * Technologies, and developer profiles with access codes.
 * Complete an issue to archive or delete it.
+* A report icon in the top bar where anyone in the company sends problems, ideas and
+  questions; the team accepts them (they become Backlog issues) or declines them.
     """,
     'author': "My Company",
     'website': "https://www.yourcompany.com",
     'category': 'Services/Project',
-    'version': '17.0.1.2.0',
+    'version': '17.0.1.4.0',
     'license': 'LGPL-3',
     'application': True,
     'depends': ['project', 'mail'],
     'data': [
         'security/ir.model.access.csv',
+        'security/report_security.xml',
         'data/dev_data.xml',
         'views/stage_views.xml',
         'views/task_views.xml',
         'views/sprint_views.xml',
         'views/milestone_views.xml',
         'views/module_views.xml',
+        'views/report_views.xml',
         'views/project_views.xml',
         'views/technology_views.xml',
         'views/developer_views.xml',
@@ -40,6 +45,11 @@ Project app, so you can switch between the two:
         'views/settings_views.xml',
         'views/menus.xml',
     ],
+    'assets': {
+        'web.assets_backend': [
+            'dev_projects/static/src/report_systray/*',
+        ],
+    },
     'post_init_hook': 'post_init_hook',
     'uninstall_hook': 'uninstall_hook',
     'installable': True,
