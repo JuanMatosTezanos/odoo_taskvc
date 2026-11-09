@@ -558,7 +558,7 @@ class DevTaskComplete(models.TransientModel):
         # anymore). The action is also in the Project app's Action menu, so
         # regular tasks go back to the Project app, not to Dev Projects.
         if software:
-            return self.env['ir.actions.act_window']._for_xml_id('dev_projects.action_board')
+            return self.env['ir.actions.act_window']._for_xml_id('dev_addons.action_board')
         if len(projects) == 1:
             return projects.action_view_tasks()
         return self.env['ir.actions.act_window']._for_xml_id('project.action_view_all_task')

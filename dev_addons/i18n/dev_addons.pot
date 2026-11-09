@@ -1,0 +1,2629 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* dev_addons
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 17.0-20260908\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-09 19:08+0000\n"
+"PO-Revision-Date: 2026-11-09 19:08+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/dev_report.py:0
+#: code:addons/dev_addons/models/dev_report.py:0
+#, python-format
+msgid "\"%s\" was already reviewed."
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/project_task.py:0
+#, python-format
+msgid ""
+"%(issue)s: %(what)s %(name)s belongs to project %(other)s, not %(project)s."
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/project_task.py:0
+#, python-format
+msgid "%(issue)s: set a project before choosing %(what)s %(name)s."
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/res_partner.py:0
+#, python-format
+msgid ""
+"%(name)s can now be assigned issues. Their login is %(login)s; set a "
+"password in Settings > Users if no invitation email arrives."
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/dev_module.py:0
+#, python-format
+msgid "%(project)s - %(module)s"
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/project_milestone.py:0
+#, python-format
+msgid "%s - Sprints"
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/dev_sprint.py:0
+#, python-format
+msgid "%s Recap"
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/res_partner.py:0
+#, python-format
+msgid "%s already has a user."
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/project_task.py:0
+#, python-format
+msgid "%s has no project, so it has no board columns."
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/project_task.py:0
+#, python-format
+msgid "%s: the end date cannot be before the start date."
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_kanban
+msgid "/ <i class=\"fa fa-cube\" title=\"Component\"/>"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_kanban
+msgid "/ <i class=\"fa fa-flag-o\" title=\"Milestone\"/>"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.developer_form
+msgid "12345678A"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_form
+msgid ": the team will plan it."
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_form
+msgid "<b>Declined:</b>"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.project_kanban
+msgid "<i class=\"fa fa-bug me-1\" title=\"Open bugs\"/>"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.project_kanban
+msgid "<i class=\"fa fa-columns me-1\" title=\"Board\"/>Board"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.project_kanban
+msgid "<i class=\"fa fa-list-ol me-1\" title=\"Backlog\"/>Backlog"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.project_kanban
+msgid "<i class=\"fa fa-refresh me-1\" title=\"Running sprint\"/>"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.technology_kanban
+msgid "<i class=\"fa fa-tasks me-1\" title=\"Issues\"/>"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.project_kanban
+msgid "<i class=\"fa fa-tasks me-1\" title=\"Open issues\"/>"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.technology_kanban
+msgid "<i class=\"fa fa-users me-1\" title=\"Developers\"/>"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.developer_form
+msgid ""
+"<span class=\"flex-grow-1\">\n"
+"                        This developer cannot be assigned issues yet: issues are assigned to people\n"
+"                        who can log in to Odoo. Create a login for them (it uses their email).\n"
+"                    </span>"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.milestone_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_form
+msgid "<span>/</span>"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_form
+msgid "<span>days</span>"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_recap_form
+msgid "<span>of</span>"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.actions.act_window,help:dev_addons.action_milestone
+msgid ""
+"A milestone is a goal with a deadline, e.g. \"Login complete by Nov 20\".\n"
+"               Link sprints to it to work towards it; their issues join the milestone."
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/project_project.py:0
+#, python-format
+msgid "A software project needs a key."
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/dev_sprint.py:0
+#, python-format
+msgid "A sprint must last at least one day."
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.constraint,message:dev_addons.constraint_dev_technology_name_unique
+msgid "A technology with this name already exists."
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/res_partner.py:0
+#, python-format
+msgid "A user with the login %s already exists."
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.actions.server,name:dev_addons.action_report_accept_server
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_accept_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_form
+msgid "Accept"
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/dev_report.py:0
+#: model:ir.model,name:dev_addons.model_dev_report_accept
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_accept_form
+#, python-format
+msgid "Accept Report"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields.selection,name:dev_addons.selection__dev_report__progress__accepted
+#: model:ir.model.fields.selection,name:dev_addons.selection__dev_report__state__accepted
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_search
+msgid "Accepted"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_form
+msgid "Accepted as"
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/dev_report.py:0
+#, python-format
+msgid ""
+"Accepted as %(key)s. It's in the team's Backlog now; this page shows its "
+"progress."
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_res_partner__dev_access_code
+#: model:ir.model.fields,field_description:dev_addons.field_res_users__dev_access_code
+msgid "Access Code"
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/res_partner.py:0
+#, python-format
+msgid "Access code cannot be modified once assigned."
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/res_partner.py:0
+#, python-format
+msgid ""
+"Access code is invalid: use 8 digits followed by letters (e.g. 12345678A)."
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/res_partner.py:0
+#, python-format
+msgid "Access code is required for developers."
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_module__message_needaction
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__message_needaction
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_module__active
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__active
+msgid "Active"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_search
+msgid "Active Sprint"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__activity_ids
+msgid "Activities"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.ui.menu,name:dev_addons.menu_config_activity_plans
+msgid "Activity Plans"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__activity_state
+msgid "Activity State"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__activity_type_icon
+msgid "Activity Type Icon"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.ui.menu,name:dev_addons.menu_config_activity_types
+msgid "Activity Types"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.actions.act_window,help:dev_addons.action_stage
+msgid "Add a board column"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.actions.act_window,help:dev_addons.action_technology
+msgid "Add a technology"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.actions.act_window,help:dev_addons.action_backlog
+msgid ""
+"Add issues here, drag them to rank them, and pick a sprint in the Sprint column to plan it.\n"
+"               Issues without a sprint are grouped under \"None\"."
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.actions.act_window,help:dev_addons.action_module
+msgid "Add your first component"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.actions.act_window,help:dev_addons.action_developer
+msgid "Add your first developer"
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/project_task.py:0
+#, python-format
+msgid "Added to the backlog"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__allowed_app_ids
+msgid "Allowed App"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.constraint,message:dev_addons.constraint_project_project_dev_key_unique
+msgid "Another project already uses this key."
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__app_menu_id
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_search
+msgid "App"
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/dev_report.py:0
+#, python-format
+msgid "App:"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields.selection,name:dev_addons.selection__dev_task_complete__mode__archive
+msgid "Archive (keep it for reference)"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.module_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.module_search
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_search
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_search
+msgid "Archived"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_complete_form
+msgid ""
+"Archived issues keep their history and comments. Find them again with the "
+"\"Archived\" filter."
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.project_task_form_inherit
+msgid "Assign to Me"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_search
+msgid "Assigned to Me"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_project_task__dev_assignee_id
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_search
+msgid "Assignee"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_module__message_attachment_count
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__message_attachment_count
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/dev_sprint.py:0
+#: model:ir.actions.act_window,name:dev_addons.action_backlog
+#: model:ir.model.fields.selection,name:dev_addons.selection__dev_sprint_complete__destination__backlog
+#: model:ir.ui.menu,name:dev_addons.menu_backlog
+#: model_terms:ir.ui.view,arch_db:dev_addons.project_form_inherit
+#, python-format
+msgid "Backlog"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields.selection,name:dev_addons.selection__dev_report__progress__in_progress
+msgid "Being worked on"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields.selection,name:dev_addons.selection__project_task__dev_severity__blocker
+msgid "Blocker"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.actions.act_window,name:dev_addons.action_board
+#: model:ir.ui.menu,name:dev_addons.menu_board
+#: model_terms:ir.ui.view,arch_db:dev_addons.project_form_inherit
+msgid "Board"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.actions.act_window,name:dev_addons.action_stage
+#: model:ir.ui.menu,name:dev_addons.menu_stages
+#: model_terms:ir.ui.view,arch_db:dev_addons.res_config_settings_view_form
+msgid "Board Columns"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields.selection,name:dev_addons.selection__dev_sprint_recap_line__issue_type__bug
+#: model:ir.model.fields.selection,name:dev_addons.selection__project_task__dev_issue_type__bug
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_kanban
+msgid "Bug"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_technology__bug_count
+#: model:ir.model.fields,field_description:dev_addons.field_project_milestone__dev_bug_count
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_search
+#: model_terms:ir.ui.view,arch_db:dev_addons.technology_list
+msgid "Bugs"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.developer_search
+msgid "Can Be Assigned"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_accept_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_decline_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_complete_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_complete_form
+msgid "Cancel"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_recap_form
+msgid "Close"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields.selection,name:dev_addons.selection__dev_sprint__state__closed
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_search
+msgid "Closed"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_module__color
+#: model:ir.model.fields,field_description:dev_addons.field_dev_technology__color
+msgid "Color"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_search
+msgid "Column"
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/project_task.py:0
+#, python-format
+msgid ""
+"Column %(stage)s allows %(limit)s issues and would have %(count)s. Finish "
+"something first or raise the WIP limit."
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.actions.act_window,help:dev_addons.action_stage
+msgid ""
+"Columns are the stages of your projects (shared with the Project app). Each has a\n"
+"               status category (To Do, In Progress, In Review, Done) and an optional WIP limit."
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__company_id
+msgid "Company"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.actions.act_window,name:dev_addons.action_task_complete
+#: model_terms:ir.ui.view,arch_db:dev_addons.milestone_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.milestone_list
+#: model_terms:ir.ui.view,arch_db:dev_addons.milestone_search
+#: model_terms:ir.ui.view,arch_db:dev_addons.project_form_inherit
+#: model_terms:ir.ui.view,arch_db:dev_addons.project_task_form_inherit
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_complete_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_kanban
+msgid "Complete"
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/dev_sprint.py:0
+#, python-format
+msgid "Complete %s"
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/project_task.py:0
+#, python-format
+msgid "Complete Issue"
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/project_task.py:0
+#: model:ir.model,name:dev_addons.model_dev_task_complete
+#, python-format
+msgid "Complete Issues"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model,name:dev_addons.model_dev_sprint_complete
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_complete_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_form
+msgid "Complete Sprint"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.milestone_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.milestone_list
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_recap_form
+msgid "Completed On"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_complete__sprint_id
+msgid "Completed Sprint"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model,name:dev_addons.model_dev_module
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_recap_line__module_id
+#: model:ir.model.fields,field_description:dev_addons.field_project_task__dev_module_id
+#: model:ir.model.fields.selection,name:dev_addons.selection__dev_sprint_recap_line__kind__component
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_recap_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_search
+msgid "Component"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.actions.act_window,name:dev_addons.action_module
+#: model:ir.model.fields,field_description:dev_addons.field_project_project__dev_module_ids
+#: model:ir.ui.menu,name:dev_addons.menu_modules
+#: model_terms:ir.ui.view,arch_db:dev_addons.project_form_inherit
+msgid "Components"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.actions.act_window,help:dev_addons.action_module
+msgid ""
+"Components are the parts of your software, e.g. Login, Payments or Camera.\n"
+"               Pick one on each issue to see what every part of the product needs."
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model,name:dev_addons.model_res_config_settings
+msgid "Config Settings"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.ui.menu,name:dev_addons.menu_config
+msgid "Configuration"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model,name:dev_addons.model_res_partner
+msgid "Contact"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.developer_form
+msgid "Create User"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.actions.act_window,help:dev_addons.action_sprint
+msgid ""
+"Create a sprint, add issues to it from the Backlog, then press Start Sprint."
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.actions.act_window,help:dev_addons.action_board
+msgid ""
+"Create an issue here. Remove the \"Current Work\" filter to see every issue,\n"
+"               or use \"Archived\" to find completed ones you archived."
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.actions.act_window,help:dev_addons.action_project
+msgid "Create your first project"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_module__create_uid
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__create_uid
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report_accept__create_uid
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report_decline__create_uid
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__create_uid
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_complete__create_uid
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_recap_line__create_uid
+#: model:ir.model.fields,field_description:dev_addons.field_dev_task_complete__create_uid
+#: model:ir.model.fields,field_description:dev_addons.field_dev_technology__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/dev_report.py:0
+#, python-format
+msgid "Created from a report by %s."
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_module__create_date
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__create_date
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report_accept__create_date
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report_decline__create_date
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__create_date
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_complete__create_date
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_recap_line__create_date
+#: model:ir.model.fields,field_description:dev_addons.field_dev_task_complete__create_date
+#: model:ir.model.fields,field_description:dev_addons.field_dev_technology__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields.selection,name:dev_addons.selection__project_task__dev_priority__3
+#: model:ir.model.fields.selection,name:dev_addons.selection__project_task__dev_severity__critical
+msgid "Critical"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_search
+msgid "Critical / Blocker Bugs"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_search
+msgid "Current Work"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__state
+msgid "Decision"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_decline_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_form
+msgid "Decline"
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/dev_report.py:0
+#: model:ir.model,name:dev_addons.model_dev_report_decline
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_decline_form
+#, python-format
+msgid "Decline Report"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields.selection,name:dev_addons.selection__dev_report__progress__declined
+#: model:ir.model.fields.selection,name:dev_addons.selection__dev_report__state__declined
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_search
+msgid "Declined"
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/dev_report.py:0
+#, python-format
+msgid "Declined: %s"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_res_config_settings__dev_default_columns
+msgid "Default Board Columns for New Software Projects"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.res_config_settings_view_form
+msgid "Default Sprint Length"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_res_config_settings__dev_sprint_duration
+msgid "Default Sprint Length (days)"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields.selection,name:dev_addons.selection__dev_task_complete__mode__delete
+msgid "Delete permanently"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_complete_form
+msgid "Deleting cannot be undone."
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_module__description
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__description
+#: model:ir.model.fields,field_description:dev_addons.field_dev_technology__description
+#: model:ir.model.fields,field_description:dev_addons.field_project_milestone__description
+#: model_terms:ir.ui.view,arch_db:dev_addons.milestone_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.module_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.technology_form
+msgid "Description"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__description
+msgid "Details"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_res_partner__dev_access_code_locked
+#: model:ir.model.fields,field_description:dev_addons.field_res_users__dev_access_code_locked
+msgid "Dev Access Code Locked"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_search
+msgid "Dev Group By"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_project_task__dev_priority
+msgid "Dev Priority"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.ui.menu,name:dev_addons.menu_root
+#: model_terms:ir.ui.view,arch_db:dev_addons.res_config_settings_view_form
+msgid "Dev Projects"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_res_partner__dev_is_developer
+#: model:ir.model.fields,field_description:dev_addons.field_res_users__dev_is_developer
+msgid "Developer"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_technology__developer_count
+msgid "Developer Count"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.actions.act_window,name:dev_addons.action_developer
+#: model:ir.model.fields,field_description:dev_addons.field_dev_technology__developer_ids
+#: model:ir.ui.menu,name:dev_addons.menu_developers
+#: model_terms:ir.ui.view,arch_db:dev_addons.technology_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.technology_list
+msgid "Developers"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.actions.act_window,help:dev_addons.action_developer
+msgid ""
+"Developers have an access code and technologies. To assign issues to them,\n"
+"               they also need an Odoo user."
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.project_form_inherit
+#: model_terms:ir.ui.view,arch_db:dev_addons.project_task_form_inherit
+msgid "Development"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_module__display_name
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__display_name
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report_accept__display_name
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report_decline__display_name
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__display_name
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_complete__display_name
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_recap_line__display_name
+#: model:ir.model.fields,field_description:dev_addons.field_dev_task_complete__display_name
+#: model:ir.model.fields,field_description:dev_addons.field_dev_technology__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields.selection,name:dev_addons.selection__dev_report__progress__done
+#: model:ir.model.fields.selection,name:dev_addons.selection__project_task__dev_status__done
+#: model:ir.model.fields.selection,name:dev_addons.selection__project_task_type__dev_category__done
+#: model:project.task.type,name:dev_addons.stage_done
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_search
+msgid "Done"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_complete__done_count
+msgid "Done Count"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__done_count
+#: model:ir.model.fields,field_description:dev_addons.field_project_milestone__dev_done_count
+msgid "Done Issues"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__done_points
+#: model:ir.model.fields,field_description:dev_addons.field_project_milestone__dev_done_points
+msgid "Done Points"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__duration
+msgid "Duration"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_kanban
+msgid "Edit"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__end_date
+msgid "End Date"
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/res_partner.py:0
+#, python-format
+msgid "Fill in %s's email first: it is used as their login."
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.project_form_inherit
+msgid "Filled in from the name, e.g. WEB"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__recap_progress
+msgid "Finished"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__recap_done_task_ids
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_recap_form
+msgid "Finished Issues"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_project_task__dev_end_date
+msgid "Finished On"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__recap_component_line_ids
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_recap_form
+msgid "Finished by Component"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__recap_person_line_ids
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_recap_form
+msgid "Finished by Person"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__recap_type_line_ids
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_recap_form
+msgid "Finished by Type"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.res_config_settings_view_form
+msgid ""
+"Folder on the server with logos named after technologies (e.g. Python.png)"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_module__message_follower_ids
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__message_follower_ids
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_module__message_partner_ids
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__message_partner_ids
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,help:dev_addons.field_dev_report__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.actions.act_window,help:dev_addons.action_report_mine
+msgid ""
+"Found a problem or have an idea? Click the <i class=\"fa fa-bullhorn\" "
+"title=\"Report\"></i> icon at the top and choose \"New Report\"."
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_project_project__dev_repository_url
+msgid "GitHub Repository"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.res_config_settings_view_form
+msgid ""
+"Give new software projects the To Do, In Progress, In Review and Done board "
+"columns"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.milestone_search
+#: model_terms:ir.ui.view,arch_db:dev_addons.module_search
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_search
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_search
+msgid "Group By"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_module__has_message
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__has_message
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__has_message
+msgid "Has Message"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.project_search_inherit
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_search_base_inherit
+msgid "Hide Software Projects"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields.selection,name:dev_addons.selection__project_task__dev_priority__2
+msgid "High"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_search
+msgid "High Priority"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__urgency
+msgid "How urgent is it?"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.module_search
+msgid "I Lead"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields.selection,name:dev_addons.selection__dev_report__urgency__blocking
+msgid "I can't work"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_module__id
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__id
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report_accept__id
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report_decline__id
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__id
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_complete__id
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_recap_line__id
+#: model:ir.model.fields,field_description:dev_addons.field_dev_task_complete__id
+#: model:ir.model.fields,field_description:dev_addons.field_dev_technology__id
+msgid "ID"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__activity_exception_icon
+msgid "Icon"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,help:dev_addons.field_dev_report__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,help:dev_addons.field_dev_module__message_needaction
+#: model:ir.model.fields,help:dev_addons.field_dev_report__message_needaction
+#: model:ir.model.fields,help:dev_addons.field_dev_sprint__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,help:dev_addons.field_dev_module__message_has_error
+#: model:ir.model.fields,help:dev_addons.field_dev_module__message_has_sms_error
+#: model:ir.model.fields,help:dev_addons.field_dev_report__message_has_error
+#: model:ir.model.fields,help:dev_addons.field_dev_report__message_has_sms_error
+#: model:ir.model.fields,help:dev_addons.field_dev_sprint__message_has_error
+#: model:ir.model.fields,help:dev_addons.field_dev_sprint__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields.selection,name:dev_addons.selection__project_task__dev_priority__1
+msgid "Important"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields.selection,name:dev_addons.selection__dev_sprint_recap_line__issue_type__improvement
+#: model:ir.model.fields.selection,name:dev_addons.selection__project_task__dev_issue_type__improvement
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_kanban
+msgid "Improvement"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_search
+msgid "Improvements"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields.selection,name:dev_addons.selection__project_task__dev_status__in_progress
+#: model:ir.model.fields.selection,name:dev_addons.selection__project_task_type__dev_category__in_progress
+#: model:project.task.type,name:dev_addons.stage_in_progress
+msgid "In Progress"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields.selection,name:dev_addons.selection__project_task__dev_status__review
+#: model:ir.model.fields.selection,name:dev_addons.selection__project_task_type__dev_category__review
+#: model:project.task.type,name:dev_addons.stage_review
+msgid "In Review"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_project_task__dev_project_is_software
+msgid "In a Software Project"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,help:dev_addons.field_dev_report__name
+msgid "In a few words, e.g. \"Can't print invoices\"."
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_module__message_is_follower
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__message_is_follower
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__message_is_follower
+msgid "Is Follower"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__task_id
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_list
+msgid "Issue"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_module__issue_count
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__item_count
+#: model:ir.model.fields,field_description:dev_addons.field_dev_technology__task_count
+msgid "Issue Count"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__issue_key
+msgid "Issue Key"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.constraint,message:dev_addons.constraint_project_task_dev_key_unique
+msgid "Issue keys must be unique."
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/res_partner.py:0
+#: model:ir.model.fields,field_description:dev_addons.field_dev_module__task_ids
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__task_ids
+#: model:ir.model.fields,field_description:dev_addons.field_dev_task_complete__task_ids
+#: model:ir.model.fields,field_description:dev_addons.field_dev_technology__task_ids
+#: model:ir.model.fields,field_description:dev_addons.field_project_milestone__dev_issue_count
+#: model:ir.model.fields,field_description:dev_addons.field_res_partner__dev_issue_count
+#: model:ir.model.fields,field_description:dev_addons.field_res_users__dev_issue_count
+#: model_terms:ir.ui.view,arch_db:dev_addons.milestone_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.milestone_list
+#: model_terms:ir.ui.view,arch_db:dev_addons.module_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.module_list
+#: model_terms:ir.ui.view,arch_db:dev_addons.project_form_inherit
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_list
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_recap_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_graph
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_list
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_pivot
+#: model_terms:ir.ui.view,arch_db:dev_addons.technology_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.technology_list
+#, python-format
+msgid "Issues"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.milestone_form
+msgid "Issues Done"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__recap_done_count
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_recap_line__issue_count
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_recap_form
+msgid "Issues Finished"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_recap_form
+msgid "Issues Moved On"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__recap_issue_count
+msgid "Issues at the End"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_accept_form
+msgid ""
+"It becomes an issue in this project's Backlog, outside any sprint.\n"
+"                    The person who sent it is told it was accepted."
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields.selection,name:dev_addons.selection__dev_report__urgency__low
+msgid "It can wait"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_project_project__dev_key
+#: model:ir.model.fields,field_description:dev_addons.field_project_task__dev_key
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_search
+msgid "Key"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_recap_line__kind
+msgid "Kind"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_recap_line__label
+msgid "Label"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_project_project__dev_issue_sequence
+msgid "Last Issue Number"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_res_partner__dev_last_login
+#: model:ir.model.fields,field_description:dev_addons.field_res_users__dev_last_login
+msgid "Last Login"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_module__write_uid
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__write_uid
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report_accept__write_uid
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report_decline__write_uid
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__write_uid
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_complete__write_uid
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_recap_line__write_uid
+#: model:ir.model.fields,field_description:dev_addons.field_dev_task_complete__write_uid
+#: model:ir.model.fields,field_description:dev_addons.field_dev_technology__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_module__write_date
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__write_date
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report_accept__write_date
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report_decline__write_date
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__write_date
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_complete__write_date
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_recap_line__write_date
+#: model:ir.model.fields,field_description:dev_addons.field_dev_task_complete__write_date
+#: model:ir.model.fields,field_description:dev_addons.field_dev_technology__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.milestone_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.milestone_search
+msgid "Late"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_module__lead_id
+#: model_terms:ir.ui.view,arch_db:dev_addons.module_search
+msgid "Lead"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,help:dev_addons.field_dev_sprint__duration
+msgid "Length of the sprint in days"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,help:dev_addons.field_project_project__dev_repository_url
+msgid "Link to the project's code, e.g. https://github.com/company/project"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.technology_kanban
+msgid "Logo"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields.selection,name:dev_addons.selection__project_task__dev_severity__major
+msgid "Major"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,help:dev_addons.field_project_milestone__dev_is_software
+#: model:ir.model.fields,help:dev_addons.field_project_project__dev_is_software
+#: model:ir.model.fields,help:dev_addons.field_project_task__dev_project_is_software
+msgid ""
+"Managed in Dev Projects (board, backlog, sprints, issue keys). Hidden from "
+"the Project app's lists by default."
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.milestone_form
+msgid "Mark as Complete"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.project_task_form_inherit
+msgid "Mark as Done"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.project_task_form_inherit
+msgid "Mark as done, then archive or delete it"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,help:dev_addons.field_project_task_type__dev_wip_limit
+msgid ""
+"Maximum number of issues of one project and sprint in this column. 0 means "
+"no limit. Not applied to Done columns."
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_kanban
+msgid "Menu"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_module__message_has_error
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__message_has_error
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_module__message_ids
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__message_ids
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__milestone_id
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_search
+msgid "Milestone"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_project_milestone__dev_issue_ids
+msgid "Milestone Issues"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.actions.act_window,name:dev_addons.action_milestone
+#: model:ir.ui.menu,name:dev_addons.menu_milestones
+#: model_terms:ir.ui.view,arch_db:dev_addons.project_form_inherit
+msgid "Milestones"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields.selection,name:dev_addons.selection__project_task__dev_severity__minor
+msgid "Minor"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_complete__destination
+msgid "Move unfinished issues to"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__recap_moved_to
+msgid "Moved To"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__recap_moved_sprint_id
+msgid "Moved To Sprint"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/res_partner.py:0
+#: model:ir.actions.server,name:dev_addons.action_my_developer_profile
+#: model:ir.ui.menu,name:dev_addons.menu_my_profile
+#, python-format
+msgid "My Developer Profile"
+msgstr ""
+
+#. module: dev_addons
+#. odoo-javascript
+#: code:addons/dev_addons/static/src/report_systray/report_systray.xml:0
+#: model:ir.actions.act_window,name:dev_addons.action_report_mine
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_search
+#, python-format
+msgid "My Reports"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_module__name
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__name
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_recap_line__name
+#: model:ir.model.fields,field_description:dev_addons.field_dev_technology__name
+msgid "Name"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,help:dev_addons.field_dev_sprint_recap_line__label
+msgid ""
+"Name at the time of the recap, kept if the component or user is deleted."
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields.selection,name:dev_addons.selection__dev_report__state__new
+msgid "New"
+msgstr ""
+
+#. module: dev_addons
+#. odoo-javascript
+#: code:addons/dev_addons/static/src/report_systray/report_systray.xml:0
+#: model:ir.actions.act_window,name:dev_addons.action_report_new
+#, python-format
+msgid "New Report"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__activity_summary
+msgid "Next Activity Summary"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__activity_type_id
+msgid "Next Activity Type"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_complete__target_sprint_id
+msgid "Next Sprint"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields.selection,name:dev_addons.selection__dev_sprint_complete__destination__sprint
+msgid "Next sprint"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_search
+msgid "No Assignee"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_search
+msgid "No Component"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_search
+msgid "No Milestone"
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/dev_sprint.py:0
+#, python-format
+msgid "No component"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.actions.act_window,help:dev_addons.action_board
+msgid "No issues yet"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.actions.act_window,help:dev_addons.action_report_triage
+msgid "No reports to review"
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/project_task.py:0
+#, python-format
+msgid ""
+"No sprint is running, so \"%s\" went to the backlog. Start a sprint (Sprints"
+" > Start) to work on it on the Board."
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/project_task.py:0
+#, python-format
+msgid ""
+"No sprint is running, so %s issues went to the backlog. Start a sprint "
+"(Sprints > Start) to work on them on the Board."
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields.selection,name:dev_addons.selection__dev_report__urgency__normal
+#: model:ir.model.fields.selection,name:dev_addons.selection__project_task__dev_priority__0
+msgid "Normal"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_search
+msgid "Not in a Sprint"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_form
+msgid "Notes about this sprint..."
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_recap_form
+msgid "Now In"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_module__message_needaction_counter
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__message_needaction_counter
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.res_config_settings_view_form
+msgid "Number of days a new sprint lasts"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_module__message_has_error_counter
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__message_has_error_counter
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,help:dev_addons.field_dev_module__message_needaction_counter
+#: model:ir.model.fields,help:dev_addons.field_dev_report__message_needaction_counter
+#: model:ir.model.fields,help:dev_addons.field_dev_sprint__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,help:dev_addons.field_dev_module__message_has_error_counter
+#: model:ir.model.fields,help:dev_addons.field_dev_report__message_has_error_counter
+#: model:ir.model.fields,help:dev_addons.field_dev_sprint__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/project_task.py:0
+#, python-format
+msgid "Only issues in progress can be paused."
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/dev_sprint.py:0
+#, python-format
+msgid "Only planned sprints can be started."
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/dev_sprint.py:0
+#, python-format
+msgid "Only running sprints can be completed."
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/dev_report.py:0
+#, python-format
+msgid "Only the development team can accept or decline reports."
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.milestone_list
+#: model_terms:ir.ui.view,arch_db:dev_addons.milestone_search
+#: model_terms:ir.ui.view,arch_db:dev_addons.module_list
+#: model_terms:ir.ui.view,arch_db:dev_addons.project_form_inherit
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_search
+msgid "Open"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_module__bug_count
+#: model:ir.model.fields,field_description:dev_addons.field_project_project__dev_open_bug_count
+#: model_terms:ir.ui.view,arch_db:dev_addons.module_list
+#: model_terms:ir.ui.view,arch_db:dev_addons.project_form_inherit
+#: model_terms:ir.ui.view,arch_db:dev_addons.project_kanban
+msgid "Open Bugs"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_complete__open_count
+msgid "Open Count"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_module__open_count
+#: model:ir.model.fields,field_description:dev_addons.field_project_milestone__dev_open_count
+#: model:ir.model.fields,field_description:dev_addons.field_project_project__dev_open_issue_count
+#: model:ir.model.fields,field_description:dev_addons.field_res_partner__dev_open_issue_count
+#: model:ir.model.fields,field_description:dev_addons.field_res_users__dev_open_issue_count
+#: model_terms:ir.ui.view,arch_db:dev_addons.developer_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.project_form_inherit
+#: model_terms:ir.ui.view,arch_db:dev_addons.project_kanban
+msgid "Open Issues"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_project_task__dev_is_overdue
+#: model_terms:ir.ui.view,arch_db:dev_addons.project_task_form_inherit
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_search
+msgid "Overdue"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.project_task_form_inherit
+msgid "Pause"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_project_task__dev_is_paused
+#: model_terms:ir.ui.view,arch_db:dev_addons.project_task_form_inherit
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_kanban
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_search
+msgid "Paused"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.actions.act_window,help:dev_addons.action_report_triage
+msgid ""
+"People outside the dev team send problems and ideas with the <i class=\"fa fa-bullhorn\" title=\"Report\"></i> icon at the top.\n"
+"               Accept one to turn it into an issue in a project's Backlog, or decline it with a reason."
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,help:dev_addons.field_dev_sprint__progress
+#: model:ir.model.fields,help:dev_addons.field_project_milestone__dev_progress
+msgid "Percentage of finished issues"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_recap_line__user_id
+#: model:ir.model.fields.selection,name:dev_addons.selection__dev_sprint_recap_line__kind__person
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_recap_form
+msgid "Person"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_technology__photo
+msgid "Photo"
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/dev_report.py:0
+#, python-format
+msgid "Pick the project that receives the issue."
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/dev_sprint.py:0
+#, python-format
+msgid "Pick the sprint that receives the unfinished issues."
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.actions.act_window,help:dev_addons.action_sprint
+msgid "Plan your first sprint"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields.selection,name:dev_addons.selection__dev_sprint__state__planned
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_search
+msgid "Planned"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__planned_points
+#: model:ir.model.fields,field_description:dev_addons.field_project_milestone__dev_planned_points
+msgid "Planned Points"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.ui.menu,name:dev_addons.menu_planning
+#: model_terms:ir.ui.view,arch_db:dev_addons.milestone_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_form
+msgid "Planning"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.milestone_list
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_recap_form
+msgid "Points"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__recap_done_points
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_recap_line__points
+msgid "Points Finished"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__recap_planned_points
+msgid "Points at the End"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__progress
+#: model:ir.model.fields,field_description:dev_addons.field_project_milestone__dev_progress
+#: model_terms:ir.ui.view,arch_db:dev_addons.milestone_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_form
+msgid "Progress"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model,name:dev_addons.model_project_project
+#: model:ir.model.fields,field_description:dev_addons.field_dev_module__project_id
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__project_id
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report_accept__project_id
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__project_id
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_complete__project_id
+#: model:ir.ui.menu,name:dev_addons.menu_project_section
+#: model_terms:ir.ui.view,arch_db:dev_addons.milestone_search
+#: model_terms:ir.ui.view,arch_db:dev_addons.module_search
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_search
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_search
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_search
+msgid "Project"
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/project_task.py:0
+#, python-format
+msgid ""
+"Project %(project)s has no '%(category)s' column. Add one under "
+"Configuration > Board Columns."
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/dev_sprint.py:0
+#, python-format
+msgid "Project %s already has a running sprint. Complete it first."
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.project_list
+msgid "Project Manager"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model,name:dev_addons.model_project_milestone
+msgid "Project Milestone"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.ui.menu,name:dev_addons.menu_config_project_stages
+msgid "Project Stages"
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/project_project.py:0
+#, python-format
+msgid ""
+"Project key %s is invalid: use 2-10 uppercase letters or digits, starting "
+"with a letter (e.g. WEB)."
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,help:dev_addons.field_project_task__dev_key
+msgid "Project key and number, e.g. WEB-42."
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.actions.act_window,name:dev_addons.action_project
+#: model:ir.ui.menu,name:dev_addons.menu_projects
+msgid "Projects"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields.selection,name:dev_addons.selection__dev_report__kind__question
+msgid "Question"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_module__rating_ids
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__rating_ids
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__rating_ids
+msgid "Ratings"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_project_milestone__is_reached
+msgid "Reached"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report_decline__reason
+msgid "Reason"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_form
+msgid "Recap"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__recap_line_ids
+msgid "Recap Line"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,help:dev_addons.field_project_task__dev_story_points
+msgid "Relative effort estimate."
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.milestone_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.project_task_form_inherit
+msgid "Reopen"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model,name:dev_addons.model_dev_report
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_form
+msgid "Report"
+msgstr ""
+
+#. module: dev_addons
+#. odoo-javascript
+#: code:addons/dev_addons/static/src/report_systray/report_systray.js:0
+#: code:addons/dev_addons/static/src/report_systray/report_systray.xml:0
+#, python-format
+msgid "Report a problem or an idea"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__reporter_id
+#: model:ir.model.fields,field_description:dev_addons.field_project_task__dev_reporter_id
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_search
+msgid "Reported by"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_search
+msgid "Reported by Me"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.actions.act_window,name:dev_addons.action_report_triage
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report_accept__report_ids
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report_decline__report_ids
+#: model:ir.ui.menu,name:dev_addons.menu_reports_triage
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_list
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_search
+msgid "Reports"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields.selection,name:dev_addons.selection__dev_report__kind__feature
+msgid "Request a feature"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__activity_user_id
+msgid "Responsible User"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_recap_form
+msgid "Result"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.project_task_form_inherit
+msgid "Resume"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_form
+msgid "Review Again"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields.selection,name:dev_addons.selection__dev_sprint__state__running
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_search
+msgid "Running"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_project_project__dev_running_sprint_id
+msgid "Running Sprint"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_module__message_has_sms_error
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__message_has_sms_error
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_recap_form
+msgid "Save"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_form
+msgid "Send"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.project_task_form_inherit
+msgid "Send to Review"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_list
+msgid "Sent On"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_module__sequence
+msgid "Sequence"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.actions.act_window,help:dev_addons.action_milestone
+msgid "Set your first milestone"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.ui.menu,name:dev_addons.menu_config_settings
+msgid "Settings"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_project_task__dev_severity
+msgid "Severity"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,help:dev_addons.field_project_project__dev_key
+msgid ""
+"Short uppercase code used in issue keys, e.g. WEB gives WEB-1, WEB-2..."
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_project_milestone__dev_is_software
+#: model:ir.model.fields,field_description:dev_addons.field_project_project__dev_is_software
+msgid "Software Project"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.project_search_inherit
+msgid "Software Projects"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.actions.act_window,help:dev_addons.action_project
+msgid ""
+"Software projects (shared with the Project app, which hides them by default). Each one gets a key\n"
+"               (like WEB) used to number its issues."
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.milestone_form
+msgid ""
+"Some issues of this milestone are not done yet. Mark it as complete anyway?"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields.selection,name:dev_addons.selection__dev_report__kind__bug
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_search
+msgid "Something's broken"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model,name:dev_addons.model_dev_sprint
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_recap_line__sprint_id
+#: model:ir.model.fields,field_description:dev_addons.field_project_task__dev_sprint_id
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_search
+msgid "Sprint"
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/dev_sprint.py:0
+#, python-format
+msgid "Sprint "
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/dev_sprint.py:0
+#, python-format
+msgid ""
+"Sprint %(sprint)s: milestone %(milestone)s belongs to project %(other)s, not"
+" %(project)s."
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/dev_sprint.py:0
+#, python-format
+msgid "Sprint %s"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_project_milestone__dev_sprint_count
+#: model:ir.model.fields,field_description:dev_addons.field_project_project__dev_sprint_count
+msgid "Sprint Count"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__goal
+msgid "Sprint Goal"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model,name:dev_addons.model_dev_sprint_recap_line
+msgid "Sprint Recap Line"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__recap_notes
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_recap_form
+msgid "Sprint Summary"
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/dev_sprint.py:0
+#, python-format
+msgid "Sprint completed: %(done)s issue(s) done, %(open)s moved to %(where)s."
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_form
+msgid "Sprint goal, e.g. Users can reset their password"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.actions.act_window,name:dev_addons.action_sprint
+#: model:ir.model.fields,field_description:dev_addons.field_project_milestone__dev_sprint_ids
+#: model:ir.model.fields,field_description:dev_addons.field_project_project__dev_sprint_ids
+#: model:ir.ui.menu,name:dev_addons.menu_sprints
+#: model_terms:ir.ui.view,arch_db:dev_addons.milestone_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.milestone_list
+#: model_terms:ir.ui.view,arch_db:dev_addons.project_form_inherit
+#: model_terms:ir.ui.view,arch_db:dev_addons.project_list
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_calendar
+msgid "Sprints"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.project_task_form_inherit
+msgid "Start"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__start_date
+msgid "Start Date"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_form
+msgid "Start Sprint"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_project_task__dev_start_date
+msgid "Started On"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__progress
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__state
+#: model:ir.model.fields,field_description:dev_addons.field_project_task__dev_status
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_search
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_search
+msgid "Status"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_project_task_type__dev_category
+msgid "Status Category"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,help:dev_addons.field_dev_report__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_search
+msgid "Stories"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields.selection,name:dev_addons.selection__dev_sprint_recap_line__issue_type__story
+#: model:ir.model.fields.selection,name:dev_addons.selection__project_task__dev_issue_type__story
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_kanban
+msgid "Story"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_project_task__dev_story_points
+#: model_terms:ir.ui.view,arch_db:dev_addons.milestone_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_form
+msgid "Story Points"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_recap_form
+msgid "Story Points Finished"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_kanban
+msgid "Story points"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_kanban
+msgid "Sub-tasks done"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_quick_create_form
+msgid "Summary..."
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.actions.act_window,help:dev_addons.action_technology
+msgid ""
+"Tag issues and developers with the technologies they use.\n"
+"               A logo is picked up automatically from the image folder when the name matches."
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.ui.menu,name:dev_addons.menu_config_tags
+msgid "Tags"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model,name:dev_addons.model_project_task
+#: model:ir.model.fields.selection,name:dev_addons.selection__dev_sprint_recap_line__issue_type__task
+#: model:ir.model.fields.selection,name:dev_addons.selection__project_task__dev_issue_type__task
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_kanban
+msgid "Task"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model,name:dev_addons.model_project_task_type
+msgid "Task Stage"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_search
+msgid "Tasks"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.ui.menu,name:dev_addons.menu_team
+msgid "Team"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.actions.act_window,name:dev_addons.action_technology
+#: model:ir.model.fields,field_description:dev_addons.field_dev_module__technology_ids
+#: model:ir.model.fields,field_description:dev_addons.field_project_milestone__dev_technology_ids
+#: model:ir.model.fields,field_description:dev_addons.field_project_task__dev_technology_ids
+#: model:ir.model.fields,field_description:dev_addons.field_res_partner__dev_technology_ids
+#: model:ir.model.fields,field_description:dev_addons.field_res_users__dev_technology_ids
+#: model:ir.ui.menu,name:dev_addons.menu_technologies
+msgid "Technologies"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,help:dev_addons.field_dev_module__technology_ids
+msgid "Technologies used by the issues of this component."
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,help:dev_addons.field_project_milestone__dev_technology_ids
+msgid "Technologies used by the issues of this milestone."
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model,name:dev_addons.model_dev_technology
+msgid "Technology"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_res_config_settings__dev_tech_image_dir
+#: model_terms:ir.ui.view,arch_db:dev_addons.res_config_settings_view_form
+msgid "Technology Logo Folder"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_form
+msgid ""
+"Tell the development team about a problem, an idea or a question.\n"
+"                        They'll review it, and you can follow it in <b>My Reports</b> (the <i class=\"fa fa-bullhorn\" title=\"Report\"/> icon at the top)."
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/dev_report.py:0
+#, python-format
+msgid "Thanks! The development team will review it. Follow it in My Reports."
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,help:dev_addons.field_dev_report__app_menu_id
+msgid "The Odoo app where it happens, e.g. Sales or Inventory."
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,help:dev_addons.field_dev_sprint__milestone_id
+msgid ""
+"The goal this sprint works towards. Issues added to the sprint get this "
+"milestone."
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,help:dev_addons.field_dev_report_accept__project_id
+msgid "The issue goes to this project's Backlog."
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_complete_form
+msgid "The issue(s) below will be marked as done and taken off the Board."
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/project_project.py:0
+#, python-format
+msgid "The key cannot change once the project has issues."
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,help:dev_addons.field_project_task__dev_assignee_id
+msgid "The one person responsible. Also added to the task's assignees."
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,help:dev_addons.field_project_task__dev_module_id
+msgid "The part of the software this issue is about, e.g. Login or Payments."
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,help:dev_addons.field_dev_module__lead_id
+msgid "The person who knows this part of the software best."
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_decline_form
+msgid "The person who sent it will see this reason."
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,help:dev_addons.field_dev_report__project_id
+msgid "The project whose Backlog received the issue."
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,help:dev_addons.field_dev_report_decline__reason
+msgid "The reporter sees this, so keep it friendly and clear."
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_search
+msgid "The running sprint plus issues not planned in any sprint"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,help:dev_addons.field_project_milestone__dev_version
+msgid "The version this milestone ships as, e.g. 1.2.0 or v2.0.1."
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_task_complete__mode
+msgid "Then"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.constraint,message:dev_addons.constraint_res_partner_dev_access_code_unique
+msgid "This access code is already used."
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.constraint,message:dev_addons.constraint_dev_module_name_project_unique
+msgid "This project already has a component with that name."
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/dev_report.py:0
+#, python-format
+msgid "This report has no issue."
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/dev_report.py:0
+#, python-format
+msgid ""
+"This report was already reviewed, so it can't be changed. Add a message "
+"below instead."
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__name
+msgid "Title"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields.selection,name:dev_addons.selection__project_task__dev_status__todo
+#: model:ir.model.fields.selection,name:dev_addons.selection__project_task_type__dev_category__todo
+#: model:project.task.type,name:dev_addons.stage_todo
+msgid "To Do"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_search
+msgid "To Review"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.milestone_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.milestone_list
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_list
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_recap_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_backlog_list
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_list
+msgid "Total"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,help:dev_addons.field_res_partner__dev_access_code_locked
+#: model:ir.model.fields,help:dev_addons.field_res_users__dev_access_code_locked
+msgid "True once an access code has been saved; it cannot change after that."
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_form
+msgid "Turn it into an issue in a project's Backlog"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint_recap_line__issue_type
+#: model:ir.model.fields,field_description:dev_addons.field_project_task__dev_issue_type
+#: model:ir.model.fields.selection,name:dev_addons.selection__dev_sprint_recap_line__kind__type
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_recap_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.task_search
+msgid "Type"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,help:dev_addons.field_dev_report__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/dev_sprint.py:0
+#, python-format
+msgid "Unassigned"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_recap_form
+msgid "Unfinished"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__recap_moved_task_ids
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_recap_form
+msgid "Unfinished Issues"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__recap_moved_count
+msgid "Unfinished Issues Moved"
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/project_task.py:0
+#, python-format
+msgid "Unsupported search on Overdue."
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields.selection,name:dev_addons.selection__dev_report__urgency__high
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_search
+msgid "Urgent"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_project_milestone__dev_version
+msgid "Version"
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/project_milestone.py:0
+#, python-format
+msgid ""
+"Version %s is not a version number. Use numbers separated by dots, e.g. 1.0,"
+" 1.2.0 or v2.0.1 (a tag like 2.1.0-beta is fine too)."
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.project_form_inherit
+msgid "View Issues"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_project_task_type__dev_wip_limit
+msgid "WIP Limit"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields.selection,name:dev_addons.selection__dev_report__progress__new
+msgid "Waiting for review"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_module__website_message_ids
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__website_message_ids
+#: model:ir.model.fields,field_description:dev_addons.field_dev_sprint__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,help:dev_addons.field_dev_module__website_message_ids
+#: model:ir.model.fields,help:dev_addons.field_dev_report__website_message_ids
+#: model:ir.model.fields,help:dev_addons.field_dev_sprint__website_message_ids
+msgid "Website communication history"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.milestone_form
+msgid ""
+"What does reaching this milestone mean? E.g. users can sign up, log in and "
+"reset their password."
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,help:dev_addons.field_dev_report__description
+msgid "What happened, what you expected, and the steps to see it again."
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_form
+msgid ""
+"What happened? What did you expect? How can we see it again? You can paste "
+"screenshots here."
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__kind
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_search
+msgid "What is it?"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,help:dev_addons.field_project_task_type__dev_category
+msgid ""
+"What this column means: an issue moved to a 'Done' column is marked done "
+"(also in the Project app), an 'In Progress' one gets its start date."
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.module_form
+msgid "What this part of the software covers..."
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_recap_form
+msgid ""
+"What was this sprint about? What got done, what went well, what didn't..."
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.model.fields,field_description:dev_addons.field_dev_report__decline_reason
+msgid "Why it was declined"
+msgstr ""
+
+#. module: dev_addons
+#: model:ir.ui.menu,name:dev_addons.menu_work
+msgid "Work"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.actions.act_window,help:dev_addons.action_report_mine
+msgid "You haven't sent any reports yet"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.actions.act_window,help:dev_addons.action_backlog
+msgid "Your backlog is empty"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_complete_form
+msgid "are not finished."
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/project_task.py:0
+#, python-format
+msgid "component"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.technology_kanban
+msgid "devs"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.milestone_form
+msgid "e.g. 1.2.0"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_form
+msgid "e.g. Can't print invoices"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.module_form
+#: model_terms:ir.ui.view,arch_db:dev_addons.project_form_inherit
+msgid "e.g. Login"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.milestone_form
+msgid "e.g. Login complete"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.technology_form
+msgid "e.g. Python"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_form
+msgid "e.g. Sales, Inventory..."
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_form
+msgid "e.g. Sprint 1"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.report_decline_form
+msgid ""
+"e.g. This already works: use File > Print. / We won't change this because..."
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.project_form_inherit
+msgid "https://github.com/company/project"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.sprint_complete_form
+msgid "issue(s) are done and"
+msgstr ""
+
+#. module: dev_addons
+#: model_terms:ir.ui.view,arch_db:dev_addons.technology_kanban
+msgid "issues"
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/project_task.py:0
+#, python-format
+msgid "milestone"
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/project_task.py:0
+#, python-format
+msgid "sprint"
+msgstr ""
+
+#. module: dev_addons
+#. odoo-python
+#: code:addons/dev_addons/models/dev_sprint.py:0
+#, python-format
+msgid "the backlog"
+msgstr ""

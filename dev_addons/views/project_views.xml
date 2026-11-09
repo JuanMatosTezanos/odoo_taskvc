@@ -47,7 +47,7 @@
                     </group>
                 </page>
                 <page name="dev_milestones" string="Milestones" invisible="not dev_is_software">
-                    <field name="milestone_ids" context="{'default_project_id': id, 'form_view_ref': 'dev_projects.milestone_form'}">
+                    <field name="milestone_ids" context="{'default_project_id': id, 'form_view_ref': 'dev_addons.milestone_form'}">
                         <tree decoration-muted="is_reached" decoration-danger="is_deadline_exceeded">
                             <field name="name" />
                             <field name="dev_version" optional="show" />

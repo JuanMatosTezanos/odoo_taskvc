@@ -111,10 +111,10 @@ class ResPartner(models.Model):
             'name': _("Issues"),
             'res_model': 'project.task',
             'view_mode': 'kanban,tree,form',
-            'views': [(self.env.ref('dev_projects.task_kanban').id, 'kanban'),
-                      (self.env.ref('dev_projects.task_list').id, 'list'),
+            'views': [(self.env.ref('dev_addons.task_kanban').id, 'kanban'),
+                      (self.env.ref('dev_addons.task_list').id, 'list'),
                       (self.env.ref('project.view_task_form2').id, 'form')],
-            'search_view_id': [self.env.ref('dev_projects.task_search').id],
+            'search_view_id': [self.env.ref('dev_addons.task_search').id],
             'domain': [('dev_assignee_id', 'in', self.user_ids.ids), ('project_id.dev_is_software', '=', True)],
             'context': {'default_dev_assignee_id': self.user_ids[:1].id, 'dev_board': True},
         }
@@ -159,6 +159,6 @@ class ResPartner(models.Model):
             'res_model': 'res.partner',
             'res_id': self.env.user.partner_id.id,
             'view_mode': 'form',
-            'views': [(self.env.ref('dev_projects.developer_form').id, 'form')],
+            'views': [(self.env.ref('dev_addons.developer_form').id, 'form')],
             'target': 'current',
         }

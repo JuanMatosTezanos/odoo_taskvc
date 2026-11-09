@@ -47,7 +47,7 @@ Project app, so you can switch between the two:
     ],
     'assets': {
         'web.assets_backend': [
-            'dev_projects/static/src/report_systray/*',
+            'dev_addons/static/src/report_systray/*',
         ],
     },
     'post_init_hook': 'post_init_hook',

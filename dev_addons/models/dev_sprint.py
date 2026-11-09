@@ -272,7 +272,7 @@ class DevSprint(models.Model):
             'res_model': 'dev.sprint',
             'res_id': self.id,
             'view_mode': 'form',
-            'views': [(self.env.ref('dev_projects.sprint_recap_form').id, 'form')],
+            'views': [(self.env.ref('dev_addons.sprint_recap_form').id, 'form')],
             'target': 'new',
             'context': {'dev_reload_project': self.env.context.get('dev_reload_project', False)},
         }
@@ -283,7 +283,7 @@ class DevSprint(models.Model):
 
     def action_view_issues(self):
         self.ensure_one()
-        action = self.env['ir.actions.act_window']._for_xml_id('dev_projects.action_board')
+        action = self.env['ir.actions.act_window']._for_xml_id('dev_addons.action_board')
         action.update({
             'domain': [('dev_sprint_id', '=', self.id), ('display_in_project', '=', True)],
             'context': {'default_project_id': self.project_id.id,

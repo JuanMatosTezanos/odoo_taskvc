@@ -100,7 +100,7 @@ class TestScreens(TransactionCase):
     # Tests ----------------------------------------------------------------
 
     def test_every_dev_menu_opens(self):
-        opened = self._open_menus('dev_projects.menu_root')
+        opened = self._open_menus('dev_addons.menu_root')
         for expected in ('Board', 'Backlog', 'Projects', 'Milestones', 'Sprints', 'Components', 'My Developer Profile',
                          'Developers', 'Technologies', 'Board Columns', 'Reports'):
             self.assertIn(expected, opened)
@@ -132,7 +132,7 @@ class TestScreens(TransactionCase):
             f.name = 'From Form'
         project = f.record
         self.assertTrue(project.dev_key)
-        with Form(self.env['project.milestone'], view='dev_projects.milestone_form') as f:
+        with Form(self.env['project.milestone'], view='dev_addons.milestone_form') as f:
             f.name = 'Form goal'
             f.project_id = project
         with Form(self.env['dev.module']) as f:
@@ -151,13 +151,13 @@ class TestScreens(TransactionCase):
         issue = f.record
         self.assertTrue(issue.dev_key.startswith(project.dev_key + '-'))
         self.assertEqual(issue.dev_status, 'todo')
-        with Form(self.env['project.task'], view='dev_projects.task_quick_create_form') as f:
+        with Form(self.env['project.task'], view='dev_addons.task_quick_create_form') as f:
             f.name = 'Quick'
             f.project_id = project
         with Form(self.env['dev.technology']) as f:
             f.name = 'Screens Form Tech'
         with Form(self.env['res.partner'].with_context(default_dev_is_developer=True),
-                  view='dev_projects.developer_form') as f:
+                  view='dev_addons.developer_form') as f:
             f.name = 'New Dev'
             f.dev_access_code = '99990000k'
         self.assertTrue(f.record.dev_is_developer)
@@ -189,7 +189,7 @@ class TestScreens(TransactionCase):
         self._open_action(milestone.action_dev_view_issues())
         milestone.action_dev_complete()
 
-        with Form(user.partner_id, view='dev_projects.developer_form') as f:
+        with Form(user.partner_id, view='dev_addons.developer_form') as f:
             f.dev_is_developer = True
             f.dev_access_code = '13572468r'
         self.assertTrue(user.partner_id.dev_is_developer)
@@ -199,19 +199,19 @@ class TestScreens(TransactionCase):
         app = self.env.ref('project.menu_main_pm')
         self.assertEqual(app.name, 'Projects')
         self.assertEqual(app.child_id.mapped('name'), ['Project', 'Dev Projects'])
-        project_section = self.env.ref('dev_projects.menu_project_section')
+        project_section = self.env.ref('dev_addons.menu_project_section')
         for xmlid in ('project.menu_projects', 'project.menu_project_management',
                       'project.menu_project_report', 'project.menu_project_config'):
             self.assertEqual(self.env.ref(xmlid).parent_id, project_section, xmlid)
-        self.assertEqual(self.env.ref('dev_projects.menu_root').parent_id, app)
-        self.assertEqual(self.env.ref('dev_projects.menu_root').child_id.mapped('name'),
+        self.assertEqual(self.env.ref('dev_addons.menu_root').parent_id, app)
+        self.assertEqual(self.env.ref('dev_addons.menu_root').child_id.mapped('name'),
                          ['Planning', 'Work', 'Team', 'Configuration'])
-        self.assertEqual(self.env.ref('dev_projects.menu_planning').child_id.mapped('name'),
+        self.assertEqual(self.env.ref('dev_addons.menu_planning').child_id.mapped('name'),
                          ['Projects', 'Milestones', 'Sprints', 'Components'])
         self.assertEqual(self.env['ir.ui.menu'].search_count([('name', '=', 'Dev Projects'), ('parent_id', '=', False)]), 0,
                          "no separate Dev Projects app")
         # Dev Projects > Configuration has Project's settings and configuration too.
-        config = self.env.ref('dev_projects.menu_config').child_id.mapped('name')
+        config = self.env.ref('dev_addons.menu_config').child_id.mapped('name')
         for name in ('Settings', 'Board Columns', 'Tags', 'Activity Types'):
             self.assertIn(name, config)
 
@@ -235,6 +235,6 @@ class TestScreens(TransactionCase):
             'groups_id': [(6, 0, [self.env.ref('base.group_user').id])]})
         self.env['dev.report'].with_user(employee).create({'name': 'Screens report'})
         self.env = self.env(user=employee)
-        for xmlid in ('dev_projects.action_report_new', 'dev_projects.action_report_mine'):
+        for xmlid in ('dev_addons.action_report_new', 'dev_addons.action_report_mine'):
             with self.subTest(action=xmlid):
                 self._open_action(self._action_data(self.env.ref(xmlid)))

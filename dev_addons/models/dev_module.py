@@ -49,7 +49,7 @@ class DevModule(models.Model):
 
     def action_view_issues(self):
         self.ensure_one()
-        action = self.env['ir.actions.act_window']._for_xml_id('dev_projects.action_board')
+        action = self.env['ir.actions.act_window']._for_xml_id('dev_addons.action_board')
         action.update({
             'domain': [('dev_module_id', '=', self.id), ('display_in_project', '=', True)],
             'context': {'default_project_id': self.project_id.id, 'default_dev_module_id': self.id,

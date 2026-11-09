@@ -11,7 +11,7 @@
                     <setting id="dev_default_columns_setting" help="Give new software projects the To Do, In Progress, In Review and Done board columns">
                         <field name="dev_default_columns" />
                         <div class="mt8">
-                            <button name="%(dev_projects.action_stage)d" type="action" string="Board Columns" icon="oi-arrow-right" class="btn-link" />
+                            <button name="%(dev_addons.action_stage)d" type="action" string="Board Columns" icon="oi-arrow-right" class="btn-link" />
                         </div>
                     </setting>
                     <setting id="dev_sprint_duration_setting" string="Default Sprint Length" help="Number of days a new sprint lasts">

@@ -10,7 +10,7 @@ import logging
 from odoo import SUPERUSER_ID, api
 from odoo.tools import plaintext2html
 
-from odoo.addons.dev_projects.hooks import enable_milestones
+from odoo.addons.dev_addons.hooks import enable_milestones
 
 _logger = logging.getLogger(__name__)
 

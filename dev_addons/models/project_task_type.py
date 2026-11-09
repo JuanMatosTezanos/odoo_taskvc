@@ -44,7 +44,7 @@ class ProjectTaskType(models.Model):
     @api.model
     def _dev_default_stages(self):
         """The four default columns linked to every new project."""
-        return (self.env.ref('dev_projects.stage_todo', raise_if_not_found=False)
-                | self.env.ref('dev_projects.stage_in_progress', raise_if_not_found=False)
-                | self.env.ref('dev_projects.stage_review', raise_if_not_found=False)
-                | self.env.ref('dev_projects.stage_done', raise_if_not_found=False))
+        return (self.env.ref('dev_addons.stage_todo', raise_if_not_found=False)
+                | self.env.ref('dev_addons.stage_in_progress', raise_if_not_found=False)
+                | self.env.ref('dev_addons.stage_review', raise_if_not_found=False)
+                | self.env.ref('dev_addons.stage_done', raise_if_not_found=False))

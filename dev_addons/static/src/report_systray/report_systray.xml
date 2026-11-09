@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
-    <t t-name="dev_projects.ReportSystray">
+    <t t-name="dev_addons.ReportSystray">
         <Dropdown class="'o_dev_report_systray'" position="'bottom-end'" autoOpen="false" tooltip="tooltip">
             <t t-set-slot="toggler">
                 <i class="fa fa-lg fa-bullhorn" role="img" aria-label="Report a problem or an idea"/>

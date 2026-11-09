@@ -9,7 +9,7 @@ import { _t } from "@web/core/l10n/translation";
 import { useService } from "@web/core/utils/hooks";
 
 export class ReportSystray extends Component {
-    static template = "dev_projects.ReportSystray";
+    static template = "dev_addons.ReportSystray";
     static components = { Dropdown, DropdownItem };
     static props = {};
 
@@ -22,12 +22,12 @@ export class ReportSystray extends Component {
     }
 
     newReport() {
-        this.action.doAction("dev_projects.action_report_new");
+        this.action.doAction("dev_addons.action_report_new");
     }
 
     myReports() {
-        this.action.doAction("dev_projects.action_report_mine");
+        this.action.doAction("dev_addons.action_report_mine");
     }
 }
 
-registry.category("systray").add("dev_projects.report", { Component: ReportSystray }, { sequence: 30 });
+registry.category("systray").add("dev_addons.report", { Component: ReportSystray }, { sequence: 30 });

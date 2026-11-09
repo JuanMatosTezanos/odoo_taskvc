@@ -88,7 +88,7 @@ class ProjectMilestone(models.Model):
 
     def action_dev_view_issues(self):
         self.ensure_one()
-        action = self.env['ir.actions.act_window']._for_xml_id('dev_projects.action_board')
+        action = self.env['ir.actions.act_window']._for_xml_id('dev_addons.action_board')
         action.update({
             'domain': [('milestone_id', '=', self.id), ('display_in_project', '=', True)],
             'context': {'default_project_id': self.project_id.id, 'default_milestone_id': self.id,
@@ -99,7 +99,7 @@ class ProjectMilestone(models.Model):
 
     def action_dev_view_sprints(self):
         self.ensure_one()
-        action = self.env['ir.actions.act_window']._for_xml_id('dev_projects.action_sprint')
+        action = self.env['ir.actions.act_window']._for_xml_id('dev_addons.action_sprint')
         action.update({
             'domain': [('milestone_id', '=', self.id)],
             'context': {'default_project_id': self.project_id.id, 'default_milestone_id': self.id},

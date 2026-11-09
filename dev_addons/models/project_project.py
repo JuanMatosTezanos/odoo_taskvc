@@ -194,30 +194,30 @@ class ProjectProject(models.Model):
         return action
 
     def action_dev_board(self):
-        return self._dev_action('dev_projects.action_board',
+        return self._dev_action('dev_addons.action_board',
                                 extra_context={'search_default_dev_current_work': 1})
 
     def action_dev_open_issues(self):
-        return self._dev_action('dev_projects.action_board',
+        return self._dev_action('dev_addons.action_board',
                                 extra_context={'search_default_dev_open': 1})
 
     def action_dev_bugs(self):
-        return self._dev_action('dev_projects.action_board', extra_context={
+        return self._dev_action('dev_addons.action_board', extra_context={
             'default_dev_issue_type': 'bug', 'search_default_dev_type_bug': 1, 'search_default_dev_open': 1})
 
     def action_dev_backlog(self):
-        action = self._dev_action('dev_projects.action_backlog')
+        action = self._dev_action('dev_addons.action_backlog')
         action['domain'] = [('project_id', '=', self.id), ('display_in_project', '=', True), ('dev_status', '!=', 'done'),
                             '|', ('dev_sprint_id', '=', False), ('dev_sprint_id.state', '!=', 'closed')]
         action['context'].update(group_by='dev_sprint_id', dev_backlog=True)
         return action
 
     def action_dev_sprints(self):
-        return self._dev_action('dev_projects.action_sprint')
+        return self._dev_action('dev_addons.action_sprint')
 
     def action_dev_milestones(self):
-        return self._dev_action('dev_projects.action_milestone')
+        return self._dev_action('dev_addons.action_milestone')
 
     def action_dev_modules(self):
-        return self._dev_action('dev_projects.action_module')
+        return self._dev_action('dev_addons.action_module')
 

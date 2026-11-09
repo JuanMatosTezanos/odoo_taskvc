@@ -31,7 +31,7 @@ class TestReports(TransactionCase):
     def _send(self, user=None, **vals):
         """Fill the pop-up as the reporter and click Send."""
         form = Form(self.env['dev.report'].with_user(user or self.alice),
-                    view='dev_projects.report_form')
+                    view='dev_addons.report_form')
         form.name = vals.pop('name', "Can't print invoices")
         for field, value in vals.items():
             setattr(form, field, value)
@@ -63,11 +63,11 @@ class TestReports(TransactionCase):
         # "Reported by" shows who it is; no Project field for reporters; Apps
         # offered are the ones on their home screen.
         arch = self.env['dev.report'].with_user(self.alice).get_views(
-            [(self.env.ref('dev_projects.report_form').id, 'form')])['views']['form']['arch']
+            [(self.env.ref('dev_addons.report_form').id, 'form')])['views']['form']['arch']
         self.assertIn('name="reporter_id"', arch)
         self.assertIn('name="app_menu_id"', arch)
         self.assertNotIn('name="project_id"', arch)
-        form = Form(self.env['dev.report'].with_user(self.alice), view='dev_projects.report_form')
+        form = Form(self.env['dev.report'].with_user(self.alice), view='dev_addons.report_form')
         self.assertEqual(form.reporter_id, self.alice)
         apps = self.env['dev.report'].with_user(self.alice).new({}).allowed_app_ids._origin
         self.assertIn(self.discuss, apps)
@@ -109,9 +109,9 @@ class TestReports(TransactionCase):
         # The reporter can't open issues but still sees the key and progress.
         as_alice = report.with_user(self.alice)
         self.assertEqual((as_alice.issue_key, as_alice.progress), (issue.dev_key, 'accepted'))
-        issue.stage_id = self.env.ref('dev_projects.stage_in_progress')
+        issue.stage_id = self.env.ref('dev_addons.stage_in_progress')
         self.assertEqual(as_alice.progress, 'in_progress')
-        issue.stage_id = self.env.ref('dev_projects.stage_done')
+        issue.stage_id = self.env.ref('dev_addons.stage_done')
         self.assertEqual(as_alice.progress, 'done')
         with self.assertRaises(UserError):
             as_alice.write({'name': 'Changed after review'})
@@ -135,7 +135,7 @@ class TestReports(TransactionCase):
         self.assertEqual((question.task_id.dev_issue_type, question.task_id.dev_priority), ('task', '3'))
         # Several at once from the list (Actions > Accept).
         more = self._send(name='One') | self._send(name='Two')
-        action = self.env.ref('dev_projects.action_report_accept_server').with_user(self.dev).with_context(
+        action = self.env.ref('dev_addons.action_report_accept_server').with_user(self.dev).with_context(
             active_model='dev.report', active_ids=more.ids).run()
         self.assertEqual((action['res_model'], action['context']['default_report_ids']), ('dev.report.accept', more.ids))
 
@@ -154,11 +154,11 @@ class TestReports(TransactionCase):
 
     def test_top_bar_icon_actions(self):
         # The icon opens these two: the form as a pop-up, and the reporter's own list.
-        new = self.env.ref('dev_projects.action_report_new')
+        new = self.env.ref('dev_addons.action_report_new')
         self.assertEqual((new.res_model, new.target, new.view_mode), ('dev.report', 'new', 'form'))
-        mine = self.env.ref('dev_projects.action_report_mine')
+        mine = self.env.ref('dev_addons.action_report_mine')
         self.assertEqual(mine.domain, "[('reporter_id', '=', uid)]")
         # No Report menu any more, and the Projects app is for the dev team only.
-        self.assertFalse(self.env.ref('dev_projects.menu_report_root', raise_if_not_found=False))
+        self.assertFalse(self.env.ref('dev_addons.menu_report_root', raise_if_not_found=False))
         visible = self.env['ir.ui.menu'].with_user(self.alice)._visible_menu_ids()
         self.assertNotIn(self.env.ref('project.menu_main_pm').id, visible)

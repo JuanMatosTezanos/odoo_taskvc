@@ -23,16 +23,16 @@ class TestDevProjects(TransactionCase):
         cls.sprint = cls.env['dev.sprint'].create({'name': 'S1', 'project_id': cls.project.id})
         cls.user = cls.env['res.users'].create({'name': 'Dev One', 'login': 'dev_one_test'})
         cls.user2 = cls.env['res.users'].create({'name': 'Dev Two', 'login': 'dev_two_test'})
-        cls.stage_todo = cls.env.ref('dev_projects.stage_todo')
-        cls.stage_progress = cls.env.ref('dev_projects.stage_in_progress')
-        cls.stage_review = cls.env.ref('dev_projects.stage_review')
-        cls.stage_done = cls.env.ref('dev_projects.stage_done')
+        cls.stage_todo = cls.env.ref('dev_addons.stage_todo')
+        cls.stage_progress = cls.env.ref('dev_addons.stage_in_progress')
+        cls.stage_review = cls.env.ref('dev_addons.stage_review')
+        cls.stage_done = cls.env.ref('dev_addons.stage_done')
 
     def _issue(self, **vals):
         return self.Task.create(dict({'name': 'T', 'project_id': self.project.id}, **vals))
 
     def _search_filter_domain(self, name):
-        arch = self.Task.get_views([(self.env.ref('dev_projects.task_search').id, 'search')])['views']['search']['arch']
+        arch = self.Task.get_views([(self.env.ref('dev_addons.task_search').id, 'search')])['views']['search']['arch']
         node = etree.fromstring(arch).find(f".//filter[@name='{name}']")
         return safe_eval(node.get('domain'), {'uid': self.env.uid})
 
@@ -201,7 +201,7 @@ class TestDevProjects(TransactionCase):
         self.assertFalse(self.project.dev_running_sprint_id)
 
     def test_board(self):
-        board = self.env.ref('dev_projects.action_board')
+        board = self.env.ref('dev_addons.action_board')
         ctx = safe_eval(board.context)
         self.assertEqual(ctx.get('search_default_dev_current_work'), 1)
         domain = safe_eval(board.domain) + self._search_filter_domain('dev_current_work')
@@ -218,7 +218,7 @@ class TestDevProjects(TransactionCase):
             [('project_id', '=', self.project.id)], ['stage_id'], ['stage_id'])
         self.assertEqual(len(groups), 4)
 
-    def _board_ctx(self, xmlid='dev_projects.action_board', **extra):
+    def _board_ctx(self, xmlid='dev_addons.action_board', **extra):
         ctx = safe_eval(self.env.ref(xmlid).context)
         ctx = {k: v for k, v in ctx.items() if not k.startswith('search_default') and k != 'group_by'}
         return dict(ctx, **extra)
@@ -231,7 +231,7 @@ class TestDevProjects(TransactionCase):
         self.assertEqual(form.dev_sprint_id, self.sprint, "shown in the form before saving")
         form.name = 'Full form'
         self.assertEqual(form.save().dev_sprint_id, self.sprint)
-        quick = Form(Board, view='dev_projects.task_quick_create_form')
+        quick = Form(Board, view='dev_addons.task_quick_create_form')
         quick.name = 'Quick'
         self.assertEqual(quick.save().dev_sprint_id, self.sprint)
         # Board from the menu (all projects): picking the project fills the sprint.
@@ -245,19 +245,19 @@ class TestDevProjects(TransactionCase):
         form.dev_sprint_id = self.env['dev.sprint']
         self.assertFalse(form.save().dev_sprint_id)
         # The Backlog plans by hand: new rows start outside any sprint.
-        for backlog_ctx in (self._board_ctx('dev_projects.action_backlog'),
+        for backlog_ctx in (self._board_ctx('dev_addons.action_backlog'),
                             self.project.action_dev_backlog()['context']):
             ctx = {k: v for k, v in backlog_ctx.items() if k != 'group_by'}
-            row = Form(self.Task.with_context(**ctx), view='dev_projects.task_backlog_list')
+            row = Form(self.Task.with_context(**ctx), view='dev_addons.task_backlog_list')
             row.name = 'Backlog row'
             row.project_id = self.project
             self.assertFalse(row.save().dev_sprint_id)
 
     def test_backlog_rows_can_be_opened(self):
         # Rows edit in place, so each one needs a "View" button to open the full issue.
-        arch = self.env.ref('dev_projects.task_backlog_list').arch
+        arch = self.env.ref('dev_addons.task_backlog_list').arch
         self.assertIn('open_form_view="1"', arch)
-        views = self.env.ref('dev_projects.action_backlog').view_ids.mapped('view_mode')
+        views = self.env.ref('dev_addons.action_backlog').view_ids.mapped('view_mode')
         self.assertIn('form', views)
 
     def test_severity_is_editable(self):
@@ -266,7 +266,7 @@ class TestDevProjects(TransactionCase):
         with Form(bug) as form:
             form.dev_severity = 'critical'
         self.assertEqual(bug.dev_severity, 'critical')
-        row = Form(self.Task.with_context(dev_backlog=True), view='dev_projects.task_backlog_list')
+        row = Form(self.Task.with_context(dev_backlog=True), view='dev_addons.task_backlog_list')
         row.name = 'Bug from the backlog'
         row.project_id = self.project
         row.dev_issue_type = 'bug'
@@ -395,13 +395,13 @@ class TestDevProjects(TransactionCase):
         self.assertFalse(self.sprint.milestone_id)
         # The tab uses the "pick existing" widget, limited to this project's open sprints.
         arch = self.env['project.milestone'].get_views(
-            [(self.env.ref('dev_projects.milestone_form').id, 'form')])['views']['form']['arch']
+            [(self.env.ref('dev_addons.milestone_form').id, 'form')])['views']['form']['arch']
         field = etree.fromstring(arch).find(".//field[@name='dev_sprint_ids']")
         self.assertEqual(field.get('widget'), 'many2many')
 
     def test_milestone_forms(self):
         with Form(self.env['project.milestone'].with_context(default_project_id=self.project.id),
-                  view='dev_projects.milestone_form') as form:
+                  view='dev_addons.milestone_form') as form:
             form.name = 'Beta launch'
             form.deadline = fields.Date.today() - timedelta(days=1)
         milestone = form.record
@@ -427,7 +427,7 @@ class TestDevProjects(TransactionCase):
                 self.milestone.dev_version = bad
         self.milestone.dev_version = False
         with Form(self.env['project.milestone'].with_context(default_project_id=self.project.id),
-                  view='dev_projects.milestone_form') as form:
+                  view='dev_addons.milestone_form') as form:
             form.name = 'Release'
             form.dev_version = '2.0.0'
         self.assertEqual(form.record.dev_version, '2.0.0')
@@ -456,7 +456,7 @@ class TestDevProjects(TransactionCase):
         self.assertEqual(login.issue_count, 1)
         self.assertEqual(self.project.dev_open_issue_count, 1)
         self.assertNotIn(sub, self.Task.search(self.project.action_dev_board()['domain']))
-        self.assertNotIn(sub, self.Task.search(safe_eval(self.env.ref('dev_projects.action_board').domain)))
+        self.assertNotIn(sub, self.Task.search(safe_eval(self.env.ref('dev_addons.action_board').domain)))
         self.assertIn(parent, self.Task.search(self.project.action_dev_backlog()['domain']))
         self.assertNotIn(sub, self.Task.search(self.project.action_dev_backlog()['domain']))
         self.assertEqual((parent.subtask_count, parent.closed_subtask_count), (2, 0))
@@ -527,7 +527,7 @@ class TestDevProjects(TransactionCase):
         self.sprint.action_start()
         recap = Form(self.env['dev.sprint.complete'].with_context(default_sprint_id=self.sprint.id)).save().action_confirm()
         self.assertEqual((recap['res_model'], recap['res_id'], recap['target']), ('dev.sprint', self.sprint.id, 'new'))
-        self.assertEqual(recap['views'][0][0], self.env.ref('dev_projects.sprint_recap_form').id)
+        self.assertEqual(recap['views'][0][0], self.env.ref('dev_addons.sprint_recap_form').id)
 
         s = self.sprint
         self.assertEqual((s.recap_issue_count, s.recap_done_count, s.recap_progress), (4, 3, 75.0),
@@ -546,7 +546,7 @@ class TestDevProjects(TransactionCase):
         unfinished.action_dev_done()
         self.assertEqual(s.recap_done_count, 3)
         # The team writes its summary in the pop-up, and Save closes it.
-        with Form(s, view='dev_projects.sprint_recap_form') as form:
+        with Form(s, view='dev_addons.sprint_recap_form') as form:
             form.recap_notes = '<p>Login is done.</p>'
         self.assertIn('Login is done.', s.recap_notes)
         self.assertEqual(s.action_dev_recap_done()['type'], 'ir.actions.act_window_close')
@@ -698,14 +698,14 @@ class TestDevProjects(TransactionCase):
 
     def test_developer_profile(self):
         partner = self.user.partner_id
-        with Form(partner, view='dev_projects.developer_form') as form:
+        with Form(partner, view='dev_addons.developer_form') as form:
             form.dev_is_developer = True
             form.email = 'dev1@example.com'
             form.dev_access_code = '55556666c'
             self.assertFalse(form._get_modifier('dev_access_code', 'readonly'), "editable while typing")
         self.assertEqual(partner.dev_access_code, '55556666C')
         self.assertIn('Devs', partner.category_id.mapped('name'))
-        with Form(partner, view='dev_projects.developer_form') as form:
+        with Form(partner, view='dev_addons.developer_form') as form:
             self.assertTrue(form._get_modifier('dev_access_code', 'readonly'), "locked once saved")
         with self.assertRaises(ValidationError):
             partner.dev_access_code = '11112222B'
@@ -777,10 +777,10 @@ class TestDevProjects(TransactionCase):
         self.assertFalse(task.dev_assignee_id)
 
         # Dev Projects screens do not list it.
-        board = self.env.ref('dev_projects.action_board')
+        board = self.env.ref('dev_addons.action_board')
         self.assertNotIn(task, self.Task.search(safe_eval(board.domain)))
-        dev_projects = self.env.ref('dev_projects.action_project')
-        self.assertNotIn(regular, self.env['project.project'].search(safe_eval(dev_projects.domain)))
+        dev_action = self.env.ref('dev_addons.action_project')
+        self.assertNotIn(regular, self.env['project.project'].search(safe_eval(dev_action.domain)))
 
         # Ticking "Software Project" later moves it over: key, numbered tasks.
         regular.dev_is_software = True
@@ -818,22 +818,22 @@ class TestDevProjects(TransactionCase):
         """With Spanish installed (any variant, e.g. Dominican Republic), each
         user who picks it in their Preferences sees Dev Projects in Spanish."""
         self.env['res.lang']._activate_lang('es_DO')
-        self.env['ir.module.module']._load_module_terms(['dev_projects'], ['es_DO'])
+        self.env['ir.module.module']._load_module_terms(['dev_addons'], ['es_DO'])
         env = self.env(context=dict(self.env.context, lang='es_DO'))
-        self.assertEqual(env.ref('dev_projects.menu_modules').name, 'Componentes')
-        self.assertEqual(env.ref('dev_projects.menu_board').name, 'Tablero')
-        self.assertEqual(env.ref('dev_projects.action_report_new').name, 'Nuevo reporte')
-        self.assertEqual(env.ref('dev_projects.action_report_mine').name, 'Mis reportes')
+        self.assertEqual(env.ref('dev_addons.menu_modules').name, 'Componentes')
+        self.assertEqual(env.ref('dev_addons.menu_board').name, 'Tablero')
+        self.assertEqual(env.ref('dev_addons.action_report_new').name, 'Nuevo reporte')
+        self.assertEqual(env.ref('dev_addons.action_report_mine').name, 'Mis reportes')
         kinds = dict(env['dev.report'].fields_get(['kind'])['kind']['selection'])
         self.assertEqual(kinds['bug'], 'Algo no funciona')
-        self.assertEqual(env.ref('dev_projects.menu_planning').name, 'Planificación')
+        self.assertEqual(env.ref('dev_addons.menu_planning').name, 'Planificación')
         fields_es = env['project.task'].fields_get(['dev_reporter_id', 'dev_issue_type', 'dev_module_id'])
         self.assertEqual(fields_es['dev_reporter_id']['string'], 'Reportado por')
         self.assertEqual(fields_es['dev_module_id']['string'], 'Componente')
         self.assertEqual(dict(fields_es['dev_issue_type']['selection'])['bug'], 'Error')
         self.assertEqual(env['project.milestone'].fields_get(['dev_version'])['dev_version']['string'], 'Versión')
-        self.assertEqual(env.ref('dev_projects.stage_todo').name, 'Por hacer')
-        recap = env['dev.sprint'].get_views([(env.ref('dev_projects.sprint_recap_form').id, 'form')])
+        self.assertEqual(env.ref('dev_addons.stage_todo').name, 'Por hacer')
+        recap = env['dev.sprint'].get_views([(env.ref('dev_addons.sprint_recap_form').id, 'form')])
         self.assertIn('Terminadas por tipo', recap['views']['form']['arch'])
         with self.assertRaises(UserError) as error:
             self.sprint.with_env(env).action_open_complete_wizard()
