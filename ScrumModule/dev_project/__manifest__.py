@@ -21,8 +21,8 @@ Project app, so you can switch between the two:
 * A report icon in the top bar where anyone in the company sends problems, ideas and
   questions; the team accepts them (they become Backlog issues) or declines them.
     """,
-    'author': "My Company",
-    'website': "https://www.yourcompany.com",
+    'author': "VitalSoftcare",
+    'website': "https://vitalsoftcare.com",
     'category': 'Services/Project',
     'version': '17.0.1.6.0',
     'license': 'LGPL-3',
